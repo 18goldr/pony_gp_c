@@ -7,6 +7,7 @@ struct node {
 	struct node *left, *right;
 };
 
+
 bool matches(struct node *n1, struct node *n2) {
 	return (n1->value == n2->value &&
 		    n1->left  == n2->left  &&

@@ -13,18 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\hashmap">
+      <UniqueIdentifier>{d506f7e7-1dd5-4b05-97de-2bfe5e550a0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pony_gp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_pony_gp.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="map.c">
+      <Filter>Source Files\hashmap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="structs.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
+      <Filter>Source Files\hashmap</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

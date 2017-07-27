@@ -4,10 +4,11 @@
 #include <stdbool.h>
 #include <math.h>
 #include "structs.h"
+#include "map.h"
 
 #define MAX_DEPTH 7
 
-void test(void);
+
 int append_node(struct node *, char, bool);
 void replace_subtree(struct node *, struct node **);
 struct node *get_children(struct node *);
@@ -17,6 +18,9 @@ struct node *get_node_at_index(struct node *, int, int *);
 int get_max_tree_depth(struct node *, int, int);
 int get_depth_at_index(struct node *, int, int *, int);
 
+map_str_t get_symbols(map_int_t);
+map_int_t get_arities(void);
+char *get_random_symbol(int, int, map_str_t, bool);
 
 /*
  * Append a symbol to the node. Return success value.
@@ -153,7 +157,8 @@ int get_max_tree_depth (struct node *root,
  * Return the depth of a node based on the index. 
  * The index is based on depth-first left-to-right traversal.
  */
-int get_depth_at_index(struct node *node, int goal_i, int *curr_i, int curr_depth) {
+int get_depth_at_index(struct node *node, int goal_i, 
+					   int *curr_i, int curr_depth) {
 	if (goal_i < 0) return -1;
 	if (goal_i == 0) return 0;
 
@@ -175,6 +180,73 @@ int get_depth_at_index(struct node *node, int goal_i, int *curr_i, int curr_dept
 }
 
 
+/*
+ * Return a symbol dictionary. Helper method to keep the code clean. 
+
+ * The nodes in a GP tree consists of different symbols. The symbols
+ * are either functions (internal nodes with arity > 0) or terminals
+ * (leaf nodes with arity = 0).
+ */
+map_str_t get_symbols(map_int_t arities) {
+	map_str_t symbols;
+	map_init(&symbols);
+
+	char *terminals = malloc(1);
+	char *functions = malloc(1);
+
+	map_iter_t iter = map_iter(aritites); 
+
+	char *key;
+	char key_value;
+	int value, term_i, func_i;
+	term_i = func_i = 0;
+
+	while ((key = map_next(&arities, &iter))) {
+
+		value = *map_get(&arities, key);
+		key_value = *key;
+
+		// A symbol with arity 0 is a terminal
+		if (!value) {
+			terminals[term_i++] = key_value;
+			terminals = realloc(terminals, sizeof(terminals) + 1);
+		} else {
+			functions[func_i++] = key_value;
+			functions = realloc(terminals, sizeof(functions) + 1);
+		}
+	}
+
+	//terminals[term_i] = ' ';
+	//functions[func_i] = ' ';
+
+	map_set(&symbols, "terminals", terminals);
+	map_set(&symbols, "functions", functions);
+
+	return symbols;
+}
+
+/*
+ * This is a temporary solution. Eventually 
+ * arities will be read from a config file.
+ */
+map_int_t get_arities() {
+	map_int_t arities;
+
+	map_init(&arities);
+
+	map_set(&arities, "+", 2);
+	map_set(&arities, "*", 2);
+	map_set(&arities, "/", 2);
+	map_set(&arities, "-", 2);
+	map_set(&arities, "1", 0);
+	map_set(&arities, "0", 0);
+
+	return arities;
+}
+
+
+
+
 main() {
 	struct node tree[] = {
 		{'+', &tree[1], &tree[6]}, // tree[0]
@@ -186,4 +258,19 @@ main() {
 		{'2', NULL,     NULL    }  // tree[6]
 	};
 
+	map_int_t arities = get_arities();
+	map_str_t symbols = get_symbols(arities);
+
+	char *terminals = *map_get(&symbols, "terminals");
+	char *functions = *map_get(&symbols, "functions");
+
+	for (int i = 0; i < 2; i++) {
+		printf("%c\n", *terminals);
+		terminals++;
+	}
+
+	for (int i = 0; i < 4; i++) {
+		printf("%c\n", *functions);
+		functions++;
+	}
 }
