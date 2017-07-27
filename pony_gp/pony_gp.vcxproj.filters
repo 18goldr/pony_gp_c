@@ -18,6 +18,9 @@
     <ClCompile Include="pony_gp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_pony_gp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="structs.h">

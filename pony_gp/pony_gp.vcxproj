@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="pony_gp.c" />
+    <ClCompile Include="test_pony_gp.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="structs.h" />
