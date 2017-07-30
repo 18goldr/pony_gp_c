@@ -139,12 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="map.c" />
+    <ClCompile Include="binary_tree.c" />
+    <ClCompile Include="hashmap.c" />
     <ClCompile Include="pony_gp.c" />
+    <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="map.h" />
-    <ClInclude Include="structs.h" />
+    <ClInclude Include="binary_tree.h" />
+    <ClInclude Include="hashmap.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
