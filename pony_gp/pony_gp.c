@@ -85,17 +85,20 @@ char get_random_symbol(int curr_depth, int max_depth, struct symbols *symbols, b
 	// Pick a terminal if max depth has been reached
 	if (curr_depth >= max_depth - 1) {
 		n = rand_index(get_char_arr_length(symbols->terminals)-1);
-		symbol = *(symbols->terminals += n);
+		//symbol = *(symbols->terminals += n);
+		symbol = symbols->terminals[n];
 	} else {
 		// 50% chance it will be a terminal if max depth has
 		// not been reached
 		if (!full && get_rand(0, 1)) {
 			n = rand_index(get_char_arr_length(symbols->terminals)-1);
-			symbol = *(symbols->terminals += n);
+			/*symbol = *(symbols->terminals += n);*/
+			symbol = symbols->terminals[n];
 		} else {
 			// Pick a random function
 			n = rand_index(get_char_arr_length(symbols->functions)-1);
-			symbol = *(symbols->functions += n);
+			//symbol = *(symbols->functions += n);
+			symbol = symbols->functions[n];
 		}
 	}
 
@@ -167,7 +170,6 @@ main() {
 
 	struct node *test = new_node('+', NULL, NULL);
 
-	grow(test, 0, 5, false, &symbols);
+	grow(test, 0, 5, true, &symbols);
 	int n = 0;
-	printf("%c", test->right->left->value);
 }
