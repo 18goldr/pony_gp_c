@@ -1,5 +1,5 @@
-#include "binary_tree.h"
 #include <assert.h>
+#include "binary_tree.h"
 
 static int get_depth_at_index_static(struct node *, int, int *, int);
 static int get_max_tree_depth_static(struct node *root, int curr_depth, int max_tree_depth);
@@ -125,19 +125,6 @@ static int get_depth_at_index_static(struct node *node, int goal_i,
 
 
 /**
-* Return if one node is equivalent to another. This is done by
-* comparing their values and the pointers to their children.
-	*n1, *n2: The nodes to compare.
-*/
-bool matches(struct node *n1, struct node *n2) {
-	return (n1->value == n2->value &&
-		n1->left == n2->left  &&
-		n1->right == n2->right
-	);
-}
-
-
-/**
 * Append a symbol to the node.
 * Return NULL if child is not NULL, otherwise return the new node.
 	**node: The (hopefully) soon to be parent node to append to. 
@@ -149,7 +136,7 @@ bool matches(struct node *n1, struct node *n2) {
 			the header.
 */
 static struct node *append_node_static(struct node **node, char value, bool side) {
-	struct node *node_new = new_node('+', NULL, NULL);
+	struct node *node_new = new_node(value, NULL, NULL);
 
 	if (side == LEFT_SIDE) {
 		
@@ -164,6 +151,19 @@ static struct node *append_node_static(struct node **node, char value, bool side
 	}
 
 	return new_node;
+}
+
+
+/**
+* Return if one node is equivalent to another. This is done by
+* comparing their values and the pointers to their children.
+	*n1, *n2: The nodes to compare.
+*/
+bool matches(struct node *n1, struct node *n2) {
+	return (n1->value == n2->value &&
+		n1->left == n2->left  &&
+		n1->right == n2->right
+	);
 }
 
 
@@ -219,7 +219,7 @@ struct node *get_node_at_index(struct node *root, int goal) {
 
 /**
 * A wrapper function to make calling get_max_tree_depth_static() simpler.
-		*root: The root node.
+	 *root: The root node.
 */
 int get_max_tree_depth(struct node *root) {
 	return get_max_tree_depth_static(root, 0, 0);

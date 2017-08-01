@@ -2,6 +2,7 @@
 
 /*
 * Array must end in Null character.
+	*arr: The array to parse.
 */
 int get_char_arr_length(char *arr) {
 	int length = 1;
@@ -17,6 +18,8 @@ int get_char_arr_length(char *arr) {
 
 /*
 * Return a random int between min and max inclusive.
+	min: The minimum value.
+	max: The maxmium value.
 */
 int get_rand(int min, int max) {
 	// srand must only be instantiated once.
@@ -31,6 +34,7 @@ int get_rand(int min, int max) {
 
 /*
 * Get a random index of an array.
+	length: The length of the array.
 */
 int rand_index(int length) {
 	return get_rand(0, length - 1);

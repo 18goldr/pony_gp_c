@@ -1,7 +1,7 @@
 #define MAX_SIZE 100
 
-void hashmap_put(struct hashmap *h, char key, int value);
-int hashmap_get(struct hashmap *h, char key);
+int hashmap_put(struct hashmap *h, const char key, const int values);
+int hashmap_get(struct hashmap *h, const char key);
 void hashmap_init(struct hashmap *h);
 void print_hashmap(struct hashmap *h);
 
