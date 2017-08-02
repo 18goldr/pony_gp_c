@@ -10,10 +10,10 @@ static int get_number_of_nodes_static(struct node **root, int cnt);
 
 /**
 * Return the number of nodes in the tree. A recursive depth-first 
-* right-to-left search is done. Must pass in 0 for cnt to work properly.
+* right-to-left search is done.
 * This function should not be called by itself. Call it's wrapper function.
 	**root: The root node.
-	   cnt: Current count. Must be passed in initially as 0 to work as intended.
+	   cnt: Current count. 
 */
 static int get_number_of_nodes_static(struct node **root, int cnt) {
 
@@ -81,10 +81,8 @@ struct node *get_node_at_index(struct node **root, int goal) {
 * Return the max depth of the tree. Recursively traverse the tree.
 * This function should not be called by itself. Call it's wrapper function.
 		     *root: The root node.
-	    curr_depth: The current depth in the tree. Must be passed in initially
-				    as 0 to work as intended.
+	    curr_depth: The current depth in the tree.
 	max_tree_depth: The current max depth that the function has reached.
-					Must be passed in initially as 0 to work as intended.
 */
 static int get_max_tree_depth_static(struct node *root,
 	int curr_depth, int max_tree_depth) {
@@ -114,9 +112,7 @@ static int get_max_tree_depth_static(struct node *root,
 	     goal_i: The index to search for.
 	    *curr_i: The current_index in the tree. This is necessary to be a pointer
 			     as it must maintain value throughout seperate recursion loops.
-			     Must be passed in as the pointer to the value 0 to work as intended.
-	 curr_depth: The current depth in the tree. Must be passed in as 0 to work as
-				 intended.
+	 curr_depth: The current depth in the tree. 
 */
 static int get_depth_at_index_static(struct node *root, int goal_i,
 	int *curr_i, int curr_depth) {
@@ -290,4 +286,19 @@ void replace_subtree(struct node **old_tree, struct node **new_tree) {
 */
 int get_num_children(struct node *root) {
 	return (root->left ? 1 : 0) + (root->right ? 1 : 0);
+}
+
+
+/**
+* Print the given node.
+*/
+void print_node(struct node *node) {
+	if (node) {
+		printf("%c:", node->value);
+
+		if (node->left) printf(" %c", node->left->value);
+		if (node->right) printf(" %c", node->right->value);
+	}
+	printf("\n");
+	
 }

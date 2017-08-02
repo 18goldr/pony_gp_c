@@ -5,6 +5,7 @@
 #define LEFT_SIDE 0
 #define RIGHT_SIDE 1
 
+void print_node(struct node *node);
 struct node *append_node(struct node *, char, bool);
 struct node **get_children(struct node **);
 int get_depth_at_index(struct node *, int);

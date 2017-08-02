@@ -4,7 +4,10 @@
 #include <assert.h>
 #include "binary_tree.h"
 #include "util.h"
+#include <float.h>
 #include "hashmap.h"
+
+#define DEFAULT_FITNESS -DBL_MAX
 
 void grow(struct node *node, int curr_depth, int max_depth, bool full, struct symbols *symbols);
 char get_random_symbol(int, int, struct symbols *, bool);
@@ -167,6 +170,47 @@ void subtree_crossover(struct node **parent1, struct node **parent2, struct hash
 
 
 /**
+ * Ramped half-half initialization. The individuals in the population
+ * are initialized using the grow or the full method for each depth
+ * value (ramped) up to max_depth.
+ 		 *params: A hashmap containing user defined parameters.
+		*symbols: The container for the functions, terminals and arities
+		          lists.
+ */
+struct individual *init_population(struct hashmap *params, struct symbols *symbols) {
+	int pop_size = (int)hashmap_get(params, "population_size");
+
+	struct individual *population = malloc(sizeof(struct node) * pop_size);
+
+	for (int i = 0; i < pop_size; i++) {
+		
+		// Pick full or grow method
+		bool full = get_randint(0, 1);
+
+		// Ramp the depth
+		int max_depth = (i % (int)hashmap_get(params, "max_depth"));
+
+		// Create the root node
+		char symbol = get_random_symbol(0, max_depth, symbols, full);
+		struct node *tree = new_node(symbol, NULL, NULL);
+
+		// Grow the tree if the root is a function symbol.
+		if (max_depth > 0 && char_in(symbols->functions, symbol)) {
+			grow(tree, 1, max_depth, full, symbols);
+
+			assert(get_max_tree_depth(tree) < max_depth + 1);
+		}
+
+		struct individual individual = (struct individual) { tree, DEFAULT_FITNESS };
+
+		population[i] = individual;
+	}
+
+	return population;
+}
+
+
+/**
  * Return a randomly chosen symbol. The depth determines if a terminal
  * must be chosen. If `full` is specified a function will be chosen
  * until the max depth is reached. The symbol is picked with a uniform
@@ -300,5 +344,10 @@ main() {
 
 	grow(test, 0, (int)hashmap_get(params, "max_depth"), true, &symbols);
 	subtree_crossover(&root, &test, params);
+	struct individual *population = init_population(params, &symbols);
 
+	for (int i = 0; i < 100; i++) {
+		print_node((population++)->genome);
+	}
+	int n = 0;
 }
