@@ -6,10 +6,10 @@
 #define RIGHT_SIDE 1
 
 struct node *append_node(struct node *, char, bool);
-struct node *get_children(struct node *);
+struct node **get_children(struct node **);
 int get_depth_at_index(struct node *, int);
 int get_max_tree_depth(struct node *root);
-struct node *get_node_at_index(struct node *root, int goal);
+struct node *get_node_at_index(struct node **root, int goal);
 int get_num_children(struct node *root);
 int get_number_of_nodes(struct node *root);
 bool matches(struct node *n1, struct node *n2);

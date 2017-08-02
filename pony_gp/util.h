@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-int get_char_arr_length(char *);
-int get_rand(int, int);
-int rand_index(int);
+int get_char_arr_length(char *arr);
+int get_randint(int min, int max);
+double get_rand_probability(void);
+int rand_index(int length);
+void start_srand(void);

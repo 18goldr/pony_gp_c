@@ -1,28 +1,30 @@
 #include <assert.h>
+#include <stdio.h>
 #include "binary_tree.h"
 
 static int get_depth_at_index_static(struct node *, int, int *, int);
 static int get_max_tree_depth_static(struct node *root, int curr_depth, int max_tree_depth);
-static struct node *get_node_at_index_static(struct node *root, int goal_i, int *curr_i);
+static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i);
 static struct node *append_node_static(struct node **node, char value, bool side);
-
+static int get_number_of_nodes_static(struct node **root, int cnt);
 
 /**
 * Return the number of nodes in the tree. A recursive depth-first 
 * right-to-left search is done. Must pass in 0 for cnt to work properly.
 * This function should not be called by itself. Call it's wrapper function.
-	*root: The root node.
-	  cnt: Current count. Must be passed in initially as 0 to work as intended.
+	**root: The root node.
+	   cnt: Current count. Must be passed in initially as 0 to work as intended.
 */
-static int get_number_of_nodes_static(struct node *root, int cnt) {
+static int get_number_of_nodes_static(struct node **root, int cnt) {
 
 	// Increase the count
 	cnt++;
 
 	// Iterate over the children
-	for (int i = 0; i < get_num_children(root); i++) {
+	for (int i = 0; i < get_num_children(*root); i++) {
 		// Recursively count the child nodes
-		cnt = get_number_of_nodes_static(&get_children(root)[i], cnt);
+		struct node *child = get_children(root)[i];
+		cnt = get_number_of_nodes_static(&child, cnt);
 	}
 
 	return cnt;
@@ -33,30 +35,44 @@ static int get_number_of_nodes_static(struct node *root, int cnt) {
 * Return the node in the tree at a given index. The index is
 * according to a depth-first left-to-right ordering.
 * This function should not be called by itself. Call it's wrapper function.
-	  *root: The root node.
+	 **root: The root node.
 	 goal_i: The index to search for.
 	*curr_i: The current_index in the tree. This is necessary to be a pointer
 			 as it must maintain value throughout seperate recursion loops.
 */
-static struct node *get_node_at_index_static(struct node *root, int goal_i, int *curr_i) {
+static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i) {
 
 	if (goal_i < 0) return NULL;
-	if (goal_i == 0) return root;
+	if (goal_i == 0) return *root;
 
 	static struct node *goal = NULL;
 
 	// Recursively loop through the tree
 	// until the index is reached.
-	for (int i = 0; !goal && i < get_num_children(root); i++) {
-		struct node *child = &get_children(root)[i];
+	for (int i = 0; !goal && i < get_num_children(*root); i++) {
+		struct node *child = malloc(sizeof(struct node));
+		child = get_children(root)[i];
 
 		(*curr_i)++;
 
 		if (*curr_i == goal_i) goal = child;
-		else get_node_at_index_static(child, goal_i, curr_i);
+		else get_node_at_index_static(&child, goal_i, curr_i);
 	}
 
 	return goal;
+}
+
+
+/**
+* A wrapper functino to make calling get_node_at_index_static() simpler.
+	**root: The root node.
+	  goal: The index to search for.
+*/
+struct node *get_node_at_index(struct node **root, int goal) {
+	int index = 0;
+	int *ptr = &index;
+
+	return get_node_at_index_static(root, goal, ptr);
 }
 
 
@@ -77,7 +93,7 @@ static int get_max_tree_depth_static(struct node *root,
 
 	// Traverse the children of the root node
 	for (int i = 0; i < get_num_children(root); i++) {
-		struct node *child = &get_children(root)[i];
+		struct node *child = get_children(&root)[i];
 
 		// Recursively get the depth of the child node
 		max_tree_depth = get_max_tree_depth_static(child, curr_depth + 1, max_tree_depth);
@@ -93,7 +109,7 @@ static int get_max_tree_depth_static(struct node *root,
 * Return the depth of a node based on the index.
 * The index is based on depth-first left-to-right traversal.
 * This function should not be called by itself. Call it's wrapper function.
-	      *node: The current tree node.
+	      *root: The root tree node.
 	     goal_i: The index to search for.
 	    *curr_i: The current_index in the tree. This is necessary to be a pointer
 			     as it must maintain value throughout seperate recursion loops.
@@ -101,7 +117,7 @@ static int get_max_tree_depth_static(struct node *root,
 	 curr_depth: The current depth in the tree. Must be passed in as 0 to work as
 				 intended.
 */
-static int get_depth_at_index_static(struct node *node, int goal_i,
+static int get_depth_at_index_static(struct node *root, int goal_i,
 	int *curr_i, int curr_depth) {
 	if (goal_i < 0) return -1;
 	if (goal_i == 0) return 0;
@@ -112,8 +128,8 @@ static int get_depth_at_index_static(struct node *node, int goal_i,
 		i_depth = curr_depth;
 	}
 
-	for (int i = 0; (i_depth == -1) && i < get_num_children(node); i++) {
-		struct node *child = &get_children(node)[i];
+	for (int i = 0; (i_depth == -1) && i < get_num_children(root); i++) {
+		struct node *child = get_children(&root)[i];
 
 		(*curr_i)++;
 
@@ -170,25 +186,24 @@ bool matches(struct node *n1, struct node *n2) {
 /**
 * Return the children of the node. The children are
 * the root's immediate descendents.
-	*root: The root node.
+	 **root: The root node.
 */
-struct node *get_children(struct node *root) {
+struct node **get_children(struct node **root) {
 	short l = 0, r = 0;
-
 	// Check that the root has a left and right descendent.
-	if (root->left)  l = 1;
-	if (root->right) r = 1;
+	if ((*root)->left)  l = 1;
+	if ((*root)->right) r = 1;
 
 	// If neither, it has no children.
-	if (!(r + l)) return (struct node *) malloc(0);
+	if (!(r + l)) return (struct node **) malloc(0);
 
 	// Determine array capacity based on the number of children;
-	struct node *children = malloc(sizeof(struct node) * (r + l));
+	struct node **children = malloc(sizeof(struct node *) * (r + l));
 
 	int i = 0;
 
-	if (l) children[i++] = *root->left;
-	if (r) children[i] = *root->right;
+	if (l) children[i++] = (*root)->left;
+	if (r) children[i] = (*root)->right;
 
 	return children;
 }
@@ -200,20 +215,7 @@ struct node *get_children(struct node *root) {
 	*root: The root node.
 */
 int get_number_of_nodes(struct node *root) {
-	return get_number_of_nodes_static(root, 0);
-}
-
-
-/**
-* A wrapper functino to make calling get_node_at_index_static() simpler.
-	*root: The root node.
-	 goal: The index to search for.
-*/
-struct node *get_node_at_index(struct node *root, int goal) {
-	int index = 0;
-	int *ptr = &index;
-
-	return get_node_at_index_static(root, goal, ptr);
+	return get_number_of_nodes_static(&root, 0);
 }
 
 
