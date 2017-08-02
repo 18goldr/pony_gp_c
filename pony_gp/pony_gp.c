@@ -116,6 +116,57 @@ void subtree_mutation(struct node **root, struct hashmap *params, struct symbols
 
 
 /**
+ * Swap two random nodes from the parents and swapping the subtrees.
+ *		**parent1: Parent to crossover
+ *		**parent2: Other parent to crossover
+ *		  *params: A hashmap containing user defined parameters.
+ */
+void subtree_crossover(struct node **parent1, struct node **parent2, struct hashmap *params) {
+	
+	// Check if crossover will occur
+	if (get_rand_probability() < hashmap_get(params, "crossover_probability")) {
+	
+		struct node *xo_nodes[2];
+		int node_depths[2][2];
+
+		for (int i = 0; i < 2; i++) {
+			struct node **parent = (i ? parent2 : parent1);
+
+			// Pick a crossover pointer
+			int end_node_i = get_number_of_nodes(*parent) - 1;
+			int node_i = get_randint(0, end_node_i);
+
+			// Find the subtree at the crossover point
+			xo_nodes[i] = get_node_at_index(parent, node_i);
+		
+			node_depths[i][0] = get_depth_at_index(*parent, node_i);
+			node_depths[i][1] = get_max_tree_depth(xo_nodes[i]);
+		}
+
+		int max_depth = (int)hashmap_get(params, "max_depth");
+		
+		// Make sure the trees will not exceed the max depth
+		if ((node_depths[0][1] + node_depths[1][1] > max_depth) ||
+			(node_depths[1][0] + node_depths[0][1] > max_depth)) {
+			if (hashmap_get(params, "verbose")) printf("Crossover too deep\n");
+			return;
+		}
+
+		// Swap the nodes
+		struct node tmp = *xo_nodes[0];
+
+		*xo_nodes[0] = *xo_nodes[1];
+		*xo_nodes[1] = tmp;
+
+		assert(
+			get_max_tree_depth(xo_nodes[0]) <= max_depth &&
+			get_max_tree_depth(xo_nodes[1]) <= max_depth
+		);
+	}
+}
+
+
+/**
  * Return a randomly chosen symbol. The depth determines if a terminal
  * must be chosen. If `full` is specified a function will be chosen
  * until the max depth is reached. The symbol is picked with a uniform
@@ -211,7 +262,7 @@ struct hashmap *get_params() {
 	hashmap_init(h);
 
 	hashmap_put(h, "population_size", 100);
-	hashmap_put(h, "max_depth", 2);
+	hashmap_put(h, "max_depth", 3);
 	hashmap_put(h, "elite_size", 2);
 	hashmap_put(h, "generations", 20);
 	hashmap_put(h, "tournament_size", 3);
@@ -219,6 +270,7 @@ struct hashmap *get_params() {
 	hashmap_put(h, "crossover_probability", 0.8);
 	hashmap_put(h, "mutation_probability", 0.2);
 	hashmap_put(h, "test_tain_split", 0.7);
+	hashmap_put(h, "verbose", 1);
 
 	return h;
 }
@@ -238,8 +290,15 @@ main() {
 	root->left->right->left = new_node('5', NULL, NULL);
 	root->left->right->right = new_node('7', NULL, NULL);
 
-	struct node *test = new_node('+', NULL, NULL);
+	struct node *test = new_node('-', NULL, NULL);
+	test->left = new_node('/', NULL, NULL);
+	test->right = new_node('9', NULL, NULL);
+	test->left->left = new_node('1', NULL, NULL);
+	test->left->right = new_node('-', NULL, NULL);
+	test->left->right->left = new_node('4', NULL, NULL);
+	test->left->right->right = new_node('8', NULL, NULL);
 
 	grow(test, 0, (int)hashmap_get(params, "max_depth"), true, &symbols);
-	subtree_mutation(&root, params, &symbols);
+	subtree_crossover(&root, &test, params);
+
 }

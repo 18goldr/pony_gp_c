@@ -4,7 +4,7 @@
 
 static int get_depth_at_index_static(struct node *, int, int *, int);
 static int get_max_tree_depth_static(struct node *root, int curr_depth, int max_tree_depth);
-static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i);
+static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i, struct node **goal);
 static struct node *append_node_static(struct node **node, char value, bool side);
 static int get_number_of_nodes_static(struct node **root, int cnt);
 
@@ -39,40 +39,41 @@ static int get_number_of_nodes_static(struct node **root, int cnt) {
 	 goal_i: The index to search for.
 	*curr_i: The current_index in the tree. This is necessary to be a pointer
 			 as it must maintain value throughout seperate recursion loops.
+	 **goal: Pointer to the pointer of the node that will be returned.
+			 Must be initialized to work properly.
 */
-static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i) {
+static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i, struct node **goal) {
 
 	if (goal_i < 0) return NULL;
 	if (goal_i == 0) return *root;
 
-	static struct node *goal = NULL;
-
 	// Recursively loop through the tree
 	// until the index is reached.
-	for (int i = 0; !goal && i < get_num_children(*root); i++) {
+	for (int i = 0; i < get_num_children(*root); i++) {
 		struct node *child = malloc(sizeof(struct node));
 		child = get_children(root)[i];
 
 		(*curr_i)++;
 
-		if (*curr_i == goal_i) goal = child;
-		else get_node_at_index_static(&child, goal_i, curr_i);
+		if (*curr_i == goal_i) *goal = child;
+		else get_node_at_index_static(&child, goal_i, curr_i, goal);
 	}
 
-	return goal;
+	return *goal;
 }
 
 
 /**
-* A wrapper functino to make calling get_node_at_index_static() simpler.
+* A wrapper function to make calling get_node_at_index_static() simpler.
 	**root: The root node.
 	  goal: The index to search for.
 */
 struct node *get_node_at_index(struct node **root, int goal) {
 	int index = 0;
 	int *ptr = &index;
+	struct node **tmp = malloc(sizeof(struct node **));
 
-	return get_node_at_index_static(root, goal, ptr);
+	return get_node_at_index_static(root, goal, ptr, tmp);
 }
 
 
