@@ -7,6 +7,7 @@ static int get_max_tree_depth_static(struct node *root, int curr_depth, int max_
 static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i, struct node **goal);
 static struct node *append_node_static(struct node **node, char value, bool side);
 static int get_number_of_nodes_static(struct node **root, int cnt);
+static void print_tree_static(struct node *root, int space, int delta_space);
 
 /**
 * Return the number of nodes in the tree. A recursive depth-first 
@@ -28,6 +29,15 @@ static int get_number_of_nodes_static(struct node **root, int cnt) {
 	}
 
 	return cnt;
+}
+
+
+/**
+* A wrapper to make calling get_number_of_nodes() simpler.
+*root: The root node.
+*/
+int get_number_of_nodes(struct node *root) {
+	return get_number_of_nodes_static(&root, 0);
 }
 
 
@@ -103,6 +113,14 @@ static int get_max_tree_depth_static(struct node *root,
 	return max_tree_depth;
 }
 
+/**
+* A wrapper function to make calling get_max_tree_depth_static() simpler.
+	 *root: The root node.
+*/
+int get_max_tree_depth(struct node *root) {
+	return get_max_tree_depth_static(root, 0, 0);
+}
+
 
 /**
 * Return the depth of a node based on the index.
@@ -168,6 +186,22 @@ static struct node *append_node_static(struct node **node, char value, bool side
 
 
 /**
+* A wrapper function to make calling append_node_static() simpler.
+*node: The (hopefully) soon to be parent node to append to.
+value: The value of the node to append.
+side: The side of the parent node to append to.
+0 = left side
+1 = right side
+Use the macros LEFT_SIDE and RIGHT_SIDE defined in
+the header.
+*/
+struct node *append_node(struct node *node, char value, bool side) {
+	struct node **ptr = &node;
+	return append_node_static(ptr, value, side);
+}
+
+
+/**
 * Return if one node is equivalent to another. This is done by
 * comparing their values and the pointers to their children.
 	*n1, *n2: The nodes to compare.
@@ -206,24 +240,6 @@ struct node **get_children(struct node **root) {
 }
 
 
-
-/**
-* A wrapper to make calling get_number_of_nodes() simpler.
-	*root: The root node.
-*/
-int get_number_of_nodes(struct node *root) {
-	return get_number_of_nodes_static(&root, 0);
-}
-
-
-/**
-* A wrapper function to make calling get_max_tree_depth_static() simpler.
-	 *root: The root node.
-*/
-int get_max_tree_depth(struct node *root) {
-	return get_max_tree_depth_static(root, 0, 0);
-}
-
 /**
 * A wrapper to make call to get_depth_at_index_static() simpler.
 	 *node: The root node.
@@ -236,21 +252,6 @@ int get_depth_at_index(struct node *node, int goal_i) {
 	return get_depth_at_index_static(node, goal_i, ptr, 0);
 }
 
-
-/**
- * A wrapper function to make calling append_node_static() simpler.
-	 *node: The (hopefully) soon to be parent node to append to.
-	 value: The value of the node to append.
-	  side: The side of the parent node to append to.
-				0 = left side
-				1 = right side
-			Use the macros LEFT_SIDE and RIGHT_SIDE defined in
-			the header.
- */
-struct node *append_node(struct node *node, char value, bool side) {
-	struct node **ptr = &node;
-	return append_node_static(ptr, value, side);
-}
 
 /**
  * A function to return a new node.
@@ -301,4 +302,38 @@ void print_node(struct node *node) {
 	}
 	printf("\n");
 	
+}
+
+
+/**
+* Print a tree. Left is the top, right is the bottom.
+* Should not be called by itself. Call it's wrapper function.
+*root: The root node of the tree.
+space: The amount of space between each tree.
+delta_space: The change in space as depth increases.
+*/
+static void print_tree_static(struct node *root, int space, int delta_space) {
+	if (!root) return;
+
+	space += delta_space;
+
+	print_tree_static(root->right, space, delta_space);
+
+	printf("\n");
+	for (int i = delta_space; i < space; i++) {
+		printf(" ");
+	}
+	printf("%c\n", root->value);
+
+	print_tree_static(root->left, space, delta_space);
+}
+
+
+/**
+* Function wrapper to make caling print_tree_static simpler.
+*root: The root node of the tree.
+delta_space: The change in space as depth increases.
+*/
+void print_tree(struct node *root, int delta_space) {
+	print_tree_static(root, 0, delta_space);
 }
