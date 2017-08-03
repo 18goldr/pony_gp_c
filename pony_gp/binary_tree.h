@@ -19,6 +19,7 @@ struct node *new_node(char v, struct node *l, struct node *r);
 void grow(struct node *node, int curr_depth, int max_depth, bool full, struct symbols *symbols);
 void subtree_mutation(struct node **node, struct hashmap *params, struct symbols *symbols);
 void subtree_crossover(struct node **parent1, struct node **parent2, struct hashmap *params);
+void print_tree(struct node *root, int count);
 
 /**
  * A structure to represent a binary tree node

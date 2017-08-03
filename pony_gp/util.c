@@ -16,21 +16,6 @@ int get_char_arr_length(char *arr) {
 
 }
 
-/**
- * Return if a character is in a char array. 
- * Must end in Null character.
- 		*arr: The array to parse.
- 		   c: Character to parse for.
- */
-bool char_in(char *arr, char c) {
-	while (*arr) {
-		if (*arr == c) return true;
-		arr++;
-	}
-
-	return false;
-}
-
 
 /**
  * Instantiate srand. Can only be performed once per execution.

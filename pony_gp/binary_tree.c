@@ -1,28 +1,30 @@
 #include <assert.h>
 #include <stdio.h>
 #include "binary_tree.h"
+#include "util.h"
 
 static int get_depth_at_index_static(struct node *, int, int *, int);
 static int get_max_tree_depth_static(struct node *root, int curr_depth, int max_tree_depth);
 static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i, struct node **goal);
 static struct node *append_node_static(struct node **node, char value, bool side);
 static int get_number_of_nodes_static(struct node **root, int cnt);
+static void print_tree_static(struct node *root, int space, int delta_space);
 
 /**
 * Return the number of nodes in the tree. A recursive depth-first 
 * right-to-left search is done.
 * This function should not be called by itself. Call it's wrapper function.
 	**root: The root node.
-	   cnt: Current count. 
+	   cnt: Current delta_space. 
 */
 static int get_number_of_nodes_static(struct node **root, int cnt) {
 
-	// Increase the count
+	// Increase the delta_space
 	cnt++;
 
 	// Iterate over the children
 	for (int i = 0; i < get_num_children(*root); i++) {
-		// Recursively count the child nodes
+		// Recursively delta_space the child nodes
 		struct node *child = get_children(root)[i];
 		cnt = get_number_of_nodes_static(&child, cnt);
 	}
@@ -291,6 +293,7 @@ int get_num_children(struct node *root) {
 
 /**
 * Print the given node.
+		*node: The node to print.
 */
 void print_node(struct node *node) {
 	if (node) {
@@ -299,6 +302,41 @@ void print_node(struct node *node) {
 		if (node->left) printf(" %c", node->left->value);
 		if (node->right) printf(" %c", node->right->value);
 	}
+
 	printf("\n");
 	
 }
+
+/**
+ * Print a tree. Left is the top, right is the bottom.
+ * Should not be called by itself. Call it's wrapper function.
+		      *root: The root node of the tree.
+			  space: The amount of space between each tree.
+		delta_space: The change in space as depth increases.
+ */
+static void print_tree_static(struct node *root, int space, int delta_space) {
+	if (!root) return;
+
+	space += delta_space;
+
+	print_tree_static(root->right, space, delta_space);
+
+	printf("\n");
+	for (int i = delta_space; i < space; i++) {
+		printf(" ");
+	}
+	printf("%c\n", root->value);
+
+	print_tree_static(root->left, space, delta_space);
+}
+
+
+/**
+ * Function wrapper to make caling print_tree_static simpler.
+			  *root: The root node of the tree.
+		delta_space: The change in space as depth increases.
+ */
+void print_tree(struct node *root, int delta_space) {
+	print_tree_static(root, 0, delta_space);
+}
+

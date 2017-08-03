@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <float.h>
+#include <string.h>
+#include "hashmap.h"
 #include "binary_tree.h"
 #include "util.h"
-#include <float.h>
-#include "hashmap.h"
 
 #define DEFAULT_FITNESS -DBL_MAX
 
@@ -16,6 +17,12 @@ char *get_functions(void);
 struct hashmap *get_arities(void);
 struct hashmap *get_params(void);
 void subtree_mutation(struct node **node, struct hashmap *params, struct symbols *symbols);
+void test_grow(void);
+void test_init_population(void);
+void test_subtree_crossover(void);
+
+// Progam parameters
+struct hashmap *params;
 
 /**
  * A struct to contain the different functions, terminals, and arities.
@@ -63,7 +70,7 @@ void grow(struct node *node, int curr_depth,
 
 	char symbol;
 
-	if (curr_depth >= max_depth) return;
+	if (curr_depth > max_depth) return;
 
 	// grow is called recursively in the loop. The loop iterates
 	// "arity" number of times, given by the node symbol.
@@ -127,7 +134,7 @@ void subtree_mutation(struct node **root, struct hashmap *params, struct symbols
 void subtree_crossover(struct node **parent1, struct node **parent2, struct hashmap *params) {
 	
 	// Check if crossover will occur
-	if (get_rand_probability() < hashmap_get(params, "crossover_probability")) {
+	//if (get_rand_probability() < hashmap_get(params, "crossover_probability")) {
 	
 		struct node *xo_nodes[2];
 		int node_depths[2][2];
@@ -144,10 +151,11 @@ void subtree_crossover(struct node **parent1, struct node **parent2, struct hash
 		
 			node_depths[i][0] = get_depth_at_index(*parent, node_i);
 			node_depths[i][1] = get_max_tree_depth(xo_nodes[i]);
+			int n = 0;
 		}
 
 		int max_depth = (int)hashmap_get(params, "max_depth");
-		
+
 		// Make sure the trees will not exceed the max depth
 		if ((node_depths[0][1] + node_depths[1][1] > max_depth) ||
 			(node_depths[1][0] + node_depths[0][1] > max_depth)) {
@@ -165,7 +173,7 @@ void subtree_crossover(struct node **parent1, struct node **parent2, struct hash
 			get_max_tree_depth(xo_nodes[0]) <= max_depth &&
 			get_max_tree_depth(xo_nodes[1]) <= max_depth
 		);
-	}
+	//}
 }
 
 
@@ -188,14 +196,14 @@ struct individual *init_population(struct hashmap *params, struct symbols *symbo
 		bool full = get_randint(0, 1);
 
 		// Ramp the depth
-		int max_depth = (i % (int)hashmap_get(params, "max_depth"));
+		int max_depth = (i % (int)hashmap_get(params, "max_depth") + (i % get_randint(2, 3) == 0 ? 1 : 0));
 
 		// Create the root node
 		char symbol = get_random_symbol(0, max_depth, symbols, full);
 		struct node *tree = new_node(symbol, NULL, NULL);
 
 		// Grow the tree if the root is a function symbol.
-		if (max_depth > 0 && char_in(symbols->functions, symbol)) {
+		if (strchr(symbols->functions, symbol)) {
 			grow(tree, 1, max_depth, full, symbols);
 
 			assert(get_max_tree_depth(tree) < max_depth + 1);
@@ -306,7 +314,7 @@ struct hashmap *get_params() {
 	hashmap_init(h);
 
 	hashmap_put(h, "population_size", 100);
-	hashmap_put(h, "max_depth", 3);
+	hashmap_put(h, "max_depth", 2);
 	hashmap_put(h, "elite_size", 2);
 	hashmap_put(h, "generations", 20);
 	hashmap_put(h, "tournament_size", 3);
@@ -324,30 +332,73 @@ main() {
 	symbols.functions = get_functions();
 	symbols.terminals = get_terminals();
 	symbols.arities = get_arities();
-	struct hashmap *params = get_params();
+	params = get_params();
+	
+	test_subtree_crossover();
+}
 
-	struct node *root = new_node('+', NULL, NULL);
-	root->left = new_node('*', NULL, NULL);
-	root->right = new_node('2', NULL, NULL);
-	root->left->left = new_node('6', NULL, NULL);
-	root->left->right = new_node('*', NULL, NULL);
-	root->left->right->left = new_node('5', NULL, NULL);
-	root->left->right->right = new_node('7', NULL, NULL);
-
-	struct node *test = new_node('-', NULL, NULL);
-	test->left = new_node('/', NULL, NULL);
-	test->right = new_node('9', NULL, NULL);
-	test->left->left = new_node('1', NULL, NULL);
-	test->left->right = new_node('-', NULL, NULL);
-	test->left->right->left = new_node('4', NULL, NULL);
-	test->left->right->right = new_node('8', NULL, NULL);
-
-	grow(test, 0, (int)hashmap_get(params, "max_depth"), true, &symbols);
-	subtree_crossover(&root, &test, params);
-	struct individual *population = init_population(params, &symbols);
+void test_grow() {
+	struct node *test;
 
 	for (int i = 0; i < 100; i++) {
-		print_node((population++)->genome);
+
+		char v = get_random_symbol(0, (int)hashmap_get(params, "max_depth"), &symbols, true);
+
+		test = new_node(v, NULL, NULL);
+		grow(test, 0, (int)hashmap_get(params, "max_depth"), true, &symbols);
+		print_tree(test, 4);
+
+		printf("press enter to continue");
+		getchar();
+		printf("\n###############################################\n");
 	}
-	int n = 0;
 }
+
+void test_init_population() {
+	struct individual population[100];
+	struct individual *tmp = init_population(params, &symbols);
+
+	for (int i = 0; i < hashmap_get(params, "population_size"); i++) {
+		population[i] = *((tmp++));
+	}
+
+	for (int i = 0; i < hashmap_get(params, "population_size"); i++) {
+		printf("\n###############################################\n");
+		print_tree(population[i].genome, 4);
+		
+		printf("Press enter to continue");
+		getchar();
+	}
+}
+
+void test_subtree_crossover() {
+	int max_depth = (int)hashmap_get(params, "max_depth");
+
+	struct node *test1 = malloc(sizeof(struct node));
+	struct node *test2 = malloc(sizeof(struct node));
+
+	for (int i = 0; i < 2; i++) {
+		struct node **curr = (i ? &test2 : &test1);
+		*curr = new_node(get_random_symbol(0, max_depth, &symbols, true), NULL, NULL);
+
+		grow(*curr, 0, max_depth, true, &symbols);
+	}
+
+	struct node *tmp = test2;
+
+	printf("Tree1 before:\n");
+	print_tree(test1, 3);
+
+	subtree_crossover(&test1, &test2, params);
+
+	printf("Tree1 after:\n");
+	print_tree(test1, 3);
+
+	printf("Tree2 before:\n");
+	print_tree(tmp, 3);
+
+	printf("Tree2 after:\n");
+	print_tree(test2, 3);
+
+}
+
