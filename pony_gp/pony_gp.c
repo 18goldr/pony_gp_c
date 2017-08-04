@@ -8,6 +8,7 @@
 #include "binary_tree.h"
 #include "util.h"
 #include "hashmap.h"
+#include "csvparser.h"
 
 #define DEFAULT_FITNESS -DBL_MAX
 #define PRINT_SPACE 4
@@ -23,6 +24,7 @@ struct hashmap *get_params(void);
 int test_grow(void);
 int test_subtree_mutation(void);
 int test_subtree_crossover(void);
+int test(void);
 
 // User defined program parameters
 struct hashmap *params;
@@ -223,7 +225,11 @@ struct individual *init_population(struct hashmap *params, struct symbols *symbo
 	return population;
 }
 
-
+/**
+ * Evaluate a node recursively. The node's symbol char is evaluated.
+	 *node: The evaluate node.
+   TODO: Add capability for csv cases.
+ */
 double evaluate(struct node *node) {
 
 	if (!node) return -DBL_MAX;
@@ -362,9 +368,47 @@ struct hashmap *get_params() {
 	hashmap_put(h, "mutation_probability", 1);
 	hashmap_put(h, "test_tain_split", 0.7);
 	hashmap_put(h, "verbose", 1);
-	hashmap_put(h, "seed", 1);
+	hashmap_put(h, "seed", -3);
 
 	return h;
+}
+
+
+void parse_exemplars(char *file_name) {
+	CsvParser *reader = CsvParser_new(file_name, ",", true);
+
+	const CsvRow *header = CsvParser_getHeader(reader);
+
+	if (!header) {
+		printf("%s\n", CsvParser_getErrorMessage(reader));
+		return;
+	}
+
+	CsvRow *row;
+
+	double *fitness_cases;
+	double *targets;
+
+	int i;
+
+	while ((row = CsvParser_getRow(reader))) {
+		char **row_fields = CsvParser_getFields(row);
+
+		int rows = CsvParser_getNumFields(row);
+
+		for (i = 0; i < rows; i++) {
+			if (i == rows - 1) {
+				targets[0] = (double)*row_fields[i] - '0';
+			}
+			else {
+				fitness_cases[i] = (double)*row_fields[i] - '0';
+			}
+		}
+
+		CsvParser_destroy_row(row);
+	}
+
+	CsvParser_destroy(reader);
 }
 
 
@@ -381,13 +425,25 @@ void setup() {
 main() {
 	setup();
 
-	test_subtree_crossover();
-
+	parse_exemplars("fitness_cases.csv");
 }
 
 /**
+ * Run all tests on current seed.
+ */
+int test() {
+	if (test_grow() || test_subtree_mutation() || test_subtree_crossover()) {
+		return (EXIT_FAILURE);
+	}
+
+	return (EXIT_SUCCESS);
+	
+}
+
+
+/**
  * A function to test the grow function.
- * Valid seeds: -24, -5, -3, 1, 2, 4, 7, 52
+ * Valid seeds: -24, -5, -3, 1, 2, 4, 7
  * Max depth must be 3.
  * Return EXIT_FAILURE if seed provided is invalid or max depth is not 3.
  */
@@ -407,7 +463,6 @@ int test_grow() {
 	char seed_2[] = { '+', '1', '1' };
 	char seed_4[] = { '+', '1', '1' };
 	char seed_7[] = { '+', '1', '1' };
-	char seed_52[] = { '+', '+', '+', '0', '0', '+', '0', '0', '+', '+', '0', '0', '+', '0', '0' };
 
 	char *arr_to_use;
 
@@ -432,9 +487,6 @@ int test_grow() {
 			break;
 		case 1:
 			arr_to_use = seed_1;
-			break;
-		case 52:
-			arr_to_use = seed_52;
 			break;
 		default:
 			printf("Current seed is not testable\n");
@@ -518,6 +570,7 @@ int test_subtree_mutation() {
 	return(EXIT_SUCCESS);
 
 }
+
 
 /**
  * A function to test the subtree_crossover function.

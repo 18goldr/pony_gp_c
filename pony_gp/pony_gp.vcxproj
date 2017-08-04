@@ -140,12 +140,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="binary_tree.c" />
+    <ClCompile Include="csvparser.c" />
     <ClCompile Include="hashmap.c" />
     <ClCompile Include="pony_gp.c" />
+    <ClCompile Include="dyn_arr.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="binary_tree.h" />
+    <ClInclude Include="csvparser.h" />
     <ClInclude Include="hashmap.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
