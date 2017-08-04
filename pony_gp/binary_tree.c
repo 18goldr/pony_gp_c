@@ -300,6 +300,7 @@ void print_node(struct node *node) {
 		if (node->left) printf(" %c", node->left->value);
 		if (node->right) printf(" %c", node->right->value);
 	}
+
 	printf("\n");
 	
 }
@@ -331,9 +332,29 @@ static void print_tree_static(struct node *root, int space, int delta_space) {
 
 /**
 * Function wrapper to make caling print_tree_static simpler.
-*root: The root node of the tree.
-delta_space: The change in space as depth increases.
+		   *root: The root node of the tree.
+	 delta_space: The change in space as depth increases.
 */
 void print_tree(struct node *root, int delta_space) {
 	print_tree_static(root, 0, delta_space);
+}
+
+/**
+ * Prints the nodes in a tree in index order ie.
+ * top-bottom right-to-left traversal.
+	 *root: The root of the tree to print.
+ */
+void print_nodes_index_order(struct node *root) {
+	int num_nodes = get_number_of_nodes(root);
+
+	for (int i = 0; i < num_nodes; i++) {
+		printf("'%c'", get_node_at_index(&root, i)->value);
+
+		if (i != num_nodes - 1) {
+			printf(", ");
+		}
+		else {
+			printf("\n");
+		}
+	}
 }

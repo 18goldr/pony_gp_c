@@ -1,5 +1,17 @@
 #include "util.h"
 
+double SEED;
+
+
+/**
+ * Set the seed for the random number generator.
+ * Useful for testing purposes.
+	 s: Value that SEED will be set to.
+ */
+void set_seed(double s) {
+	SEED = s;
+}
+
 /*
 * Array must end in Null character.
 	*arr: The array to parse.
@@ -21,10 +33,14 @@ int get_char_arr_length(char *arr) {
  * Instantiate srand. Can only be performed once per execution.
  */
 void start_srand() {
-	// srand must only be instantiated once.
+	// srand must only be instantiated once for different results each time.
 	static bool first_time = true;
 
-	if (first_time) {
+	if (SEED != 0) {
+		srand((unsigned int)SEED);
+	}
+
+	else if (first_time) {
 		srand((unsigned int)time(NULL));
 		first_time = false;
 	}
@@ -60,3 +76,4 @@ double get_rand_probability() {
 int rand_index(int length) {
 	return get_randint(0, length - 1);
 }
+
