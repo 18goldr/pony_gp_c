@@ -8,7 +8,7 @@
 #include "binary_tree.h"
 #include "util.h"
 #include "hashmap.h"
-#include "csv_reader.h"
+#include "csvparser.h"
 
 #define DEFAULT_FITNESS -DBL_MAX
 #define PRINT_SPACE 4
@@ -389,66 +389,22 @@ void setup() {
 }
 
 
+/**
+* Parse a CSV file. Parse the fitness case and split the data into
+* Test and train data. In the fitness case file each row is an exemplar
+* and each dimension is in a column. The last column is the target value of
+* the exemplar:
+*	 file_name: Name of the CSV file with header
+*/
 double **parse_exemplars(char *file_name) {
-	csv_reader *reader = init_csv(file_name, ',');
-
-	// Ignore the header
-	free(get_header(reader));
-
-	int e_i = 0;
-	int t_i = 0;
-	int curr_e_size = 50;
-	int curr_t_size = 100;
-
-	double *fitness_cases, *targets;
-	
-	fitness_cases = malloc(sizeof(double) * curr_e_size);
-	targets = malloc(sizeof(double) * curr_t_size);
-
-	csv_line *row;
-
-	while ((row = readline(reader))) {
-		for (int i = 0; i < row->size; i++) {
-
-			if (i == row->size-1) {
-				
-				if (t_i >= curr_t_size-1) {
-					curr_t_size *= 2;
-					targets = realloc(targets, sizeof(double) * curr_t_size);
-				}
-				targets[t_i++] = atof(row->content[i]);
-			}
-			else {
-
-				if (e_i >= curr_e_size-1) {
-					curr_e_size *= 2;
-					fitness_cases = realloc(fitness_cases, sizeof(double) * curr_e_size);
-				}
-
-				fitness_cases[e_i++] = atof(row->content[i]);
-			}
-		}
-	}
-
-	double *results[] = { fitness_cases, targets };
-
-	return results;
 }
-
-
-
 
 
 main() {
 	setup();
 
-	double ** exemplars = parse_exemplars("fitness_cases.csv");
-
-	double *fits = exemplars[0];
-	double *targs = exemplars[1];
-
+	parse_exemplars("fitness_cases.csv");
 }
-
 
 /**
  * Run all tests on current seed.

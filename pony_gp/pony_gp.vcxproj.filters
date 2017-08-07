@@ -33,11 +33,8 @@
     <ClCompile Include="hashmap.c">
       <Filter>Source Files\Data Structures</Filter>
     </ClCompile>
-    <ClCompile Include="csvparser.c">
+    <ClCompile Include="csv_reader.c">
       <Filter>Source Files\CSV</Filter>
-    </ClCompile>
-    <ClCompile Include="dyn_arr.c">
-      <Filter>Source Files\Data Structures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,7 +47,7 @@
     <ClInclude Include="hashmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="csvparser.h">
+    <ClInclude Include="csv_reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
