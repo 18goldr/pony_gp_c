@@ -56,13 +56,6 @@ csv_line *readline(csv_reader *reader) {
 
 	csv_line *line = new_line(values, i);
 
-	int n = 0;
-
-	//for (int i = 0; i < 3; i++) {
-	//	printf("%s,", line->content[i]);
-	//}
-	//printf("\n");
-
 	return line;
 
 }

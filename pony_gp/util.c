@@ -1,7 +1,7 @@
 #include "util.h"
 
-double SEED;
 
+double SEED;
 
 /**
  * Set the seed for the random number generator.
@@ -12,7 +12,8 @@ void set_seed(double s) {
 	SEED = s;
 }
 
-/*
+/**
+* Get the length of a character array/string
 * Array must end in Null character.
 	*arr: The array to parse.
 */
@@ -26,6 +27,22 @@ int get_char_arr_length(char *arr) {
 
 	return length;
 
+}
+
+/**
+ * Get the length of a double array.
+ * Array must end in the value NAN defined in <math.h>
+	*arr: The array to parse.
+ */
+int get_double_arr_length(double *arr) {
+	int length = 1;
+
+	while (!isnan(*arr)) {
+		length++;
+		arr++;
+	}
+
+	return length;
 }
 
 

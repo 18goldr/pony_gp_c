@@ -22,6 +22,7 @@ char *get_functions(void);
 struct hashmap *get_arities(void);
 struct hashmap *get_params(void);
 double **parse_exemplars(char *file_name);
+double **get_test_and_train_data(char *file_name, double split);
 
 int test_grow(void);
 int test_subtree_mutation(void);
@@ -389,20 +390,27 @@ void setup() {
 }
 
 
+/**
+ * Parse a CSV file. Parse the fitness case and split the data into
+ * test and train data. in the fitness case file each row is an exemplar
+ * and each dimension is in a column. The last column is the target value
+ * of the exemplar. 
+	 *file_name: Name of CSV file with a header.
+ */
 double **parse_exemplars(char *file_name) {
 	csv_reader *reader = init_csv(file_name, ',');
 
 	// Ignore the header
 	free(get_header(reader));
 
-	int e_i = 0;
+	int f_i = 0;
 	int t_i = 0;
-	int curr_e_size = 50;
+	int curr_f_size = 50;
 	int curr_t_size = 100;
 
 	double *fitness_cases, *targets;
 	
-	fitness_cases = malloc(sizeof(double) * curr_e_size);
+	fitness_cases = malloc(sizeof(double) * curr_f_size);
 	targets = malloc(sizeof(double) * curr_t_size);
 
 	csv_line *row;
@@ -410,42 +418,98 @@ double **parse_exemplars(char *file_name) {
 	while ((row = readline(reader))) {
 		for (int i = 0; i < row->size; i++) {
 
+			// The last collumn is the target.
 			if (i == row->size-1) {
-				
-				if (t_i >= curr_t_size-1) {
+				// Dynamically allocate targets.
+				// Allow for NaN at end of array
+				if (t_i >= curr_t_size-2) {
 					curr_t_size *= 2;
 					targets = realloc(targets, sizeof(double) * curr_t_size);
 				}
 				targets[t_i++] = atof(row->content[i]);
 			}
 			else {
-
-				if (e_i >= curr_e_size-1) {
-					curr_e_size *= 2;
-					fitness_cases = realloc(fitness_cases, sizeof(double) * curr_e_size);
+				// Dynamically allocate fitness_cases. 
+				// Allow for NaN at end of array
+				if (f_i >= curr_f_size-2) {
+					curr_f_size *= 2;
+					fitness_cases = realloc(fitness_cases, sizeof(double) * curr_f_size);
 				}
 
-				fitness_cases[e_i++] = atof(row->content[i]);
+				fitness_cases[f_i++] = atof(row->content[i]);
 			}
 		}
 	}
+
+	fitness_cases[f_i] = NAN;
+	targets[t_i] = NAN;
 
 	double *results[] = { fitness_cases, targets };
 
 	return results;
 }
 
-
-
-
-
-main() {
-	setup();
-
+/**
+ * Return test and train data. Random selection or exemplars(ros)
+ * from file containing data.
+	 *file_name: Name of CSV file with a header.
+		  split: Percentage of exemplar data used for training.
+ */
+double **get_test_and_train_data(char *file_name, double split) {
 	double ** exemplars = parse_exemplars("fitness_cases.csv");
 
 	double *fits = exemplars[0];
 	double *targs = exemplars[1];
+
+	int fits_len = get_double_arr_length(fits)-1;
+	int targs_len = get_double_arr_length(targs)-1;
+
+	int fits_split_i = (int)(floor(fits_len * split));
+	int *fits_rand_idxs = random_indexes(fits_len);
+
+	int targs_split_i = (int)(floor(targs_len * split));
+	int *targs_rand_idxs = random_indexes(targs_len);
+
+	double *training_cases = malloc(sizeof(double) * fits_split_i);
+	double *training_targets = malloc(sizeof(double) * targs_split_i);
+	double *test_cases = malloc(sizeof(double) * (fits_len - fits_split_i));
+	double *test_targets = malloc(sizeof(double) * (fits_len - targs_split_i));
+
+	int rand_i;
+	int i;
+
+	for (i = 0; i < fits_len; i++) {
+		rand_i = fits_rand_idxs[i];
+
+		if (i >= fits_split_i) {
+			test_cases[i] = fits[rand_i];
+		}
+		else {
+			training_cases[i] = fits[rand_i];
+		}
+	}
+
+	for (i = 0; i < targs_len; i++) {
+		rand_i = targs_rand_idxs[i];
+
+		if (i >= targs_split_i) {
+			test_targets[i] = targs[rand_i];
+		}
+		else {
+			training_targets[i] = targs[rand_i];
+		}
+	}
+
+	double *results[] = { test_cases, test_targets, training_cases, training_targets };
+
+	return results;
+}
+
+
+main() {
+	setup();
+	double **results = get_test_and_train_data("fitness_cases.csv", 0.7);
+
 
 }
 

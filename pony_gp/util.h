@@ -3,10 +3,17 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #define ARR_SIZE(arr) ((int)(sizeof(arr) / sizeof(0[arr])))
 
+/**
+ * A container for an array in order to store its size across
+ * functions.
+ */
+
 int get_char_arr_length(char *arr);
+int get_double_arr_length(double *arr);
 int get_randint(int min, int max);
 double get_rand_probability(void);
 int rand_index(int length);
