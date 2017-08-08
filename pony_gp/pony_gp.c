@@ -13,32 +13,13 @@
 #define DEFAULT_FITNESS -DBL_MAX
 #define PRINT_SPACE 4
 
-void grow(struct node *node, int curr_depth, int max_depth, bool full, struct symbols *symbols);
-char get_random_symbol(int, int, struct symbols *, bool);
-void subtree_mutation(struct node **node, struct hashmap *params, struct symbols *symbols);
-void subtree_crossover(struct node **parent1, struct node **parent2, struct hashmap *params);
-char *get_terminals(void); 
-char *get_functions(void);
-struct hashmap *get_arities(void);
-struct hashmap *get_params(void);
-double **parse_exemplars(char *file_name);
-double **get_test_and_train_data(char *file_name, double split);
-
-int test_grow(void);
-int test_subtree_mutation(void);
-int test_subtree_crossover(void);
-int test(void);
-
-// User defined program parameters
-struct hashmap *params;
-
 /**
- * A struct to contain the different functions, terminals, and arities.
-	 *terminals: An array of constant numbers that can be used in the program.
-	 *functions: An array of functions that can be used in the program.
-	   *arities: A hashmap containing the arities of different symbols
-				to be used in the program.
- */
+* A struct to contain the different functions, terminals, and arities.
+*	*terminals: An array of constant numbers that can be used in the program.
+*	*functions: An array of functions that can be used in the program.
+*	  *arities: A hashmap containing the arities of different symbols
+*			    to be used in the program.
+*/
 struct symbols {
 	char *terminals;
 	char *functions;
@@ -47,14 +28,53 @@ struct symbols {
 
 
 /**
- * An individual is a struct that contains:
- *		 "genome": A tree.
- *		"fitness": The fitness of the evaluated tree.
- */
+* An individual is a struct that contains:
+*		 *genome: A tree.
+*		 fitness: The fitness of the evaluated tree.
+*/
 struct individual {
 	struct node *genome;
 	double fitness;
 };
+
+/**
+* A struct to contain the data collected from the CSV file.
+*	       *test_cases: The test cases.
+*	     *test_targets: The test targets.
+*	   *training_cases: The training cases.
+*	 *training_targets: The training targets.
+*/
+struct csv_data {
+	double *test_cases;
+	double *test_targets;
+	double *training_cases;
+	double *training_targets;
+} test_and_train_data;
+
+
+// User defined program parameters
+struct hashmap *params;
+
+
+void grow(struct node *node, int curr_depth, int max_depth, bool full);
+char get_random_symbol(int curr_depth, int max_depth, bool full);
+void subtree_mutation(struct node **node);
+void subtree_crossover(struct node **parent1, struct node **parent2);
+struct individual *init_population(void);
+char *get_terminals(void); 
+char *get_functions(void);
+struct hashmap *get_arities(void);
+struct hashmap *get_params(void);
+char *get_fitness_file(void);
+double **parse_exemplars(char *file_name);
+double **get_test_and_train_data(char *file_name, double split);
+
+void setup(void);
+void deallocate_mem(void);
+int test_grow(void);
+int test_subtree_mutation(void);
+int test_subtree_crossover(void);
+int test(void);
 
 
 /*
@@ -66,11 +86,8 @@ struct individual {
 	 max_tree_depth: The current max depth that the function has reached.
 	                 Must be passed in initially as 0 to work as intended.
 	    should_fill: Grows the tree to max depth when true.
-	       *symbols: The container for the functions, terminals and arities
-	                 lists.
  */
-void grow(struct node *node, int curr_depth,
-		  int max_depth, bool must_fill, struct symbols *symbols) {
+void grow(struct node *node, int curr_depth, int max_depth, bool must_fill) {
 	char node_symbol = node->value;
 	char node_arr[2];
 	node_arr[0] = node_symbol;
@@ -82,9 +99,9 @@ void grow(struct node *node, int curr_depth,
 
 	// grow is called recursively in the loop. The loop iterates
 	// "arity" number of times, given by the node symbol.
-	for (int side = 0; side < hashmap_get(symbols->arities, node_arr); side++) {
+	for (int side = 0; side < hashmap_get(symbols.arities, node_arr); side++) {
 		
-		symbol = get_random_symbol(curr_depth, max_depth, symbols, must_fill);
+		symbol = get_random_symbol(curr_depth, max_depth, must_fill);
 
 		// new_node is not set with append_node() because it returns a copy of
 		// the pointer to the new node, not the new node itself.
@@ -92,7 +109,7 @@ void grow(struct node *node, int curr_depth,
 		struct node *new_node = (!side ? node->left : node->right);
 
 		// call grow with the child node as the current node.
-		grow(new_node, curr_depth+1, max_depth, must_fill, symbols);
+		grow(new_node, curr_depth+1, max_depth, must_fill);
 
 	}
 
@@ -102,11 +119,8 @@ void grow(struct node *node, int curr_depth,
 /**
  * Subtree mutation. Pick a node and grow it.
 	   **root: The root node of the tree.
-	  *params: A hashmap containing user defined parameters.
-	 *symbols: The container for the functions, terminals and arities
-	           lists.
  */
-void subtree_mutation(struct node **root, struct hashmap *params, struct symbols *symbols) {
+void subtree_mutation(struct node **root) {
 
 	// Check if mutation should be applied
 	if (get_rand_probability() < hashmap_get(params, "mutation_probability")) {
@@ -119,13 +133,13 @@ void subtree_mutation(struct node **root, struct hashmap *params, struct symbols
 		int node_depth = get_depth_at_index(*root, node_i);
 		
 		char new_symbol = get_random_symbol(
-				node_depth, (int)hashmap_get(params, "max_depth") - node_depth, symbols, false
+				node_depth, (int)hashmap_get(params, "max_depth") - node_depth, false
 		);
 
 		struct node *new_subtree = new_node(new_symbol, NULL, NULL);
 
 		// Grow the subtree
-		grow(new_subtree, 0, (int)hashmap_get(params, "max_depth"), false, symbols);
+		grow(new_subtree, 0, (int)hashmap_get(params, "max_depth"), false);
 		
 		// Replace the old subtree with the new one
 		*old_node = *new_subtree;
@@ -137,9 +151,8 @@ void subtree_mutation(struct node **root, struct hashmap *params, struct symbols
  * Swap two random nodes from the parents and swapping the subtrees.
  *		**parent1: Parent to crossover
  *		**parent2: Other parent to crossover
- *		  *params: A hashmap containing user defined parameters.
  */
-void subtree_crossover(struct node **parent1, struct node **parent2, struct hashmap *params) {
+void subtree_crossover(struct node **parent1, struct node **parent2) {
 	
 	// Check if crossover will occur
 	if (get_rand_probability() < hashmap_get(params, "crossover_probability")) {
@@ -168,7 +181,7 @@ void subtree_crossover(struct node **parent1, struct node **parent2, struct hash
 			(node_depths[1][1] + node_depths[0][0] > max_depth)) {
 
 			if (hashmap_get(params, "verbose")) {
-				printf("\n---------------------Crossover too deep---------------------\n");
+				printf("\n-----------------Crossover too deep-----------------\n");
 			}
 
 			return;
@@ -192,11 +205,8 @@ void subtree_crossover(struct node **parent1, struct node **parent2, struct hash
  * Ramped half-half initialization. The individuals in the population
  * are initialized using the grow or the full method for each depth
  * value (ramped) up to max_depth.
- 		 *params: A hashmap containing user defined parameters.
-		*symbols: The container for the functions, terminals and arities
-		          lists.
  */
-struct individual *init_population(struct hashmap *params, struct symbols *symbols) {
+struct individual *init_population() {
 	int pop_size = (int)hashmap_get(params, "population_size");
 
 	struct individual *population = malloc(sizeof(struct node) * pop_size);
@@ -210,12 +220,12 @@ struct individual *init_population(struct hashmap *params, struct symbols *symbo
 		int max_depth = (i % (int)hashmap_get(params, "max_depth")) + 1;
 
 		// Create the root node
-		char symbol = get_random_symbol(0, max_depth, symbols, full);
+		char symbol = get_random_symbol(0, max_depth, full);
 		struct node *tree = new_node(symbol, NULL, NULL);
 
 		// Grow the tree if the root is a function symbol.
-		if (max_depth > 0 && strchr(symbols->functions, symbol)) {
-			grow(tree, 0, max_depth, full, symbols);
+		if (max_depth > 0 && strchr(symbols.functions, symbol)) {
+			grow(tree, 0, max_depth, full);
 
 			assert(get_max_tree_depth(tree) < max_depth + 1);
 		}
@@ -275,29 +285,27 @@ double evaluate(struct node *node) {
 	   curr_depth: The current depth. Must be passed in as 0 to perform
 				   as intended.
 	    max_depth: The max depth that the tree is allowed to reach.
-	     *symbols: The container for the functions, terminals and arities
-		     	   lists. 
 	         full: True if function symbols should be used until max depth
 				   is reached.
  */
-char get_random_symbol(int curr_depth, int max_depth, struct symbols *symbols, bool full) {
+char get_random_symbol(int curr_depth, int max_depth, bool full) {
 	char symbol;
 	int n;
 
 	// Pick a terminal if max depth has been reached
 	if (curr_depth >= (max_depth - 1)) {
-		n = rand_index(get_char_arr_length(symbols->terminals)-1);
-		symbol = symbols->terminals[n];
+		n = rand_index(get_char_arr_length(symbols.terminals)-1);
+		symbol = symbols.terminals[n];
 	} else {
 		// 50% chance it will be a terminal if max depth has
 		// not been reached
 		if (!full && get_randint(0, 1)) {
-			n = rand_index(get_char_arr_length(symbols->terminals)-1);
-			symbol = symbols->terminals[n];
+			n = rand_index(get_char_arr_length(symbols.terminals)-1);
+			symbol = symbols.terminals[n];
 		} else {
 			// Pick a random function
-			n = rand_index(get_char_arr_length(symbols->functions)-1);
-			symbol = symbols->functions[n];
+			n = rand_index(get_char_arr_length(symbols.functions)-1);
+			symbol = symbols.functions[n];
 		}
 	}
 
@@ -340,8 +348,7 @@ char *get_functions() {
  * a config document.
  */
 struct hashmap *get_arities() {
-	struct hashmap *h = malloc(sizeof(struct hashmap));
-	hashmap_init(h);
+	struct hashmap *h = hashmap_init();
 
 	hashmap_put(h, "+", 2);
 	hashmap_put(h, "*", 2);
@@ -359,8 +366,7 @@ struct hashmap *get_arities() {
 * a config document.
 */
 struct hashmap *get_params() {
-	struct hashmap *h = malloc(sizeof(struct hashmap));
-	hashmap_init(h);
+	struct hashmap *h = hashmap_init();
 
 	hashmap_put(h, "population_size", 100);
 	hashmap_put(h, "max_depth", 3);
@@ -369,26 +375,21 @@ struct hashmap *get_params() {
 	hashmap_put(h, "tournament_size", 3);
 	hashmap_put(h, "crossover_probability", 1);
 	hashmap_put(h, "mutation_probability", 1);
-	hashmap_put(h, "test_tain_split", 0.7);
+	hashmap_put(h, "test_train_split", 0.7);
 	hashmap_put(h, "verbose", 1);
-	hashmap_put(h, "seed", -3);
+	hashmap_put(h, "seed", 1);
 
 	return h;
 }
 
 
 /**
- * Wrapper for setup.
- */
-void setup() {
-	symbols.functions = get_functions();
-	symbols.terminals = get_terminals();
-	symbols.arities = get_arities();
-	params = get_params();
-
-	set_seed(hashmap_get(params, "seed"));
+* Temporary function to get the fitness case file. Will modify to read
+* from a config document.
+*/
+char *get_fitness_file() {
+	return "fitness_cases.csv";
 }
-
 
 /**
  * Parse a CSV file. Parse the fitness case and split the data into
@@ -444,7 +445,9 @@ double **parse_exemplars(char *file_name) {
 	fitness_cases[f_i] = NAN;
 	targets[t_i] = NAN;
 
-	double *results[] = { fitness_cases, targets };
+	double **results = malloc(sizeof(double *) * 2);
+	results[0] = fitness_cases; 
+	results[1] = targets;
 
 	return results;
 }
@@ -456,7 +459,7 @@ double **parse_exemplars(char *file_name) {
 		  split: Percentage of exemplar data used for training.
  */
 double **get_test_and_train_data(char *file_name, double split) {
-	double ** exemplars = parse_exemplars("fitness_cases.csv");
+	double ** exemplars = parse_exemplars(file_name);
 
 	double *fits = exemplars[0];
 	double *targs = exemplars[1];
@@ -470,10 +473,10 @@ double **get_test_and_train_data(char *file_name, double split) {
 	int targs_split_i = (int)(floor(targs_len * split));
 	int *targs_rand_idxs = random_indexes(targs_len);
 
-	double *training_cases = malloc(sizeof(double) * fits_split_i);
-	double *training_targets = malloc(sizeof(double) * targs_split_i);
-	double *test_cases = malloc(sizeof(double) * (fits_len - fits_split_i));
-	double *test_targets = malloc(sizeof(double) * (fits_len - targs_split_i));
+	double *training_cases = malloc((sizeof(double) * fits_split_i) + 1);
+	double *training_targets = malloc((sizeof(double) * targs_split_i) + 1);
+	double *test_cases = malloc(sizeof(double) * (fits_len - fits_split_i) + 1);
+	double *test_targets = malloc(sizeof(double) * (targs_len - targs_split_i) + 1);
 
 	int rand_i;
 	int i;
@@ -482,7 +485,7 @@ double **get_test_and_train_data(char *file_name, double split) {
 		rand_i = fits_rand_idxs[i];
 
 		if (i >= fits_split_i) {
-			test_cases[i] = fits[rand_i];
+			test_cases[i - fits_split_i] = fits[rand_i];
 		}
 		else {
 			training_cases[i] = fits[rand_i];
@@ -493,24 +496,60 @@ double **get_test_and_train_data(char *file_name, double split) {
 		rand_i = targs_rand_idxs[i];
 
 		if (i >= targs_split_i) {
-			test_targets[i] = targs[rand_i];
+			test_targets[i - targs_split_i] = targs[rand_i];
 		}
 		else {
 			training_targets[i] = targs[rand_i];
 		}
 	}
 
-	double *results[] = { test_cases, test_targets, training_cases, training_targets };
+	// Set last index to NAN to allow for easier looping of arrays
+	training_cases[fits_split_i] = NAN;
+	test_cases[fits_len - fits_split_i] = NAN;
+	training_targets[targs_split_i] = NAN;
+	test_targets[targs_len - targs_split_i] = NAN;
+
+	double **results = malloc(sizeof(double *) * 4);
+	results[0] = test_cases;
+	results[1] = test_targets;
+	results[2] = training_cases;
+	results[3] = training_targets;
 
 	return results;
 }
 
 
+/**
+* Wrapper for setup.
+*/
+void setup() {
+	symbols.functions = get_functions();
+	symbols.terminals = get_terminals();
+	symbols.arities = get_arities();
+	params = get_params();
+
+	double **data = get_test_and_train_data(get_fitness_file(), hashmap_get(params, "test_train_split"));
+
+	test_and_train_data.test_cases = data[0];
+	test_and_train_data.test_targets = data[1];
+	test_and_train_data.training_cases = data[2];
+	test_and_train_data.training_targets = data[3];
+	
+	set_seed(hashmap_get(params, "seed"));
+}
+
+
+void exit_and_cleanup() {
+	free(symbols.arities);
+	free(symbols.functions);
+	free(symbols.terminals);
+	exit(EXIT_SUCCESS);
+}
+
 main() {
 	setup();
-	double **results = get_test_and_train_data("fitness_cases.csv", 0.7);
-
-
+	
+	exit_and_cleanup();
 }
 
 
@@ -540,7 +579,7 @@ int test_grow() {
 	}
 
 	struct node *test = new_node('+', NULL, NULL);
-	grow(test, 0, (int)hashmap_get(params, "max_depth"), false, &symbols);
+	grow(test, 0, (int)hashmap_get(params, "max_depth"), false);
 
 	char seed_neg24[] = { '+', '+', '+', '0', '0', '+', '0', '0', '+', '+', '0', '0', '+', '0', '0' };
 	char seed_neg5[] = { '+', '/', '/', '0', '0', '/', '0', '0', '/', '/', '0', '0', '/', '0', '0' };
@@ -610,7 +649,7 @@ int test_subtree_mutation() {
 	test->left->right->left = new_node('5', NULL, NULL);
 	test->left->right->right = new_node('7', NULL, NULL);
 
-	subtree_mutation(&test, params, &symbols);
+	subtree_mutation(&test);
 
 	char seed_neg3[] = { '+', '+', '+', '0', '0', '+', '0', '0', '+', '+', '0', '0', '+', '0', '0' };
 	char seed_neg5[] = { '+', '0', '2' };
@@ -709,7 +748,7 @@ int test_subtree_crossover() {
 	char *arr1_to_use;
 	char *arr2_to_use;
 
-	subtree_crossover(&test1, &test2, params);
+	subtree_crossover(&test1, &test2);
 
 	switch ((int)hashmap_get(params, "seed")) {
 		case -3:

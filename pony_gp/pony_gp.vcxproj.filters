@@ -16,9 +16,6 @@
     <Filter Include="Source Files\Data Structures">
       <UniqueIdentifier>{7667645f-7c66-45b1-a194-2aba5fd9a1a4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\CSV">
-      <UniqueIdentifier>{08f15f6d-fb89-4b18-8098-d5fcc5060e9c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pony_gp.c">
@@ -34,7 +31,7 @@
       <Filter>Source Files\Data Structures</Filter>
     </ClCompile>
     <ClCompile Include="csv_reader.c">
-      <Filter>Source Files\CSV</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

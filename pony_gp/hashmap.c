@@ -4,8 +4,11 @@
 #include <float.h>
 #include "hashmap.h"
 
-void hashmap_init(struct hashmap *h) {
+struct hashmap *hashmap_init() {
+	struct hashmap *h = malloc(sizeof(struct hashmap));
 	h->curr_index = 0;
+
+	return h;
 }
 
 void hashmap_deinit(struct hashmap *h) {

@@ -2,7 +2,8 @@
 
 int hashmap_put(struct hashmap *h, char *key, const double value);
 double hashmap_get(struct hashmap *h, char *key);
-void hashmap_init(struct hashmap *h);
+struct hashmap *hashmap_init(void);
+void hashmap_deinit(struct hashmap *h);
 void print_hashmap(struct hashmap *h);
 
 struct hashmap {
