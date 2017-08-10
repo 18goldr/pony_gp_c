@@ -18,6 +18,7 @@ void replace_subtree(struct node **old_tree, struct node **new_tree);
 struct node *new_node(char v, struct node *l, struct node *r);
 void print_tree(struct node *root, int delta_space);
 void print_nodes_index_order(struct node *root);
+char *to_string(struct node *root);
 
 /**
  * A structure to represent a binary tree node

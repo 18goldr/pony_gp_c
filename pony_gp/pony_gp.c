@@ -5,6 +5,7 @@
 #include <string.h>
 #include <float.h>
 #include <math.h>
+#include <ctype.h>
 #include "binary_tree.h"
 #include "util.h"
 #include "hashmap.h"
@@ -39,17 +40,17 @@ struct individual {
 
 /**
 * A struct to contain the data collected from the CSV file.
-*	       *test_cases: The test cases.
-*	     *test_targets: The test targets.
-*	   *training_cases: The training cases.
-*	 *training_targets: The training targets.
+*	       **test_cases: The test cases.
+*	      *test_targets: The test targets.
+*	   **training_cases: The training cases.
+*	  *training_targets: The training targets.
 */
 struct csv_data {
-	double *test_cases;
+	double **test_cases;
 	double *test_targets;
-	double *training_cases;
+	double **training_cases;
 	double *training_targets;
-} test_and_train_data;
+} *data;
 
 
 // User defined program parameters
@@ -66,11 +67,14 @@ char *get_functions(void);
 struct hashmap *get_arities(void);
 struct hashmap *get_params(void);
 char *get_fitness_file(void);
-double **parse_exemplars(char *file_name);
-double **get_test_and_train_data(char *file_name, double split);
+double ***parse_exemplars(char *file_name);
+struct csv_data *get_test_and_train_data(char *file_name, double split);
+double evaluate(struct node *node, double *fitness_case);
+void evaluate_individual(struct individual *individual);
+void evaluate_fitness(struct individual *individuals, int size, struct hashmap *cache);
 
 void setup(void);
-void deallocate_mem(void);
+void exit_and_cleanup(void);
 int test_grow(void);
 int test_subtree_mutation(void);
 int test_subtree_crossover(void);
@@ -239,45 +243,6 @@ struct individual *init_population() {
 }
 
 /**
- * Evaluate a node recursively. The node's symbol char is evaluated.
-	 *node: The evaluate node.
-   TODO: Add capability for csv cases.
- */
-double evaluate(struct node *node) {
-
-	if (!node) return -DBL_MAX;
-
-	char symbol = node->value;
-
-	if (symbol == '+') {
-		return evaluate(node->left) + evaluate(node->right);
-	} 
-	
-	else if (symbol == '-') {
-		return evaluate(node->left) - evaluate(node->right);
-	}
-
-	else if (symbol == '*') {
-		return evaluate(node->left) * evaluate(node->right);
-	}
-
-	else if (symbol == '/') {
-		double numerator = evaluate(node->left);
-		double denominator = evaluate(node->right);
-
-		if (fabs(denominator) < 0.00001) {
-			denominator = 1.0;
-		}
-		return numerator / denominator;
-	}
-
-	else {
-		return (double)symbol - '0';
-	}
-}
-
-
-/**
  * Return a randomly chosen symbol. The depth determines if a terminal
  * must be chosen. If `full` is specified a function will be chosen
  * until the max depth is reached. The symbol is picked with a uniform
@@ -377,7 +342,7 @@ struct hashmap *get_params() {
 	hashmap_put(h, "mutation_probability", 1);
 	hashmap_put(h, "test_train_split", 0.7);
 	hashmap_put(h, "verbose", 1);
-	hashmap_put(h, "seed", 1);
+	hashmap_put(h, "seed", 0);
 
 	return h;
 }
@@ -398,56 +363,50 @@ char *get_fitness_file() {
  * of the exemplar. 
 	 *file_name: Name of CSV file with a header.
  */
-double **parse_exemplars(char *file_name) {
+double ***parse_exemplars(char *file_name) {
 	csv_reader *reader = init_csv(file_name, ',');
 
-	// Ignore the header
-	free(get_header(reader));
+	double **fitness_cases, *targets;
+	int num_columns = get_num_column(reader);
+	int num_lines = get_num_lines(reader);
 
-	int f_i = 0;
-	int t_i = 0;
-	int curr_f_size = 50;
-	int curr_t_size = 100;
+	// leave space for NULL
+	fitness_cases = malloc(sizeof(double *) * (num_lines));
 
-	double *fitness_cases, *targets;
-	
-	fitness_cases = malloc(sizeof(double) * curr_f_size);
-	targets = malloc(sizeof(double) * curr_t_size);
+	for (int i = 0; i < num_lines; i++) {
+		fitness_cases[i] = malloc(sizeof(double) * (num_columns-1));
+	}
+
+	// leave space for NAN
+	targets = malloc(sizeof(double) * (num_lines));
 
 	csv_line *row;
+	int f_i = 0;
+	int t_i = 0;
+
+	// Ignore the header
+	next_line(reader);
 
 	while ((row = readline(reader))) {
-		for (int i = 0; i < row->size; i++) {
-
-			// The last collumn is the target.
-			if (i == row->size-1) {
-				// Dynamically allocate targets.
-				// Allow for NaN at end of array
-				if (t_i >= curr_t_size-2) {
-					curr_t_size *= 2;
-					targets = realloc(targets, sizeof(double) * curr_t_size);
-				}
+		int i;
+		for (i = 0; i < num_columns; i++) {
+			if (i == num_columns - 1) {
 				targets[t_i++] = atof(row->content[i]);
 			}
 			else {
-				// Dynamically allocate fitness_cases. 
-				// Allow for NaN at end of array
-				if (f_i >= curr_f_size-2) {
-					curr_f_size *= 2;
-					fitness_cases = realloc(fitness_cases, sizeof(double) * curr_f_size);
-				}
-
-				fitness_cases[f_i++] = atof(row->content[i]);
+				fitness_cases[f_i][i] = atof(row->content[i]);
 			}
 		}
+		fitness_cases[f_i][i-1] = NAN;
+		f_i++;
 	}
-
-	fitness_cases[f_i] = NAN;
+	fitness_cases[f_i] = NULL;
 	targets[t_i] = NAN;
 
-	double **results = malloc(sizeof(double *) * 2);
-	results[0] = fitness_cases; 
-	results[1] = targets;
+	double ***results = malloc(sizeof(double **) * 2);
+	double *tmp[] = { targets };
+	results[0] = fitness_cases;
+	results[1] = tmp;
 
 	return results;
 }
@@ -458,37 +417,45 @@ double **parse_exemplars(char *file_name) {
 	 *file_name: Name of CSV file with a header.
 		  split: Percentage of exemplar data used for training.
  */
-double **get_test_and_train_data(char *file_name, double split) {
-	double ** exemplars = parse_exemplars(file_name);
+struct csv_data *get_test_and_train_data(char *file_name, double split) {
+	double ***exemplars = parse_exemplars(file_name);
 
-	double *fits = exemplars[0];
-	double *targs = exemplars[1];
+	double **fitness = exemplars[0];
+	double *targs = *exemplars[1];
 
-	int fits_len = get_double_arr_length(fits)-1;
-	int targs_len = get_double_arr_length(targs)-1;
+	int fitness_len = get_2d_arr_length(fitness);
+	int targs_len = get_double_arr_length(targs);
 
-	int fits_split_i = (int)(floor(fits_len * split));
-	int *fits_rand_idxs = random_indexes(fits_len);
+	int col_size = get_double_arr_length(fitness[0]);
 
+	// randomize the index order
+	int fits_split_i = (int)(floor(fitness_len * split));
+	int *fits_rand_idxs = random_indexes(fitness_len);
 	int targs_split_i = (int)(floor(targs_len * split));
 	int *targs_rand_idxs = random_indexes(targs_len);
 
-	double *training_cases = malloc((sizeof(double) * fits_split_i) + 1);
+	double **training_cases = malloc((sizeof(double *) * fits_split_i ) + 1);
+	double **test_cases = malloc((sizeof(double *) * (fitness_len - fits_split_i)) + 1);
+
+	for (int i = 0; i < 2; i++) {
+		training_cases[i] = malloc(sizeof(double) * col_size);
+		test_cases[i] = malloc(sizeof(double) * col_size);
+	}
+
 	double *training_targets = malloc((sizeof(double) * targs_split_i) + 1);
-	double *test_cases = malloc(sizeof(double) * (fits_len - fits_split_i) + 1);
 	double *test_targets = malloc(sizeof(double) * (targs_len - targs_split_i) + 1);
 
 	int rand_i;
 	int i;
 
-	for (i = 0; i < fits_len; i++) {
+	for (i = 0; i < fitness_len; i++) {
 		rand_i = fits_rand_idxs[i];
 
 		if (i >= fits_split_i) {
-			test_cases[i - fits_split_i] = fits[rand_i];
+			test_cases[i - fits_split_i] = fitness[rand_i];
 		}
 		else {
-			training_cases[i] = fits[rand_i];
+			training_cases[i] = fitness[rand_i];
 		}
 	}
 
@@ -503,21 +470,128 @@ double **get_test_and_train_data(char *file_name, double split) {
 		}
 	}
 
-	// Set last index to NAN to allow for easier looping of arrays
-	training_cases[fits_split_i] = NAN;
-	test_cases[fits_len - fits_split_i] = NAN;
+	// Set last index to NULL/NAN to allow for easier looping of arrays
+	training_cases[fits_split_i] = NULL;
+	test_cases[fitness_len - fits_split_i] = NULL;
 	training_targets[targs_split_i] = NAN;
 	test_targets[targs_len - targs_split_i] = NAN;
 
-	double **results = malloc(sizeof(double *) * 4);
-	results[0] = test_cases;
-	results[1] = test_targets;
-	results[2] = training_cases;
-	results[3] = training_targets;
+	struct csv_data *results = malloc(sizeof(struct csv_data));
+	results->test_cases = test_cases;
+	results->training_cases = training_cases;
+	results->training_targets = training_targets;
+	results->test_targets = test_targets;
 
 	return results;
+
 }
 
+/**
+* Evaluate a node recursively. The node's symbol char is evaluated.
+*	*node: The evaluate node.
+*	*fitness_case: Current fitness case.
+*/
+double evaluate(struct node *node, double *fitness_case) {
+
+	if (!node) return -DBL_MAX;
+
+	char symbol = node->value;
+
+	if (symbol == '+') {
+		return evaluate(node->left, fitness_case) + evaluate(node->right, fitness_case);
+	}
+
+	else if (symbol == '-') {
+		return evaluate(node->left, fitness_case) - evaluate(node->right, fitness_case);
+	}
+
+	else if (symbol == '*') {
+		return evaluate(node->left, fitness_case) * evaluate(node->right, fitness_case);
+	}
+
+	else if (symbol == '/') {
+		double numerator = evaluate(node->left, fitness_case);
+		double denominator = evaluate(node->right, fitness_case);
+
+		if (fabs(denominator) < 0.00001) {
+			denominator = 1.0;
+		}
+		return numerator / denominator;
+	}
+
+	else if (isalpha(symbol)) {
+
+		// Fitness case variables must be in alphabetical order
+		// for this to work correctly.
+		if (symbol >= 'A') {
+			return fitness_case[symbol - 'a'];
+		}
+		else {
+			return fitness_case[symbol - 'A'];
+		}
+	}
+
+	else {
+		return (double)symbol - '0';
+	}
+}
+
+/**
+* Evaulate fitness absed on fitness cases and target values. Fitness
+* cases are a set of exemplars (input and ouput points) by
+* comparing the error between the output of an individual (symbolic
+* expression) and the target values.
+* Evaluates and sets the fitness in an individual. Fitness is the
+* negative mean square error (MSE).
+*	     *individual: The individual solution to evaluate.
+*	 **fitness_cases: Input for the evaluation.
+*	        *targets: Output corresponding to the input.
+*/
+void evaluate_individual(struct individual *individual) {
+	// Initial fitness value
+	double fitness = 0.0;
+	int targs_len = get_double_arr_length(data->training_targets);
+
+	// Calculate the error between the output of the individual solution and
+	// the target for each input.
+	for (int i = 0; i < targs_len; i++) {
+		double output = evaluate(individual->genome,data->training_cases[i]);
+		
+		// Get the squared error
+		double error = output -data->training_targets[i];
+		fitness += error * error;
+	}
+
+	assert(fitness >= 0);
+
+	// Get the mean fitness and assign it to the individual.
+	individual->fitness = (fitness * -1) / targs_len;
+
+	assert(individual->fitness <= 0);
+}
+
+/**
+* Evaluate each individual of the population.
+* Uses a simple cache for reducing unmber evaluations of individuals.
+*	 *individuals: Population to evaluate.
+*	         size: Population size.
+*		   *cache: Cache for fitness evaluation.
+*/
+void evaluate_fitness(struct individual *individuals, int size, struct hashmap *cache) {
+	for (int i = 0; i < size; i++) {
+
+		char *key = to_string(individuals[i].genome);
+		double fitness = hashmap_get(cache, key);
+
+		if (!isnan(fitness)) {
+			individuals[i].fitness = fitness;
+		}
+		else {
+			evaluate_individual(&individuals[i]);
+			hashmap_put(cache, key, individuals[i].fitness);
+		}
+	}
+}
 
 /**
 * Wrapper for setup.
@@ -527,18 +601,14 @@ void setup() {
 	symbols.terminals = get_terminals();
 	symbols.arities = get_arities();
 	params = get_params();
-
-	double **data = get_test_and_train_data(get_fitness_file(), hashmap_get(params, "test_train_split"));
-
-	test_and_train_data.test_cases = data[0];
-	test_and_train_data.test_targets = data[1];
-	test_and_train_data.training_cases = data[2];
-	test_and_train_data.training_targets = data[3];
-	
 	set_seed(hashmap_get(params, "seed"));
+
+	data = get_test_and_train_data(get_fitness_file(), hashmap_get(params, "test_train_split"));
 }
 
-
+/**
+* Wrapper for deallocating memory and exiting.
+*/
 void exit_and_cleanup() {
 	free(symbols.arities);
 	free(symbols.functions);
@@ -546,9 +616,27 @@ void exit_and_cleanup() {
 	exit(EXIT_SUCCESS);
 }
 
+
 main() {
 	setup();
-	
+
+	struct node *test = new_node('+', NULL, NULL);
+	test->left = new_node('*', NULL, NULL);
+	test->right = new_node('*', NULL, NULL);
+	test->left->left = new_node('a', NULL, NULL);
+	test->left->right = new_node('a', NULL, NULL);
+	test->right->left = new_node('b', NULL, NULL);
+	test->right->right = new_node('b', NULL, NULL);
+
+	struct individual *individuals = init_population();
+	struct hashmap *cache = hashmap_init();
+
+	evaluate_fitness(individuals, (int)hashmap_get(params, "population_size"), cache);
+
+	for (int i = 0; i < (int)hashmap_get(params, "population_size"); i++) {
+		printf("%f\n", individuals[i].fitness);
+	}
+
 	exit_and_cleanup();
 }
 

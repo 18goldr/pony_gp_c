@@ -24,3 +24,6 @@ csv_reader *init_csv(char *file_name, char delimeter);
 csv_line *readline(csv_reader *reader);
 csv_line *get_header(csv_reader *reader);
 csv_line *new_line(char **content, int size);
+void next_line(csv_reader *reader);
+int get_num_column(csv_reader *reader);
+int get_num_lines(csv_reader *reader);

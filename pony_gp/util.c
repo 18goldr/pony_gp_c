@@ -1,6 +1,6 @@
 #include "util.h"
 
-
+// the seed to pass to the random function
 double SEED;
 
 /**
@@ -35,9 +35,26 @@ int get_char_arr_length(char *arr) {
 	*arr: The array to parse.
  */
 int get_double_arr_length(double *arr) {
-	int length = 1;
+	int length = 0;
 
 	while (!isnan(*arr)) {
+		length++;
+		arr++;
+	}
+
+	return length;
+}
+
+/**
+* Get the length of a 2 dimensional array of doubles. Each outer array must end
+* with a NULL pointer. Each inner array must end with the NAN value
+* defined in <math.h>
+	 **arr: The 2D array to parse.
+*/
+int get_2d_arr_length(double **arr) {
+	int length = 0;
+
+	while (*arr) {
 		length++;
 		arr++;
 	}
@@ -175,4 +192,32 @@ void remove_spaces(char *str) {
 	}
 
 	*i = 0;
+}
+
+/**
+* Print a 2 dimensional array of doubles. Each outer array must end
+* with a NULL pointer. Each inner array must end with the NAN value
+* defined in <math.h>
+	 **arr: The 2D array to print.
+*/
+void print_2d_array(double **arr) {
+	while (*arr) {
+		while (!isnan(**arr)) {
+			printf("%f\n", *(*arr)++);
+		}
+
+		arr++;
+	}
+}
+
+
+int str_in_arr(char **strings, char *str, int size) {
+	
+	for (int i = 0; i < size; i++) {
+		if (!strcmp(strings[i], str)) {
+			return true;
+		}
+	}
+
+	return false;
 }

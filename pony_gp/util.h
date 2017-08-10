@@ -7,11 +7,6 @@
 
 #define ARR_SIZE(arr) ((int)(sizeof(arr) / sizeof(0[arr])))
 
-/**
- * A container for an array in order to store its size across
- * functions.
- */
-
 int get_char_arr_length(char *arr);
 int get_double_arr_length(double *arr);
 int get_randint(int min, int max);
@@ -23,4 +18,7 @@ int *random_indexes(int length);
 void shuffle(int *array, int n);
 char *str_sep(char **stringp, const char *delim);
 void remove_spaces(char *str);
+int get_2d_arr_length(double **arr);
+void print_2d_array(double **arr);
+int str_in_arr(char **strings, char *str, int size);
 

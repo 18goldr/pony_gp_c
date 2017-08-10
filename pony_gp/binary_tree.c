@@ -2,12 +2,13 @@
 #include <stdio.h>
 #include "binary_tree.h"
 
-static int get_depth_at_index_static(struct node *, int, int *, int);
-static int get_max_tree_depth_static(struct node *root, int curr_depth, int max_tree_depth);
-static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i, struct node **goal);
-static struct node *append_node_static(struct node **node, char value, bool side);
-static int get_number_of_nodes_static(struct node **root, int cnt);
-static void print_tree_static(struct node *root, int space, int delta_space);
+static int get_depth_at_index_util(struct node *, int, int *, int);
+static int get_max_tree_depth_util(struct node *root, int curr_depth, int max_tree_depth);
+static struct node *get_node_at_index_util(struct node **root, int goal_i, int *curr_i, struct node **goal);
+static struct node *append_node_util(struct node **node, char value, bool side);
+static int get_number_of_nodes_util(struct node **root, int cnt);
+static void print_tree_util(struct node *root, int space, int delta_space);
+static char *to_string_util(struct node *root, char *str, int *cur_pos);
 
 /**
 * Return the number of nodes in the tree. A recursive depth-first 
@@ -16,7 +17,7 @@ static void print_tree_static(struct node *root, int space, int delta_space);
 	**root: The root node.
 	   cnt: Current count. 
 */
-static int get_number_of_nodes_static(struct node **root, int cnt) {
+static int get_number_of_nodes_util(struct node **root, int cnt) {
 
 	// Increase the count
 	cnt++;
@@ -25,7 +26,7 @@ static int get_number_of_nodes_static(struct node **root, int cnt) {
 	for (int i = 0; i < get_num_children(*root); i++) {
 		// Recursively count the child nodes
 		struct node *child = get_children(root)[i];
-		cnt = get_number_of_nodes_static(&child, cnt);
+		cnt = get_number_of_nodes_util(&child, cnt);
 	}
 
 	return cnt;
@@ -37,7 +38,7 @@ static int get_number_of_nodes_static(struct node **root, int cnt) {
 *root: The root node.
 */
 int get_number_of_nodes(struct node *root) {
-	return get_number_of_nodes_static(&root, 0);
+	return get_number_of_nodes_util(&root, 0);
 }
 
 
@@ -52,7 +53,7 @@ int get_number_of_nodes(struct node *root) {
 	 **goal: Pointer to the pointer of the node that will be returned.
 			 Must be initialized to work properly.
 */
-static struct node *get_node_at_index_static(struct node **root, int goal_i, int *curr_i, struct node **goal) {
+static struct node *get_node_at_index_util(struct node **root, int goal_i, int *curr_i, struct node **goal) {
 
 	if (goal_i < 0) return NULL;
 	if (goal_i == 0) return *root;
@@ -66,7 +67,7 @@ static struct node *get_node_at_index_static(struct node **root, int goal_i, int
 		(*curr_i)++;
 
 		if (*curr_i == goal_i) *goal = child;
-		else get_node_at_index_static(&child, goal_i, curr_i, goal);
+		else get_node_at_index_util(&child, goal_i, curr_i, goal);
 	}
 
 	return *goal;
@@ -74,7 +75,7 @@ static struct node *get_node_at_index_static(struct node **root, int goal_i, int
 
 
 /**
-* A wrapper function to make calling get_node_at_index_static() simpler.
+* A wrapper function to make calling get_node_at_index_util() simpler.
 	**root: The root node.
 	  goal: The index to search for.
 */
@@ -83,7 +84,7 @@ struct node *get_node_at_index(struct node **root, int goal) {
 	int *ptr = &index;
 	struct node **tmp = malloc(sizeof(struct node **));
 
-	return get_node_at_index_static(root, goal, ptr, tmp);
+	return get_node_at_index_util(root, goal, ptr, tmp);
 }
 
 
@@ -94,7 +95,7 @@ struct node *get_node_at_index(struct node **root, int goal) {
 	    curr_depth: The current depth in the tree.
 	max_tree_depth: The current max depth that the function has reached.
 */
-static int get_max_tree_depth_static(struct node *root,
+static int get_max_tree_depth_util(struct node *root,
 	int curr_depth, int max_tree_depth) {
 
 	// Update the max depth if the current depth is greater
@@ -105,7 +106,7 @@ static int get_max_tree_depth_static(struct node *root,
 		struct node *child = get_children(&root)[i];
 
 		// Recursively get the depth of the child node
-		max_tree_depth = get_max_tree_depth_static(child, curr_depth + 1, max_tree_depth);
+		max_tree_depth = get_max_tree_depth_util(child, curr_depth + 1, max_tree_depth);
 	}
 
 	assert(curr_depth <= max_tree_depth);
@@ -114,11 +115,11 @@ static int get_max_tree_depth_static(struct node *root,
 }
 
 /**
-* A wrapper function to make calling get_max_tree_depth_static() simpler.
+* A wrapper function to make calling get_max_tree_depth_util() simpler.
 	 *root: The root node.
 */
 int get_max_tree_depth(struct node *root) {
-	return get_max_tree_depth_static(root, 0, 0);
+	return get_max_tree_depth_util(root, 0, 0);
 }
 
 
@@ -132,7 +133,7 @@ int get_max_tree_depth(struct node *root) {
 			     as it must maintain value throughout seperate recursion loops.
 	 curr_depth: The current depth in the tree. 
 */
-static int get_depth_at_index_static(struct node *root, int goal_i,
+static int get_depth_at_index_util(struct node *root, int goal_i,
 	int *curr_i, int curr_depth) {
 	if (goal_i < 0) return -1;
 	if (goal_i == 0) return 0;
@@ -148,7 +149,7 @@ static int get_depth_at_index_static(struct node *root, int goal_i,
 
 		(*curr_i)++;
 
-		i_depth = get_depth_at_index_static(child, goal_i, curr_i, curr_depth + 1);
+		i_depth = get_depth_at_index_util(child, goal_i, curr_i, curr_depth + 1);
 	}
 
 	return i_depth;
@@ -166,7 +167,7 @@ static int get_depth_at_index_static(struct node *root, int goal_i,
 			Use the macros LEFT_SIDE and RIGHT_SIDE defined in
 			the header.
 */
-static struct node *append_node_static(struct node **node, char value, bool side) {
+static struct node *append_node_util(struct node **node, char value, bool side) {
 	struct node *node_new = new_node(value, NULL, NULL);
 
 	if (side == LEFT_SIDE) {
@@ -186,7 +187,7 @@ static struct node *append_node_static(struct node **node, char value, bool side
 
 
 /**
-* A wrapper function to make calling append_node_static() simpler.
+* A wrapper function to make calling append_node_util() simpler.
 *node: The (hopefully) soon to be parent node to append to.
 value: The value of the node to append.
 side: The side of the parent node to append to.
@@ -197,7 +198,7 @@ the header.
 */
 struct node *append_node(struct node *node, char value, bool side) {
 	struct node **ptr = &node;
-	return append_node_static(ptr, value, side);
+	return append_node_util(ptr, value, side);
 }
 
 
@@ -241,7 +242,7 @@ struct node **get_children(struct node **root) {
 
 
 /**
-* A wrapper to make call to get_depth_at_index_static() simpler.
+* A wrapper to make call to get_depth_at_index_util() simpler.
 	 *node: The root node.
 	goal_i: The index to search for.
 */
@@ -249,7 +250,7 @@ int get_depth_at_index(struct node *node, int goal_i) {
 	int index = 0;
 	int *ptr = &index;
 
-	return get_depth_at_index_static(node, goal_i, ptr, 0);
+	return get_depth_at_index_util(node, goal_i, ptr, 0);
 }
 
 
@@ -313,12 +314,12 @@ void print_node(struct node *node) {
 space: The amount of space between each tree.
 delta_space: The change in space as depth increases.
 */
-static void print_tree_static(struct node *root, int space, int delta_space) {
+static void print_tree_util(struct node *root, int space, int delta_space) {
 	if (!root) return;
 
 	space += delta_space;
 
-	print_tree_static(root->right, space, delta_space);
+	print_tree_util(root->right, space, delta_space);
 
 	printf("\n");
 	for (int i = delta_space; i < space; i++) {
@@ -326,17 +327,17 @@ static void print_tree_static(struct node *root, int space, int delta_space) {
 	}
 	printf("%c\n", root->value);
 
-	print_tree_static(root->left, space, delta_space);
+	print_tree_util(root->left, space, delta_space);
 }
 
 
 /**
-* Function wrapper to make caling print_tree_static simpler.
+* Function wrapper to make caling print_tree_util simpler.
 		   *root: The root node of the tree.
 	 delta_space: The change in space as depth increases.
 */
 void print_tree(struct node *root, int delta_space) {
-	print_tree_static(root, 0, delta_space);
+	print_tree_util(root, 0, delta_space);
 }
 
 /**
@@ -357,4 +358,30 @@ void print_nodes_index_order(struct node *root) {
 			printf("\n");
 		}
 	}
+}
+
+static char *to_string_util(struct node *root, char *str, int *cur_pos) {
+
+	if (!root) return "";
+
+	str[(*cur_pos)++] = root->value;
+
+	if (root->left) to_string_util(root->left, str, cur_pos);
+
+	if (root->right) to_string_util(root->right, str, cur_pos);
+
+	return str;
+}
+
+
+char *to_string(struct node *root) {
+	int num_nodes = get_number_of_nodes(root);
+	char *str = malloc(num_nodes);
+	int pos = 0;
+
+	str = to_string_util(root, str, &pos);
+
+	str[num_nodes] = '\0';
+
+	return str;
 }
