@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <float.h>
-#include "hashmap.h"
 #include <math.h>
+#include "hashmap.h"
 
 /**
 * Return a new hashmap.
@@ -13,6 +13,14 @@ struct hashmap *hashmap_init() {
 	h->curr_index = 0;
 
 	return h;
+}
+
+/**
+* Get the size of a hashmap.
+*	 *h: The hashmap to check.
+*/
+int hashmap_get_size(struct hashmap *h) {
+	return h->curr_index;
 }
 
 /**
@@ -57,6 +65,34 @@ double hashmap_get(struct hashmap *h, char *key) {
 
 	return NAN;
 
+}
+
+/**
+* Return the key at the specified index.
+*	 *h: The hashmap to read.
+*	  i: The index.
+*/
+char *hashmap_get_key(struct hashmap *h, int i) {
+	return h->keys[i];
+}
+
+/**
+* Get the number of keys with the specified value.
+*	    *h: The hashmap to parse.
+*	 value: The value to search for.
+*/
+int hashmap_get_num_with_value(struct hashmap *h, int value) {
+	int count = 0;
+
+	for (int i = 0; i < h->curr_index; i++) {
+		int curr_value = (int)hashmap_get(h, h->keys[i]);
+		
+		if (curr_value == value) {
+			count++;
+		}
+	}
+
+	return count;
 }
 
 /**

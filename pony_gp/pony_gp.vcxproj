@@ -143,12 +143,16 @@
     <ClCompile Include="csv_reader.c" />
     <ClCompile Include="hashmap.c" />
     <ClCompile Include="pony_gp.c" />
+    <ClCompile Include="pony_gp_util.c" />
+    <ClCompile Include="queue.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="binary_tree.h" />
     <ClInclude Include="csv_reader.h" />
     <ClInclude Include="hashmap.h" />
+    <ClInclude Include="pony_gp_util.h" />
+    <ClInclude Include="queue.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
