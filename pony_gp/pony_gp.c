@@ -26,7 +26,7 @@ struct symbols *symbols;
 
 void grow(struct node *node, int curr_depth, int max_depth, bool full);
 void subtree_mutation(struct node **node);
-struct node **subtree_crossover(struct node parent1, struct node parent2);
+struct node **subtree_crossover(struct node *parent1, struct node *parent2);
 struct individual *init_population(void);
 double evaluate(struct node *node, double *fitness_case);
 void evaluate_individual(struct individual *individual);
@@ -117,9 +117,9 @@ void subtree_mutation(struct node **root) {
 *		**parent1: Parent to crossover
 *		**parent2: Other parent to crossover
 */
-struct node **subtree_crossover(struct node parent1, struct node parent2) {
-	parent1 = *tree_deep_copy(&parent1);
-	parent2 = *tree_deep_copy(&parent2);
+struct node **subtree_crossover(struct node *parent1, struct node *parent2) {
+	parent1 = tree_deep_copy(parent1);
+	parent2 = tree_deep_copy(parent2);
 
 	// Check if crossover will occur
 	if (get_rand_probability() < hashmap_get(params, "crossover_probability")) {
@@ -128,7 +128,7 @@ struct node **subtree_crossover(struct node parent1, struct node parent2) {
 		int node_depths[2][2];
 
 		for (int i = 0; i < 2; i++) {
-			struct node *parent = (i ? &parent2 : &parent1);
+			struct node *parent = (i ? parent2 : parent1);
 
 			// Pick a crossover point
 			int end_node_i = get_number_of_nodes(parent) - 1;
@@ -167,8 +167,8 @@ struct node **subtree_crossover(struct node parent1, struct node parent2) {
 	}
 
 	struct node **parents = malloc(sizeof(struct node *) * 2);
-	parents[0] = &parent1;
-	parents[1] = &parent2;
+	parents[0] = parent1;
+	parents[1] = parent2;
 
 	return parents;
 }
@@ -341,9 +341,11 @@ struct individual *tournament_selection(struct individual *population) {
 		for (int i = 0; i < tourn_size; i++) {
 			competitors[i] = population[samples[i]];
 		}
-		winners[win_i] = population[best_ever_index(competitors, tourn_size)];
-		win_i++;
+
+		winners[win_i++] = population[best_ever_index(competitors, tourn_size)];
 	}
+
+	free(samples);
 
 	return winners;
 }
@@ -358,21 +360,23 @@ struct individual *generational_replacement(struct individual *new_population,
 
 	int elite_size = (int)hashmap_get(params, "elite_size");
 
-	sort_population(&old_population, params);
+	struct individual *population = malloc(sizeof(struct individual) * (elite_size + size));
 
-	new_population = realloc(new_population,
-		sizeof(struct individual) * (elite_size + size));
+	int i;
 
-	for (int i = 0; i < elite_size; i++) {
-		new_population[size + i] = old_population[i];
+	for (i = 0; i < size; i++) {
+		population[i] = new_population[i];
 	}
 
-	sort_population(&new_population, params);
+	for (i; i < elite_size; i++) {
+		population[i] = old_population[i];
+	}
 
-	new_population = realloc(new_population,
-		sizeof(struct individual) * (int)hashmap_get(params, "population_size"));
+	sort_population(&population, params);
 
-	return new_population;
+	population = realloc(population, sizeof(struct individual) * size);
+
+	return population;
 }
 
 /**
@@ -395,11 +399,12 @@ struct individual *search_loop(struct individual *population) {
 	print_stats(0, population, pop_size, difftime(time(NULL), tic), params);
 
 	// Set best solution
-	struct individual *best_ever = &population[best_ever_index(population, pop_size)];
+	sort_population(&population, params);
+	struct individual *best_ever = &population[0];
 
 	int generation = 1;
 
-	struct individual *new_population;
+	struct individual *new_population = malloc(sizeof(struct individual) * pop_size);
 	struct individual *parents;
 
 	/////////////////////
@@ -410,7 +415,6 @@ struct individual *search_loop(struct individual *population) {
 		tic = time(NULL);
 
 		int new_pop_i = 0;
-		new_population = malloc(sizeof(struct individual) * pop_size);
 
 		parents = tournament_selection(population);
 
@@ -423,7 +427,7 @@ struct individual *search_loop(struct individual *population) {
 			struct node *node1 = parent1.genome;
 			struct node *node2 = parent2.genome;
 
-			struct node **nodes = subtree_crossover(*node1, *node2);
+			struct node **nodes = subtree_crossover(node1, node2);
 			node1 = nodes[0];
 			node2 = nodes[1];
 
@@ -444,10 +448,6 @@ struct individual *search_loop(struct individual *population) {
 
 		population = generational_replacement(new_population, pop_size, population);
 
-		//for (int i = 0; i < pop_size; i++) {
-		//	print_individuals(population, pop_size);
-		//}
-
 		sort_population(&population, params);
 		best_ever = &population[0];
 
@@ -456,10 +456,11 @@ struct individual *search_loop(struct individual *population) {
 		generation++;
 	
 	}
+
 	free(cache);
 	free(parents);
+	free(new_population);
 
-	print_tree(best_ever->genome, PRINT_SPACE);
 	return best_ever;
 }
 
@@ -486,7 +487,7 @@ void setup() {
 
 
 /**
-* Return the best solution. Create and initial
+* Return the best solution. Create an initial
 * population. perform an evolutionary search.
 */
 struct individual run() {
@@ -494,7 +495,6 @@ struct individual run() {
 
 	struct individual *best_ever = search_loop(population);
 
-	print_tree(best_ever->genome, PRINT_SPACE);
 	free(population);
 
 	return *best_ever;
@@ -503,11 +503,12 @@ struct individual run() {
 main() {
 	setup();
 
-	struct individual best_ever = run();
-	//print_tree(best_ever.genome, PRINT_SPACE);
-	//printf("Best solution on train data: %s\n", individual_to_string(best_ever));
+	struct individual *population = init_population();
 
-	//out_of_sample_test(&best_ever);
+	struct individual *best_ever = search_loop(population);
+	printf("Best solution on train data: %s\n", individual_to_string(*best_ever));
+
+	out_of_sample_test(best_ever);
 
 	exit_and_cleanup(symbols, params, data);
 }

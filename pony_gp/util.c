@@ -143,6 +143,7 @@ int *random_sample(int length, int sample_size) {
 		// Make the last value unavailable
 		length--;
 	}
+	free(all_indexes);
 
 	return random_indexes;
 }
