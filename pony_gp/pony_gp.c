@@ -416,43 +416,65 @@ struct individual *search_loop(struct individual *population) {
 
 		int new_pop_i = 0;
 
+		///////////////
+		// Selection //
+		///////////////
+
 		parents = tournament_selection(population);
 
+		///////////////////////////////////////////////////
+		// Varation -- Generate new individual solutions //
+		///////////////////////////////////////////////////
+
+		// Crossover
 		while (new_pop_i < pop_size) {
+			// Select parents
 			int *rand_idxs = random_sample(pop_size, 2);
 
 			struct individual parent1 = parents[rand_idxs[0]];
 			struct individual parent2 = parents[rand_idxs[1]];
 
-			struct node *node1 = parent1.genome;
-			struct node *node2 = parent2.genome;
+			// Generate nodes by crossing over the parents
+			struct node **children = subtree_crossover(parent1.genome, parent2.genome);
+			struct node *child1 = children[0];
+			struct node *child2 = children[1];
 
-			struct node **nodes = subtree_crossover(node1, node2);
-			node1 = nodes[0];
-			node2 = nodes[1];
-
-			struct individual i1 = *new_individual(node1, parent1.fitness);
+			// Append the child to the new population
+			struct individual i1 = *new_individual(child1, parent1.fitness);
 			new_population[new_pop_i++] = i1;
 
+			// Ensure that too many elements can't be added.
+			// Handles uneven population sizes, since crossover returns 2 offspring
 			if (new_pop_i < pop_size) {
-				struct individual i2 = *new_individual(node2, parent2.fitness);
+				struct individual i2 = *new_individual(child2, parent2.fitness);
 				new_population[new_pop_i++] = i2;
 			}
 		}
 
+		// Vary the population by mutation
 		for (int i = 0; i < pop_size; i++) {
 			subtree_mutation(&new_population[i].genome);
 		}
 
+		////////////////////
+		//Evaluate fitness//
+		////////////////////
 		evaluate_fitness(new_population, pop_size, cache);
 
+
+		/////////////////////////////////////////////////////////////////
+		// Replacement. Replace individual solutions in the population //
+		/////////////////////////////////////////////////////////////////
 		population = generational_replacement(new_population, pop_size, population);
 
+		// Set best solution
 		sort_population(&population, params);
 		best_ever = &population[0];
 
+		// Print the stats of the population
 		print_stats(generation, population, pop_size, difftime(time(NULL), tic), params);
 
+		// Increase the generation counter
 		generation++;
 	
 	}
@@ -510,248 +532,7 @@ main() {
 
 	out_of_sample_test(best_ever);
 
+	free(best_ever);
+
 	exit_and_cleanup(symbols, params, data);
 }
-//
-///**
-//* Run all tests on current seed.
-//*/
-//int test() {
-//	if (test_grow() || test_subtree_mutation() || test_subtree_crossover()) {
-//		return (EXIT_FAILURE);
-//	}
-//
-//	return (EXIT_SUCCESS);
-//	
-//}
-//
-///**
-//* A function to test the grow function.
-//* Valid seeds: -24, -5, -3, 1, 2, 4, 7
-//* Max depth must be 3.
-//* Return EXIT_FAILURE if seed provided is invalid or max depth is not 3.
-//*/
-//int test_grow() {
-//	if (hashmap_get(params, "max_depth") != 3) {
-//		printf("Please set max_depth to 3");
-//		return(EXIT_FAILURE);
-//	}
-//
-//	struct node *test = new_node('+', NULL, NULL);
-//	grow(test, 0, (int)hashmap_get(params, "max_depth"), false);
-//
-//	char seed_neg24[] = { '+', '+', '+', '0', '0', '+', '0', '0', '+', '+', '0', '0', '+', '0', '0' };
-//	char seed_neg5[] = { '+', '/', '/', '0', '0', '/', '0', '0', '/', '/', '0', '0', '/', '0', '0' };
-//	char seed_neg3[] = { '+', '+', '+', '0', '0', '+', '0', '0', '+', '+', '0', '0', '+', '0', '0' };
-//	char seed_1[] = { '+', '1', '1' };
-//	char seed_2[] = { '+', '1', '1' };
-//	char seed_4[] = { '+', '1', '1' };
-//	char seed_7[] = { '+', '1', '1' };
-//
-//	char *arr_to_use;
-//
-//	switch ((int)hashmap_get(params, "seed")) {
-//		case -3:
-//			arr_to_use = seed_neg3;
-//			break;
-//		case -5:
-//			arr_to_use = seed_neg5;
-//			break;
-//		case 4:
-//			arr_to_use = seed_4;
-//			break;
-//		case 2:
-//			arr_to_use = seed_2;
-//			break;
-//		case -24:
-//			arr_to_use = seed_neg24;
-//			break;
-//		case 7:
-//			arr_to_use = seed_7;
-//			break;
-//		case 1:
-//			arr_to_use = seed_1;
-//			break;
-//		default:
-//			printf("Current seed is not testable\n");
-//			return(EXIT_FAILURE);
-//	};
-//
-//	for (int i = 0; i < get_number_of_nodes(test); i++) {
-//		assert(get_node_at_index(&test, i)->value == arr_to_use[i]);
-//	}
-//
-//	free(test);
-//
-//	return(EXIT_SUCCESS);
-//
-//}
-//
-///**
-//* A function to test the subtree_mutation function.
-//* Valid seeds: -24, -5, -3, 1, 2, 4, 7
-//* Max depth must be 3.
-//* Return EXIT_FAILURE if seed provided is invalid or max depth is not 3.
-//*/
-//int test_subtree_mutation() {
-//	if (hashmap_get(params, "max_depth") != 3) {
-//		printf("Please set max_depth to 3");
-//		return(EXIT_FAILURE);
-//	}
-//
-//	struct node *test = new_node('+', NULL, NULL);
-//	test->left = new_node('*', NULL, NULL);
-//	test->right = new_node('2', NULL, NULL);
-//	test->left->left = new_node('6', NULL, NULL);
-//	test->left->right = new_node('*', NULL, NULL);
-//	test->left->right->left = new_node('5', NULL, NULL);
-//	test->left->right->right = new_node('7', NULL, NULL);
-//
-//	subtree_mutation(&test);
-//
-//	char seed_neg3[] = { '+', '+', '+', '0', '0', '+', '0', '0', '+', '+', '0', '0', '+', '0', '0' };
-//	char seed_neg5[] = { '+', '0', '2' };
-//	char seed_4[] = { '+', '*', '1', '*', '5', '7', '2' };
-//	char seed_2[] = { '+', '*', '6', '1', '2' };
-//	char seed_neg24[] = { '+', '*', '6', '0', '2' };
-//	char seed_7[] = { '+', '*', '6', '*', '5', '1', '2' };
-//	char seed_1[] = { '+', '*', '6', '*', '5', '7', '1' };
-//
-//	char *arr_to_use;
-//
-//	switch ((int)hashmap_get(params, "seed")) {
-//		case -3:
-//			arr_to_use = seed_neg3;
-//			break;
-//		case -5:
-//			arr_to_use = seed_neg5;
-//			break;
-//		case 4:
-//			arr_to_use = seed_4;
-//			break;
-//		case 2:
-//			arr_to_use = seed_2;
-//			break;
-//		case -24:
-//			arr_to_use = seed_neg24;
-//			break;
-//		case 7:
-//			arr_to_use = seed_7;
-//			break;
-//		case 1:
-//			arr_to_use = seed_1;
-//			break;
-//		default:
-//			printf("Current seed is not testable\n");
-//			return(EXIT_FAILURE);
-//	};
-//
-//
-//
-//	for (int i = 0; i < get_number_of_nodes(test); i++) {
-//		assert(get_node_at_index(&test, i)->value == arr_to_use[i]);
-//	}
-//
-//	free(test);
-//
-//	return(EXIT_SUCCESS);
-//
-//}
-//
-///**
-//* A function to test the subtree_crossover function.
-//* Valid seeds: -24, -5, -3, 1, 2, 4, 7
-//* Max depth must be 3.
-//* Return EXIT_FAILURE if seed provided is invalid or max depth is not 3.
-//*/
-//int test_subtree_crossover() {
-//	if (hashmap_get(params, "max_depth") != 3) {
-//		printf("Please set max_depth to 3");
-//		return(EXIT_FAILURE);
-//	}
-//
-//	struct node *test1 = new_node('+', NULL, NULL);
-//	test1->left = new_node('*', NULL, NULL);
-//	test1->right = new_node('2', NULL, NULL);
-//	test1->left->left = new_node('6', NULL, NULL);
-//	test1->left->right = new_node('*', NULL, NULL);
-//	test1->left->right->left = new_node('5', NULL, NULL);
-//	test1->left->right->right = new_node('7', NULL, NULL);
-//
-//	struct node *test2 = new_node('-', NULL, NULL);
-//	test2->left = new_node('-', NULL, NULL);
-//	test2->right = new_node('1', NULL, NULL);
-//	test2->left->left = new_node('3', NULL, NULL);
-//	test2->left->right = new_node('/', NULL, NULL);
-//	test2->left->right->left = new_node('4', NULL, NULL);
-//	test2->left->right->right = new_node('8', NULL, NULL);
-//
-//	char seed1_neg3[] = { '-', '-', '3', '/', '4', '8', '1' };
-//	char seed1_neg5[] = { '+', '-', '3', '/', '4', '8', '2' };
-//	char seed1_4[] = { '+', '*', '3', '*', '5', '7', '2' };
-//	char seed1_2[] = { '+', '*', '6', '/', '4', '8', '2' };
-//	char seed1_neg24[] = { '+', '*', '6', '/', '4', '8', '2' };
-//	char seed1_7[] = { '+', '*', '6', '*', '5', '8', '2' };
-//	char seed1_1[] = { '+', '*', '6', '*', '5', '7', '1' };
-//
-//	char seed2_neg3[] = { '+', '*', '6', '*', '5', '7', '2' };
-//	char seed2_neg5[] = { '+', '-', '3', '/', '4', '8', '2' };
-//	char seed2_4[] = { '-', '-', '6', '/', '4', '8', '1' };
-//	char seed2_2[] = { '-', '-', '3', '*', '5', '7', '1' };
-//	char seed2_neg24[] = { '-', '-', '3', '*', '5', '7', '1' };
-//	char seed2_7[] = { '-', '-', '3', '/', '4', '7', '1' };
-//	char seed2_1[] = { '-', '-', '3', '/', '4', '8', '2' };
-//
-//	char *arr1_to_use;
-//	char *arr2_to_use;
-//
-//	subtree_crossover(&test1, &test2);
-//
-//	switch ((int)hashmap_get(params, "seed")) {
-//		case -3:
-//			arr1_to_use = seed1_neg3;
-//			arr2_to_use = seed2_neg3;
-//			break;
-//		case -5:
-//			arr1_to_use = seed1_neg5;
-//			arr2_to_use = seed2_neg5;
-//			break;
-//		case 4:
-//			arr1_to_use = seed1_4;
-//			arr2_to_use = seed2_4;
-//			break;
-//		case 2:
-//			arr1_to_use = seed1_2;
-//			arr2_to_use = seed2_2;
-//			break;
-//		case -24:
-//			arr1_to_use = seed1_neg24;
-//			arr2_to_use = seed2_neg24;
-//			break;
-//		case 7:
-//			arr1_to_use = seed1_7;
-//			arr2_to_use = seed2_7;
-//			break;
-//		case 1:
-//			arr1_to_use = seed1_1;
-//			arr2_to_use = seed2_1;
-//			break;
-//		default:
-//			printf("Current seed is not testable\n");
-//			return(EXIT_FAILURE);
-//	};
-//
-//	for (int i = 0; i < get_number_of_nodes(test1); i++) {
-//		assert(get_node_at_index(&test1, i)->value == arr1_to_use[i]);
-//	}
-//
-//	for (int i = 0; i < get_number_of_nodes(test2); i++) {
-//		assert(get_node_at_index(&test2, i)->value == arr2_to_use[i]);
-//	}
-//
-//	free(test1);
-//	free(test2);
-//
-//	return (EXIT_SUCCESS);
-//}
-//
