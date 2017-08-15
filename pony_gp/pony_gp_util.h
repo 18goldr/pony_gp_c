@@ -21,6 +21,7 @@ int double_length(double d, int d_places);
 struct individual *new_individual(struct node *genome, double fitness);
 
 
+
 /**
 * A struct to contain the different functions, terminals, and arities.
 *	*terminals: An array of constant numbers that can be used in the program.

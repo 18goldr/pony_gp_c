@@ -71,12 +71,8 @@ void start_srand() {
 	// srand must only be called once for different results each time.
 	static bool first_time = true;
 
-	if (SEED != 0) {
-		srand((unsigned int)SEED);
-	}
-
-	else if (first_time) {
-		srand((unsigned int)time(NULL));
+	if (first_time) {
+		srand((unsigned int)(SEED ? SEED : time(NULL)));
 		first_time = false;
 	}
 }
@@ -175,18 +171,23 @@ int *fill_array_indexes(int length) {
 void shuffle(int *array, int n) {
 	start_srand();
 
-	if (n > 1) {
+	for (int i = n - 1; i > 0; i--) {
+		int j = rand() % (i + 1);
 
-		for (int i = 0; i < n; i++) {
-			int j = 1 + rand() / (RAND_MAX / (n - i) + 1);
-
-			int temp = array[j];
-
-			array[j] = array[i];
-			array[i] = temp;
-		}
+		swap(&array[i], &array[j]);
 	}
 }
+
+/**
+* Utility function to swap two integers.
+*	*a, *b: The integers to swap.
+*/
+void swap(int *a, int *b) {
+	int temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
 
 /**
 * Seperate a string by the delimeter.

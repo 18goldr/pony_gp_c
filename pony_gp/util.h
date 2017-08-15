@@ -27,4 +27,5 @@ double *get_ave_and_std(double *values, int size);
 double sum_doubles(double *values, int size);
 double get_std(double *values, int size, double ave);
 double max_value(double *values, int size);
+void swap(int *a, int *b);
 

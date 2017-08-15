@@ -164,16 +164,16 @@ struct hashmap *get_arities() {
 struct hashmap *get_params() {
 	struct hashmap *h = hashmap_init();
 
-	hashmap_put(h, "population_size", 100);
+	hashmap_put(h, "population_size", 10);
 	hashmap_put(h, "max_depth", 5);
 	hashmap_put(h, "elite_size", 2);
-	hashmap_put(h, "generations", 100);
-	hashmap_put(h, "tournament_size", 2);
+	hashmap_put(h, "generations", 2);
+	hashmap_put(h, "tournament_size", 3);
 	hashmap_put(h, "crossover_probability", 0.8);
 	hashmap_put(h, "mutation_probability", 0.2);
 	hashmap_put(h, "test_train_split", 0.7);
 	hashmap_put(h, "verbose", 0);
-	hashmap_put(h, "seed", 0);
+	hashmap_put(h, "seed", -1);
 
 	return h;
 }

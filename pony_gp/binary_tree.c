@@ -5,7 +5,7 @@
 #include "queue.h"
 #include "binary_tree.h"
 
-static int get_depth_at_index_util(struct node *, int, int *, int);
+static int get_depth_at_index_util(struct node *root, int goal_i, int *curr_i, int curr_depth, int *i_depth);
 static struct node *get_node_at_index_util(struct node **root, int goal_i, int *curr_i, struct node **goal);
 static struct node *append_node_util(struct node **node, char value, bool side);
 static void print_tree_util(struct node *root, int space, int delta_space);
@@ -13,16 +13,15 @@ static char *to_string_util(struct node *root, char *str, int *cur_pos);
 
 /**
 * Function to count the number of nodes in a tree with recursion and
-* without a stack
+* without a stack using the Morris Tree Taversal algorithm.
 *	 *root: The root of the tree.
 */
 int get_number_of_nodes(struct node *root) {
-	int count = 0;
-	struct node *current, *pre;
-
 	if (!root) return 0;
 
-	current = root;
+	int count = 0;
+	struct node *pre, *current = root;
+
 	while (current) {
 		if (!current->left) {
 			count++;
@@ -109,15 +108,9 @@ int get_max_tree_depth(struct node *root) {
 
 	enqueue(q, root);
 	int height = 0;
+	int node_count;
 
-	while (true) {
-		int node_count = queue_size(q);
-
-		if (!node_count) {
-			// Height is one more than it should be.
-			return height-1;
-		}
-
+	while ((node_count = queue_size(q))) {
 		height++;
 
 		while (node_count > 0) {
@@ -136,6 +129,11 @@ int get_max_tree_depth(struct node *root) {
 		}
 	}
 
+	free(q);
+
+	 //Height is one more than it should be.
+	return height - 1;
+
 }
 
 
@@ -150,25 +148,36 @@ int get_max_tree_depth(struct node *root) {
 *	 curr_depth: The current depth in the tree. 
 */
 static int get_depth_at_index_util(struct node *root, int goal_i,
-	int *curr_i, int curr_depth) {
+	int *curr_i, int curr_depth, int *i_depth) {
 	if (goal_i < 0) return -1;
 	if (goal_i == 0) return 0;
 
-	static int i_depth = -1;
-
 	if (goal_i == *curr_i) {
-		i_depth = curr_depth;
+		*i_depth = curr_depth;
 	}
 
-	for (int i = 0; (i_depth == -1) && i < get_num_children(root); i++) {
+	for (int i = 0; (*i_depth == -1) && i < get_num_children(root); i++) {
 		struct node *child = get_children(&root)[i];
 
 		(*curr_i)++;
 
-		i_depth = get_depth_at_index_util(child, goal_i, curr_i, curr_depth + 1);
+		*i_depth = get_depth_at_index_util(child, goal_i, curr_i, curr_depth + 1, i_depth);
 	}
 
-	return i_depth;
+	return *i_depth;
+}
+
+
+/**
+* A wrapper to make call to get_depth_at_index_util() simpler.
+*	 *node: The root node.
+*	goal_i: The index to search for.
+*/
+int get_depth_at_index(struct node *node, int goal_i) {
+	int index = 0;
+	int i_depth = -1;
+
+	return get_depth_at_index_util(node, goal_i, &index, 0, &i_depth);
 }
 
 
@@ -254,19 +263,6 @@ struct node **get_children(struct node **root) {
 	if (r) children[i] = (*root)->right;
 
 	return children;
-}
-
-
-/**
-* A wrapper to make call to get_depth_at_index_util() simpler.
-*	 *node: The root node.
-*	goal_i: The index to search for.
-*/
-int get_depth_at_index(struct node *node, int goal_i) {
-	int index = 0;
-	int *ptr = &index;
-
-	return get_depth_at_index_util(node, goal_i, ptr, 0);
 }
 
 
@@ -424,4 +420,20 @@ char *tree_to_string(struct node *root) {
 	str[num_nodes] = '\0';
 
 	return str;
+}
+
+/**
+* Recursively create a deep copy of a tree.
+*	 *root: The root node of the tree.
+*/
+struct node *tree_deep_copy(struct node *root) {
+	struct node *copy = NULL;
+
+	if (root) {
+		copy = default_new_node(root->value);
+		copy->left = tree_deep_copy(root->left);
+		copy->right = tree_deep_copy(root->right);
+	}
+
+	return copy;
 }

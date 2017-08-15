@@ -3,6 +3,7 @@
 #define LEFT_SIDE 0
 #define RIGHT_SIDE 1
 
+struct node *default_new_node(char v);
 void print_node(struct node *node);
 struct node *append_node(struct node *, char, bool);
 struct node **get_children(struct node **);
@@ -17,7 +18,7 @@ struct node *new_node(char v, struct node *l, struct node *r);
 void print_tree(struct node *root, int delta_space);
 void print_nodes_index_order(struct node *root);
 char *tree_to_string(struct node *root);
-struct node *default_new_node(char v);
+struct node *tree_deep_copy(struct node *root);
 
 /**
  * A structure to represent a binary tree node
