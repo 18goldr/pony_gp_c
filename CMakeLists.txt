@@ -1,14 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project (pony_gp)
 
-# Define header with directory to csv file
-#file(GLOB pony_gp_CSV_FILE "userdata/*.csv")
-#get_filename_component(CSV_DIR $(pony_gp_CSV_FILE) DIRECTORY)
-
-#set(CSV_HEADER ${CSV_DIR})
-
-#configure_file("include/params.h.in" "include/params.h" @ONLY)
-
 file(GLOB_RECURSE pony_gp_SOURCES "src/*.c")
 file(GLOB_RECURSE pony_gp_HEADERS "include/*.h")
 
