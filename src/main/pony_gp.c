@@ -535,7 +535,7 @@ struct individual *run() {
 /**
 * Search. Evaluate best solution on out-of-sample data.
 */
-main() {
+int main() {
 	setup();
 
 	struct individual *best_ever = run();
