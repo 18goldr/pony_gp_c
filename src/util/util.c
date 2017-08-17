@@ -1,3 +1,8 @@
+#include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 #include "util.h"
 
 // the seed to pass to the random function
