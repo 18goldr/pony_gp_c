@@ -3,7 +3,6 @@
 #endif
 
 #include <math.h>
-#include <direct.h>
 #include "binary_tree.h"
 #include "util.h"
 #include "hashmap.h"
