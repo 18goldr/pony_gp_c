@@ -33,12 +33,10 @@ struct hashmap *get_params() {
 }
 
 /**
-* Retrieve the directory of a .csv file.
-* Dependant on CMakeLists.txt finding it.
-* File must be contained in [root]/userdata
+* Edit this with the path to your csv file.
 */
 char *get_fitness_file() {
-	return "C:/Users/Robbie/Dropbox/MIT/pony_gp (Cmake)/pony_gp/fitness_cases.csv";
+	return "C:/Users/Robbie/Dropbox/MIT/pony_gp (Cmake)/pony_gp/data/fitness_cases.csv";
 }
 
 /**
