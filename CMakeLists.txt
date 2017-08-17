@@ -12,3 +12,5 @@ list(REMOVE_DUPLICATES pony_gp_INCLUDE_DIRS)
 
 include_directories(${pony_gp_INCLUDE_DIRS} "${CMAKE_SOURCE_DIR}/userdata")
 add_executable (pony_gpExe ${pony_gp_SOURCES})
+
+target_link_libraries(pony_gpExe m)
