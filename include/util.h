@@ -1,7 +1,9 @@
 #include <stdbool.h>
+#include <stdio.h>
 
 #define ARR_SIZE(arr) ((int)(sizeof(arr) / sizeof(0[arr])))
 
+char *getline(FILE *file);
 int get_char_arr_length(char *arr);
 int get_double_arr_length(double *arr);
 int get_randint(int min, int max);

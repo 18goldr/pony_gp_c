@@ -9,7 +9,17 @@
 #include "csv_reader.h"
 #include "queue.h"
 #include "pony_gp_util.h"
+#include "config_parser.h"
 #include "include/params.h"
+
+
+void parse_config() {
+	ini_parser *p = create_ini_parser(get_config_file());
+
+	for (int i = 0; i < num_sections(p->file); i++) {
+		p->sections[i];
+	}
+}
 
 /**
 * Temporary function to set parameters. Will modify to read from
@@ -30,6 +40,21 @@ struct hashmap *get_params() {
 	hashmap_put(h, "seed", 0);
 
 	return h;
+}
+
+/**
+* Return the config file. Automatically found by CMake
+* If not using CMake, manually input it in this function.
+* Fitness file must be in <root>/data. File must have extension
+* .ini
+*/
+char *get_config_file() {
+	#ifdef INI_DIR
+		return INI_DIR;
+	#endif
+
+	fprintf(stderr, "Config file not found. Please include in the folder <root>/data");
+	abort();
 }
 
 /**

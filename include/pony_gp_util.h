@@ -40,6 +40,8 @@ struct csv_data {
 	double *training_targets;
 };
 
+void parse_config(void); //util
+char *get_config_file(void); //util
 char *individual_to_string(struct individual i); //pony_gp
 void print_individuals(struct individual *individuals, int size); //pony_gp
 char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols *symbols); //pony_gp

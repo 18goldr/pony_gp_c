@@ -5,6 +5,8 @@
 #include <math.h>
 #include "util.h"
 
+#define MAX_LINE_LENGTH 2048
+
 // the seed to pass to the random function
 // default to 0
 double SEED = 0;
@@ -16,6 +18,29 @@ double SEED = 0;
 */
 void set_seed(double s) {
 	SEED = s;
+}
+
+/**
+* Return the next non-empty line of a file.
+*	file: The file to read.
+*/
+char *getline(FILE *file) {
+	char *f_line = calloc(MAX_LINE_LENGTH, sizeof(char));
+
+	fgets(f_line, MAX_LINE_LENGTH, file);
+	// Removes newline character from fgets
+	f_line[strcspn(f_line, "\n")] = 0;
+
+	// Ignore line if blank
+	while (!f_line[0]) {
+		// If end of file, return NULL.
+		if (!fgets(f_line, MAX_LINE_LENGTH, file)) return NULL;
+
+		// Removes newline character from fgets
+		f_line[strcspn(f_line, "\n")] = 0;
+	}
+
+	return f_line;
 }
 
 /**
