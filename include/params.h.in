@@ -1,2 +1,7 @@
+#ifndef PARAMS_H
+#define PARAMS_H
+
 #cmakedefine CSV_DIR "@DIR_STRING@"
 #cmakedefine INI_DIR "@INI_DIR@"
+
+#endif

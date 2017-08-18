@@ -1,3 +1,6 @@
+#ifndef QUEUE_H
+#define QUEUE_H
+
 #include <stdbool.h>
 
 struct q_node {
@@ -16,3 +19,5 @@ struct queue *create_queue(void);
 void enqueue(struct queue *queue, struct node *node);
 struct q_node *dequeue(struct queue *q);
 int queue_size(struct queue *q);
+
+#endif

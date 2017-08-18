@@ -1,3 +1,11 @@
+#ifdef _WIN32
+#define _CRT_SECURE_NO_DEPRECATE
+#endif
+
+#include <assert.h>
+#include "util.h"
+#include <stdio.h>
+#include <string.h>
 #include "csv_reader.h"
 
 #define MAX_LINE_LENGTH 2048

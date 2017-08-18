@@ -1,3 +1,6 @@
+#ifndef CONFIG_PARSER_H
+#define CONFIG_PARSER_H
+
 #include <stdio.h>
 
 /**
@@ -55,3 +58,5 @@ ini_pair *get_pairs(char **lines, int start);
 char **get_lines(FILE *file);
 int num_lines(char **lines);
 void free_parser(ini_parser *p);
+
+#endif
