@@ -4,8 +4,8 @@
 
 /**
 * Return a new csv_reader.
-*	 *file_name: Name of the file that the csv_reader will rad.
-*	  delimeter: The character that the file will differentiate 
+*	 file_name: Name of the file that the csv_reader will rad.
+*	 delimeter: The character that the file will differentiate 
 *				 collumns with.
 */
 csv_reader *init_csv(char *file_name, char delimeter) {
@@ -22,8 +22,8 @@ csv_reader *init_csv(char *file_name, char delimeter) {
 
 /**
 * Return a new csv_line.
-*	 **content: The content of the line.
-*	      size: The size in characters of the line.
+*	 content: The content of the line.
+*	    size: The size in characters of the line.
 */
 csv_line *new_line(char **content, int size) {
 	csv_line *line = malloc(sizeof(struct csv_line));
@@ -37,7 +37,7 @@ csv_line *new_line(char **content, int size) {
 
 /**
 * Get the number of lines in a csv file. 
-*	 *reader: The csv_reader containing the file to parse.
+*	 reader: The csv_reader containing the file to parse.
 */
 int get_num_lines(csv_reader *reader) {
 	rewind(reader->file);
@@ -64,7 +64,7 @@ int get_num_lines(csv_reader *reader) {
 * Get the number of collumns in the csv file. This function assumes
 * that the number of collumns is the same throughout the entire
 * document.
-*	 *reader: The csv_reader containing the file to parse.
+*	 reader: The csv_reader containing the file to parse.
 */
 int get_num_column(csv_reader *reader) {
 	rewind(reader->file);
@@ -75,7 +75,7 @@ int get_num_column(csv_reader *reader) {
 
 	int count = 1;
 
-	for (int i = 0; i < strlen(line); i++) {
+	for (int i = 0; i < (int)strlen(line); i++) {
 		count += (line[i] == reader->delimiter);
 	}
 
@@ -87,7 +87,7 @@ int get_num_column(csv_reader *reader) {
 * Return the values contained in a line of the csv file.
 * The reader remembers its position in the document throughout
 * seperate calls.
-*	 *reader: The csv_reader containing the file to parse.
+*	 reader: The csv_reader containing the file to parse.
 */
 csv_line *readline(csv_reader *reader) {
 	char *f_line = calloc(MAX_LINE_LENGTH, sizeof(char));
@@ -125,7 +125,7 @@ csv_line *readline(csv_reader *reader) {
 
 /**
 * Skip the current line the file.
-*	 *reader: The csv_reader containing the document.
+*	 reader: The csv_reader containing the document.
 */
 void next_line(csv_reader *reader) {
 	char ignore[MAX_LINE_LENGTH];
@@ -134,7 +134,7 @@ void next_line(csv_reader *reader) {
 
 /**
 * Return the header values.
-*	*reader: The csv_reader containing the document.
+*	reader: The csv_reader containing the document.
 */
 csv_line *get_header(csv_reader *reader) {
 	rewind(reader->file);

@@ -1,4 +1,11 @@
+#include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 #include "util.h"
+
+#define MAX_LINE_LENGTH 2048
 
 // the seed to pass to the random function
 // default to 0
@@ -14,9 +21,32 @@ void set_seed(double s) {
 }
 
 /**
+* Return the next non-empty line of a file.
+*	file: The file to read.
+*/
+char *getline(FILE *file) {
+	char *f_line = calloc(MAX_LINE_LENGTH, sizeof(char));
+
+	fgets(f_line, MAX_LINE_LENGTH, file);
+	// Removes newline character from fgets
+	f_line[strcspn(f_line, "\n")] = 0;
+
+	// Ignore line if blank
+	while (!f_line[0]) {
+		// If end of file, return NULL.
+		if (!fgets(f_line, MAX_LINE_LENGTH, file)) return NULL;
+
+		// Removes newline character from fgets
+		f_line[strcspn(f_line, "\n")] = 0;
+	}
+
+	return f_line;
+}
+
+/**
 * Get the length of a character array/string
 * Array must end in Null character.
-*	*arr: The array to parse.
+*	arr: The array to parse.
 */
 int get_char_arr_length(char *arr) {
 	int length = 1;
@@ -33,7 +63,7 @@ int get_char_arr_length(char *arr) {
 /**
 * Get the length of a double array.
 * Array must end in the value NAN defined in <math.h>
-*	*arr: The array to parse.
+*	arr: The array to parse.
 */
 int get_double_arr_length(double *arr) {
 	int length = 0;
@@ -50,7 +80,7 @@ int get_double_arr_length(double *arr) {
 * Get the length of a 2 dimensional array of doubles. Each outer array must end
 * with a NULL pointer. Each inner array must end with the NAN value
 * defined in <math.h>
-*	 **arr: The 2D array to parse.
+*	 arr: The 2D array to parse.
 */
 int get_2d_arr_length(double **arr) {
 	int length = 0;
@@ -166,8 +196,8 @@ int *fill_array_indexes(int length) {
 /**
 * Arrange the `n` elements of the array in random order.
 * `n` must be must smaller than RAND_MAX to be effective.
-*	 *array: The array to shuffle.
-*		  n: The size of the array.
+*	 array: The array to shuffle.
+*		 n: The size of the array.
 */
 void shuffle(int *array, int n) {
 	start_srand();
@@ -181,7 +211,7 @@ void shuffle(int *array, int n) {
 
 /**
 * Utility function to swap two integers.
-*	*a, *b: The integers to swap.
+*	a, b: The integers to swap.
 */
 void swap(int *a, int *b) {
 	int temp = *a;
@@ -192,8 +222,8 @@ void swap(int *a, int *b) {
 
 /**
 * Seperate a string by the delimeter.
-*	   **str: String to modify
-*	  *delim: The character to seperate the string by.
+*	   str: String to modify
+*	 delim: The character to seperate the string by.
 */
 char *str_sep(char **str, const char* delim) {
 
@@ -216,7 +246,7 @@ char *str_sep(char **str, const char* delim) {
 
 /**
 * Remove the spaces from a string.
-*	 *str: The string to modify.
+*	 str: The string to modify.
 */
 void remove_spaces(char *str) {
 	if (!str) return;
@@ -236,7 +266,7 @@ void remove_spaces(char *str) {
 * Print a 2 dimensional array of doubles. Each outer array must end
 * with a NULL pointer. Each inner array must end with the NAN value
 * defined in <math.h>
-	 **arr: The 2D array to print.
+	 arr: The 2D array to print.
 */
 void print_2d_array(double **arr) {
 	while (*arr) {
@@ -250,9 +280,9 @@ void print_2d_array(double **arr) {
 
 /**
 * Return if a string is in an array.
-*	 **strings: The array of strings to parse.
-*	      *str: The string to parse for.
-*		  size: The size of the array of strings.
+*	 strings: The array of strings to parse.
+*	     str: The string to parse for.
+*		size: The size of the array of strings.
 */
 bool str_in_arr(char **strings, char *str, int size) {
 	
@@ -267,8 +297,8 @@ bool str_in_arr(char **strings, char *str, int size) {
 
 /**
 * Return average and standard deviation.
-*	 *values: Values to calculate on.
-*	    size: The number of elements in values.
+*	 values: Values to calculate on.
+*	   size: The number of elements in values.
 */
 double *get_ave_and_std(double *values, int size) {
 	double ave = sum_doubles(values, size) / size;
@@ -283,8 +313,8 @@ double *get_ave_and_std(double *values, int size) {
 
 /**
 * Return the sum of the doubles in an array.
-*	 *values: The array.
-*	    size: The size of the array.
+*	 values: The array.
+*	   size: The size of the array.
 */
 double sum_doubles(double *values, int size) {
 	double total = 0;
@@ -298,9 +328,9 @@ double sum_doubles(double *values, int size) {
 
 /**
 * Return the standard deviation of a set of values.
-*	 *values: The array of values.
-*	    size: The size of the array.
-*		 ave: The average of the values.
+*	 values: The array of values.
+*	   size: The size of the array.
+*		ave: The average of the values.
 */
 double get_std(double *values, int size, double ave) {
 	double std = 0.0;
@@ -331,8 +361,8 @@ int double_length(double d, int d_places) {
 
 /**
 * Get the max value of all doubles in an array.
-*	 *values: The array to parse.
-*	    size: The size of the array.
+*	 values: The array to parse.
+*	   size: The size of the array.
 */
 double max_value(double *values, int size) {
 	double max = values[0];

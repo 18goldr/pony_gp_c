@@ -17,7 +17,7 @@ struct hashmap *hashmap_init() {
 
 /**
 * Get the size of a hashmap.
-*	 *h: The hashmap to check.
+*	 h: The hashmap to check.
 */
 int hashmap_get_size(struct hashmap *h) {
 	return h->curr_index;
@@ -26,7 +26,7 @@ int hashmap_get_size(struct hashmap *h) {
 /**
 * Deallocate the hashmap. Must be called in order to avoid
 * memory leaks.
-*	 *h: The hashmap to deallocate.
+*	 h: The hashmap to deallocate.
 */
 void hashmap_deinit(struct hashmap *h) {
 	free(h);
@@ -34,8 +34,8 @@ void hashmap_deinit(struct hashmap *h) {
 
 /**
 * Assign a key-value pair.
-*	    *h: The hashmap to assign it to.
-*	  *key: The key.
+*	     h: The hashmap to assign it to.
+*	   key: The key.
 *	 value: The value.
 */
 int hashmap_put(struct hashmap *h, char *key, const double value) {
@@ -53,8 +53,8 @@ int hashmap_put(struct hashmap *h, char *key, const double value) {
 
 /**
 * Get the value of the given key. Returns NAN if not found.
-* 	   *h: The hashmap to retrieve the value from.
-*	 *key: The key to search for.
+* 	   h: The hashmap to retrieve the value from.
+*	 key: The key to search for.
 */
 double hashmap_get(struct hashmap *h, char *key) {
 	for (int i = 0; i < h->curr_index; i++) {
@@ -69,8 +69,8 @@ double hashmap_get(struct hashmap *h, char *key) {
 
 /**
 * Return the key at the specified index.
-*	 *h: The hashmap to read.
-*	  i: The index.
+*	 h: The hashmap to read.
+*	 i: The index.
 */
 char *hashmap_get_key(struct hashmap *h, int i) {
 	return h->keys[i];
@@ -78,7 +78,7 @@ char *hashmap_get_key(struct hashmap *h, int i) {
 
 /**
 * Get the number of keys with the specified value.
-*	    *h: The hashmap to parse.
+*	     h: The hashmap to parse.
 *	 value: The value to search for.
 */
 int hashmap_get_num_with_value(struct hashmap *h, int value) {
@@ -97,7 +97,7 @@ int hashmap_get_num_with_value(struct hashmap *h, int value) {
 
 /**
 * Print a hashmap to the console.
-*	 *h: The hashmap to print.
+*	 h: The hashmap to print.
 */
 void print_hashmap(struct hashmap *h) {
 	for (int i = 0; i < h->curr_index; i++) {

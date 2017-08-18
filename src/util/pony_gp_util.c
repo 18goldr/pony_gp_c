@@ -9,7 +9,73 @@
 #include "csv_reader.h"
 #include "queue.h"
 #include "pony_gp_util.h"
+#include "config_parser.h"
+#include "include/params.h"
 
+
+void parse_config() {
+	ini_parser *p = create_ini_parser(get_config_file());
+
+	for (int i = 0; i < num_sections(p->file); i++) {
+		p->sections[i];
+	}
+}
+
+/**
+* Temporary function to set parameters. Will modify to read from
+* a config document.
+*/
+struct hashmap *get_params() {
+	struct hashmap *h = hashmap_init();
+
+	hashmap_put(h, "population_size", 100);
+	hashmap_put(h, "max_depth", 5);
+	hashmap_put(h, "elite_size", 2);
+	hashmap_put(h, "generations", 100);
+	hashmap_put(h, "tournament_size", 3);
+	hashmap_put(h, "crossover_probability", 0.8);
+	hashmap_put(h, "mutation_probability", 0.2);
+	hashmap_put(h, "test_train_split", 0.7);
+	hashmap_put(h, "verbose", 0);
+	hashmap_put(h, "seed", 0);
+
+	return h;
+}
+
+/**
+* Return the config file. Automatically found by CMake
+* If not using CMake, manually input it in this function.
+* Fitness file must be in <root>/data. File must have extension
+* .ini
+*/
+char *get_config_file() {
+	#ifdef INI_DIR
+		return INI_DIR;
+	#endif
+
+	fprintf(stderr, "Config file not found. Please include in the folder <root>/data");
+	abort();
+}
+
+/**
+* Return the fitness file. Automatically found by CMake
+* If not using CMake, manually input it in this function.
+* Fitness file must be in <root>/data
+*/
+char *get_fitness_file() {
+    #ifdef CSV_DIR
+		return CSV_DIR;
+    #endif
+	
+	fprintf(stderr, "CSV file not found. Please include in the folder <root>/data");
+	abort();
+}
+
+/**
+* Return a new individual.
+*	  genome: The individuals tree.
+*	 fitness: The fitness evaluation of the genome.
+*/
 struct individual *new_individual(struct node *genome, double fitness) {
 	struct individual *new_ind = malloc(sizeof(struct individual));
 
@@ -21,7 +87,7 @@ struct individual *new_individual(struct node *genome, double fitness) {
 
 /**
 * Return a string representation of an individual.
-*	 *i: The individual.
+*	 i: The individual.
 */
 char *individual_to_string(struct individual i) {
 	char *genome = tree_to_string(i.genome);
@@ -43,8 +109,8 @@ char *individual_to_string(struct individual i) {
 
 /**
 * Print an array of individuals.
-*	 *individuals: The array to print.
-*	         size: The size of the array.
+*	 individuals: The array to print.
+*	        size: The size of the array.
 */
 void print_individuals(struct individual *individuals, int size) {
 	for (int i = 0; i < size; i++) {
@@ -88,9 +154,19 @@ char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols 
 		}
 	}
 
-	assert(symbol != '\0');
+	assert(symbol_is_valid(symbol, symbols->arities));
 	
 	return symbol;
+}
+
+/**
+* Return is a symbol is valid.
+*	 sym: The symbol to verify.
+*	 arities: Hashmap of symbols and their arities.
+*/
+bool symbol_is_valid(char sym, struct hashmap *arities) {
+	char symbol_str[] = { sym, '\0' };
+	return (!isnan(hashmap_get(arities, symbol_str)));
 }
 
 /**
@@ -157,41 +233,14 @@ struct hashmap *get_arities() {
 	return h;
 }
 
-/**
-* Temporary function to set parameters. Will modify to read from
-* a config document.
-*/
-struct hashmap *get_params() {
-	struct hashmap *h = hashmap_init();
 
-	hashmap_put(h, "population_size", 100);
-	hashmap_put(h, "max_depth", 5);
-	hashmap_put(h, "elite_size", 5);
-	hashmap_put(h, "generations", 100);
-	hashmap_put(h, "tournament_size", 20);
-	hashmap_put(h, "crossover_probability", 0.8);
-	hashmap_put(h, "mutation_probability", 0.2);
-	hashmap_put(h, "test_train_split", 0.7);
-	hashmap_put(h, "verbose", 0);
-	hashmap_put(h, "seed", 0);
-
-	return h;
-}
-
-/**
-* Temporary function to get the fitness case file. Will modify to read
-* from a config document.
-*/
-char *get_fitness_file() {
-	return "fitness_cases.csv";
-}
 
 /**
 * Parse a CSV file. Parse the fitness case and split the data into
 * test and train data. in the fitness case file each row is an exemplar
 * and each dimension is in a column. The last column is the target value
 * of the exemplar.
-*	 *file_name: Name of CSV file with a header.
+*	 file_name: Name of CSV file with a header.
 */
 double ***parse_exemplars(char *file_name) {
 	csv_reader *reader = init_csv(file_name, ',');
@@ -237,7 +286,7 @@ double ***parse_exemplars(char *file_name) {
 	double *tmp[] = { targets };
 	results[0] = fitness_cases;
 	results[1] = tmp;
-	
+
 	free(row);
 	free(reader);
 
@@ -247,7 +296,7 @@ double ***parse_exemplars(char *file_name) {
 /**
 * Return test and train data. Random selection or exemplars(ros)
 * from file containing data.
-*	 *file_name: Name of CSV file with a header.
+*	  file_name: Name of CSV file with a header.
 *		  split: Percentage of exemplar data used for training.
 */
 struct csv_data *get_test_and_train_data(char *file_name, double split) {
@@ -265,10 +314,6 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 	int fits_split_i = (int)(floor(fitness_len * split));
 	int *fits_rand_idxs = random_indexes(fitness_len);
 
-
-	int targs_split_i = (int)(floor(targs_len * split));
-	int *targs_rand_idxs = random_indexes(targs_len);
-
 	double **training_cases = malloc((sizeof(double *) * fits_split_i) + 1);
 	double **test_cases = malloc((sizeof(double *) * (fitness_len - fits_split_i)) + 1);
 
@@ -277,8 +322,8 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 		test_cases[i] = malloc(sizeof(double) * col_size);
 	}
 
-	double *training_targets = malloc((sizeof(double) * targs_split_i) + 1);
-	double *test_targets = malloc(sizeof(double) * (targs_len - targs_split_i) + 1);
+	double *training_targets = malloc((sizeof(double) * fits_split_i) + 1);
+	double *test_targets = malloc(sizeof(double) * (targs_len - fits_split_i) + 1);
 
 	int rand_i;
 	int i;
@@ -288,28 +333,18 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 
 		if (i >= fits_split_i) {
 			test_cases[i - fits_split_i] = fitness[rand_i];
+			test_targets[i - fits_split_i] = targs[rand_i];
 		}
 		else {
 			training_cases[i] = fitness[rand_i];
-		}
-	}
-
-	for (i = 0; i < targs_len; i++) {
-		rand_i = targs_rand_idxs[i];
-
-		if (i >= targs_split_i) {
-			test_targets[i - targs_split_i] = targs[rand_i];
-		}
-		else {
 			training_targets[i] = targs[rand_i];
 		}
 	}
-
 	// Set last index to NULL/NAN to allow for easier looping of arrays
 	training_cases[fits_split_i] = NULL;
 	test_cases[fitness_len - fits_split_i] = NULL;
-	training_targets[targs_split_i] = NAN;
-	test_targets[targs_len - targs_split_i] = NAN;
+	training_targets[fits_split_i] = NAN;
+	test_targets[targs_len - fits_split_i] = NAN;
 
 	struct csv_data *results = malloc(sizeof(struct csv_data));
 	results->test_cases = test_cases;
@@ -318,16 +353,14 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 	results->test_targets = test_targets;
 
 	free(exemplars);
-	free(targs_rand_idxs);
 	free(fits_rand_idxs);
 
 	return results;
-
 }
 
 /**
 * Return the index of the individual with the best fitness.
-*	 *individuals: The population.
+*	  individuals: The population.
 *			 size: Size of the population.
 */
 int best_ever_index(struct individual *individuals, int size) {
@@ -348,20 +381,22 @@ int best_ever_index(struct individual *individuals, int size) {
 * Helper function to compare individuals in terms of their fitnessses.
 * For sorting in reverse order
 * Use for qsort()
-*	 *elem1: The first individual to compare.
-*	 *elem2: The second individual.
+*	 elem1: The first individual to compare.
+*	 elem2: The second individual.
 */
 int fitness_comp(const void *elem1, const void *elem2) {
 	struct individual *i1 = (struct individual *)elem1;
 	struct individual *i2 = (struct individual *)elem2;
+
 	if (i1->fitness < i2->fitness) return 1;
 	if (i1->fitness > i2->fitness) return -1;
+	
 	return 0;
 }
 
 /**
 * Sort population in reverse order in terms of fitness.
-*	 **population: The population to sort.
+*	 population: The population to sort.
 */
 void sort_population(struct individual **population, struct hashmap *params) {
 	int pop_size = (int)hashmap_get(params, "population_size");
@@ -370,10 +405,10 @@ void sort_population(struct individual **population, struct hashmap *params) {
 
 /**
 * Print the statistics for the generation and population.
-*	   generation: The generation number
-*	 *individuals: Population to get statistics for
-*	     duration: Duration of computation
-*	      *params: User parameters
+*	  generation: The generation number
+*	 individuals: Population to get statistics for
+*	    duration: Duration of computation
+*	      params: User parameters
 */
 void print_stats(int generation, struct individual *individuals, 
 			int size, double duration, struct hashmap *params) {
@@ -393,6 +428,7 @@ void print_stats(int generation, struct individual *individuals,
 		fitness_values[i] = individuals[i].fitness;
 		size_values[i] = (double)get_number_of_nodes(individuals[i].genome);
 		depth_values[i] = (double)get_max_tree_depth(individuals[i].genome);
+		//assert(depth_values[i] <= hashmap_get(params, "max_depth"));
 	}
 	
 	double *fit_stats = get_ave_and_std(fitness_values, size);
@@ -403,11 +439,12 @@ void print_stats(int generation, struct individual *individuals,
 	int max_depth = (int)max_value(depth_values, size);
 	double max_fitness = max_value(fitness_values, size);
 
+	
 	char *ind_string = individual_to_string(individuals[0]);
 
 	printf(
-		"Generation: %d, Duration: %.4f, fit ave: %.2f+-%.3f, size ave: %.2f+-%.3f "
-		"depth ave: %.2f+-%.3f, max size: %d, max depth: %d, max fit:%f "
+		"Generation: %d, Duration: %.4f, fit ave: %.2f+/-%.3f, size ave: %.2f+/-%.3f "
+		"depth ave: %.2f+/-%.3f, max size: %d, max depth: %d, max fit:%f "
 		"best solution: %s",
 		generation, duration, fit_stats[0], fit_stats[1], size_stats[0], size_stats[1],
 		depth_stats[0], depth_stats[1], max_size, max_depth, max_fitness, ind_string
@@ -420,7 +457,6 @@ void print_stats(int generation, struct individual *individuals,
 	free(size_stats);
 	free(depth_stats);
 	free(ind_string);
-
 }
 
 /**
