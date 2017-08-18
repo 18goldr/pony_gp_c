@@ -208,7 +208,7 @@ static struct node *append_node_util(struct node **node, char value, bool side) 
 	
 	}
 
-	return new_node;
+	return node_new;
 }
 
 
@@ -238,7 +238,7 @@ struct node *append_node(struct node *node, char value, bool side) {
 
 	}
 
-	return new_node;
+	return node_new;
 
 }
 

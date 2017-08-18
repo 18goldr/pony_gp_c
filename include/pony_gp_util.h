@@ -40,20 +40,20 @@ struct csv_data {
 	double *training_targets;
 };
 
-char *individual_to_string(struct individual i);
-void print_individuals(struct individual *individuals, int size);
-char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols *symbols);
+char *individual_to_string(struct individual i); //pony_gp
+void print_individuals(struct individual *individuals, int size); //pony_gp
+char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols *symbols); //pony_gp
+char *get_fitness_file(void); //util
+double ***parse_exemplars(char *file_name); //util
+struct csv_data *get_test_and_train_data(char *file_name, double split); //util
+int best_ever_index(struct individual *individuals, int size); //pony_gp
+int fitness_comp(const void *elem1, const void *elem2); //pony_gp
+void sort_population(struct individual **population, struct hashmap *params); //pony_gp
+void print_stats(int generation, struct individual *individuals, int size, double duration, struct hashmap *params); //pony_gp
+void exit_and_cleanup(struct symbols *symbols, struct hashmap *params, struct csv_data *data); //pony_gp
+int double_length(double d, int d_places); //util
+struct individual *new_individual(struct node *genome, double fitness); //pony_gp
+bool symbol_is_valid(char sym, struct hashmap *arities);
 struct symbols *get_symbols(void);
 struct hashmap *get_arities(void);
 struct hashmap *get_params(void);
-char *get_fitness_file(void);
-double ***parse_exemplars(char *file_name);
-struct csv_data *get_test_and_train_data(char *file_name, double split);
-int best_ever_index(struct individual *individuals, int size);
-int fitness_comp(const void *elem1, const void *elem2);
-void sort_population(struct individual **population, struct hashmap *params);
-void print_stats(int generation, struct individual *individuals, int size, double duration, struct hashmap *params);
-void exit_and_cleanup(struct symbols *symbols, struct hashmap *params, struct csv_data *data);
-int double_length(double d, int d_places);
-struct individual *new_individual(struct node *genome, double fitness);
-bool symbol_is_valid(char sym, struct hashmap *arities);

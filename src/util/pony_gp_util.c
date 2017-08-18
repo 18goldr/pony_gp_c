@@ -9,6 +9,7 @@
 #include "csv_reader.h"
 #include "queue.h"
 #include "pony_gp_util.h"
+#include "include/params.h"
 
 /**
 * Temporary function to set parameters. Will modify to read from
@@ -19,9 +20,9 @@ struct hashmap *get_params() {
 
 	hashmap_put(h, "population_size", 100);
 	hashmap_put(h, "max_depth", 5);
-	hashmap_put(h, "elite_size", 3);
+	hashmap_put(h, "elite_size", 2);
 	hashmap_put(h, "generations", 100);
-	hashmap_put(h, "tournament_size", 5);
+	hashmap_put(h, "tournament_size", 3);
 	hashmap_put(h, "crossover_probability", 0.8);
 	hashmap_put(h, "mutation_probability", 0.2);
 	hashmap_put(h, "test_train_split", 0.7);
@@ -32,10 +33,17 @@ struct hashmap *get_params() {
 }
 
 /**
-* Edit this with the path to your csv file.
+* Return the fitness file. Automatically found by CMake
+* If not using CMake, manually input it in this function.
+* Fitness file must be in <root>/data
 */
 char *get_fitness_file() {
-	return "C:/Users/Robbie/Dropbox/MIT/pony_gp (Cmake)/pony_gp/data/fitness_cases.csv";
+    #ifdef CSV_DIR
+		return CSV_DIR;
+    #endif
+	
+	fprintf(stderr, "CSV file not found. Please include in the folder <root>/data");
+	abort();
 }
 
 /**
@@ -281,10 +289,6 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 	int fits_split_i = (int)(floor(fitness_len * split));
 	int *fits_rand_idxs = random_indexes(fitness_len);
 
-
-	int targs_split_i = (int)(floor(targs_len * split));
-	int *targs_rand_idxs = random_indexes(targs_len);
-
 	double **training_cases = malloc((sizeof(double *) * fits_split_i) + 1);
 	double **test_cases = malloc((sizeof(double *) * (fitness_len - fits_split_i)) + 1);
 
@@ -293,8 +297,8 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 		test_cases[i] = malloc(sizeof(double) * col_size);
 	}
 
-	double *training_targets = malloc((sizeof(double) * targs_split_i) + 1);
-	double *test_targets = malloc(sizeof(double) * (targs_len - targs_split_i) + 1);
+	double *training_targets = malloc((sizeof(double) * fits_split_i) + 1);
+	double *test_targets = malloc(sizeof(double) * (targs_len - fits_split_i) + 1);
 
 	int rand_i;
 	int i;
@@ -304,28 +308,18 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 
 		if (i >= fits_split_i) {
 			test_cases[i - fits_split_i] = fitness[rand_i];
+			test_targets[i - fits_split_i] = targs[rand_i];
 		}
 		else {
 			training_cases[i] = fitness[rand_i];
-		}
-	}
-
-	for (i = 0; i < targs_len; i++) {
-		rand_i = targs_rand_idxs[i];
-
-		if (i >= targs_split_i) {
-			test_targets[i - targs_split_i] = targs[rand_i];
-		}
-		else {
 			training_targets[i] = targs[rand_i];
 		}
 	}
-
 	// Set last index to NULL/NAN to allow for easier looping of arrays
 	training_cases[fits_split_i] = NULL;
 	test_cases[fitness_len - fits_split_i] = NULL;
-	training_targets[targs_split_i] = NAN;
-	test_targets[targs_len - targs_split_i] = NAN;
+	training_targets[fits_split_i] = NAN;
+	test_targets[targs_len - fits_split_i] = NAN;
 
 	struct csv_data *results = malloc(sizeof(struct csv_data));
 	results->test_cases = test_cases;
@@ -334,7 +328,6 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 	results->test_targets = test_targets;
 
 	free(exemplars);
-	free(targs_rand_idxs);
 	free(fits_rand_idxs);
 
 	return results;
@@ -425,8 +418,8 @@ void print_stats(int generation, struct individual *individuals,
 	char *ind_string = individual_to_string(individuals[0]);
 
 	printf(
-		"Generation: %d, Duration: %.4f, fit ave: %.2f+-%.3f, size ave: %.2f+-%.3f "
-		"depth ave: %.2f+-%.3f, max size: %d, max depth: %d, max fit:%f "
+		"Generation: %d, Duration: %.4f, fit ave: %.2f+/-%.3f, size ave: %.2f+/-%.3f "
+		"depth ave: %.2f+/-%.3f, max size: %d, max depth: %d, max fit:%f "
 		"best solution: %s",
 		generation, duration, fit_stats[0], fit_stats[1], size_stats[0], size_stats[1],
 		depth_stats[0], depth_stats[1], max_size, max_depth, max_fitness, ind_string

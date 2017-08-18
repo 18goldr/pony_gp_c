@@ -226,8 +226,6 @@ double evaluate(struct node *node, double *fitness_case) {
 
 	char symbol = node->value;
 
-	assert(symbol_is_valid(symbol, symbols->arities));
-
 	if (symbol == '+') {
 		return evaluate(node->left, fitness_case) + evaluate(node->right, fitness_case);
 	}
