@@ -40,7 +40,8 @@ struct csv_data {
 	double *training_targets;
 };
 
-void parse_config(void); //util
+void add_constants_from_csv(struct hashmap *params);
+struct hashmap **parse_config(void); //util
 char *get_config_file(void); //util
 char *individual_to_string(struct individual i); //pony_gp
 void print_individuals(struct individual *individuals, int size); //pony_gp
@@ -56,6 +57,6 @@ void exit_and_cleanup(struct symbols *symbols, struct hashmap *params, struct cs
 int double_length(double d, int d_places); //util
 struct individual *new_individual(struct node *genome, double fitness); //pony_gp
 bool symbol_is_valid(char sym, struct hashmap *arities);
-struct symbols *get_symbols(void);
+struct symbols *get_symbols(struct hashmap *arities);
 struct hashmap *get_arities(void);
 struct hashmap *get_params(void);

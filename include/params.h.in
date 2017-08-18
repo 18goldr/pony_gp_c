@@ -1,1 +1,2 @@
 #cmakedefine CSV_DIR "@DIR_STRING@"
+#cmakedefine INI_DIR "@INI_DIR@"

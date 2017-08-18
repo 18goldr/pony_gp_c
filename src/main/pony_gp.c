@@ -507,8 +507,10 @@ void out_of_sample_test(struct individual *individual) {
 * Wrapper for setup.
 */
 void setup() {
-	symbols = get_symbols();
-	params = get_params();
+	struct hashmap **config = parse_config();
+	symbols = get_symbols(config[0]);
+	params = config[1];
+
 	set_seed(hashmap_get(params, "seed"));
 
 	data = get_test_and_train_data(get_fitness_file(), hashmap_get(params, "test_train_split"));
@@ -534,6 +536,7 @@ struct individual *run() {
 */
 int main() {
 	setup();
+	parse_config();
 
 	struct individual *best_ever = run();
 	printf("Best solution on train data: %s\n", individual_to_string(*best_ever));

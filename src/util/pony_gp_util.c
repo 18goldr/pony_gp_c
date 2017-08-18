@@ -12,34 +12,67 @@
 #include "config_parser.h"
 #include "include/params.h"
 
+/**
+* Parse a config file. The extension must be .ini
+*/
+struct hashmap **parse_config() {
+	struct hashmap *arities = hashmap_init();
+	struct hashmap *params = hashmap_init();
 
-void parse_config() {
 	ini_parser *p = create_ini_parser(get_config_file());
 
-	for (int i = 0; i < num_sections(p->file); i++) {
-		p->sections[i];
+	for (int i = 0; i < p->num_sections; i++) {
+		ini_section section = p->sections[i];
+	
+		for (int k = 0; k < section.num_pairs; k++) {
+			if (!strcmp(section.header, "[arities]")) {
+				hashmap_put(arities, section.pairs[k].key, section.pairs[k].values[0]);
+			}
+			else if (!strcmp(section.header, "[search_parameters]")) {
+				hashmap_put(params, section.pairs[k].key, section.pairs[k].values[0]);
+			}
+			else if (!strcmp(section.header, "[constants]")) {
+				for (int x = 0; x < section.pairs->num_values; x++) {
+					double d = section.pairs[0].values[x];
+
+					char *str = int_to_string((int)d);
+
+					hashmap_put(arities, str, 0);
+				}
+			}
+		}
 	}
+
+	free_parser(p);
+	add_constants_from_csv(arities);
+
+	// Verbose printing defaults to zero.
+	if (isnan(hashmap_get(params, "verbose"))) hashmap_put(params, "verbose", 0);
+
+	struct hashmap **config = malloc(2 * sizeof(struct hashmap *)); 
+	config[0] = arities;
+	config[1] = params;
+
+	return config;
 }
 
 /**
-* Temporary function to set parameters. Will modify to read from
-* a config document.
+* Add the constants from the header of a csv file to
+* a hashmap of arities.
+*	 arities: The hashmap to add to.
 */
-struct hashmap *get_params() {
-	struct hashmap *h = hashmap_init();
+void add_constants_from_csv(struct hashmap *arities) {
+	csv_reader *reader = init_csv(get_fitness_file(), ',');
 
-	hashmap_put(h, "population_size", 100);
-	hashmap_put(h, "max_depth", 5);
-	hashmap_put(h, "elite_size", 2);
-	hashmap_put(h, "generations", 100);
-	hashmap_put(h, "tournament_size", 3);
-	hashmap_put(h, "crossover_probability", 0.8);
-	hashmap_put(h, "mutation_probability", 0.2);
-	hashmap_put(h, "test_train_split", 0.7);
-	hashmap_put(h, "verbose", 0);
-	hashmap_put(h, "seed", 0);
+	csv_line *header = get_header(reader);
+	char **line = header->content;
+	int size = header->size;
+	
+	for (int i = 0; i < size - 1; i++) {
+		hashmap_put(arities, line[i], 0);
+	}
 
-	return h;
+	deinit_csv(reader);
 }
 
 /**
@@ -50,7 +83,7 @@ struct hashmap *get_params() {
 */
 char *get_config_file() {
 	#ifdef INI_DIR
-		return INI_DIR;
+	return INI_DIR;
 	#endif
 
 	fprintf(stderr, "Config file not found. Please include in the folder <root>/data");
@@ -64,7 +97,7 @@ char *get_config_file() {
 */
 char *get_fitness_file() {
     #ifdef CSV_DIR
-		return CSV_DIR;
+	return CSV_DIR;
     #endif
 	
 	fprintf(stderr, "CSV file not found. Please include in the folder <root>/data");
@@ -91,18 +124,15 @@ struct individual *new_individual(struct node *genome, double fitness) {
 */
 char *individual_to_string(struct individual i) {
 	char *genome = tree_to_string(i.genome);
+	char *fitness_str = double_to_string(i.fitness, "%.4f", 4);
+
 	int genome_length = (int)strlen(genome);
 	int str_outline_len = (int)strlen("Genome: , Fitness: ,\n");
-	
-	// Number of decimal places to add
-	int sprintf_d_places = 4;
-	int d_len = double_length(i.fitness, sprintf_d_places) + 1; // Allow for decimal place
+	int fitness_length = (int)strlen(fitness_str);
 
-	if (i.fitness < 0) d_len++; // Allow for negative sign
+	char *str = malloc(genome_length + str_outline_len + fitness_length + 1); // Leave space for '\0'
 	
-	char *str = malloc(genome_length + str_outline_len + d_len + 1); // Leave space for '\0'
-	
-	sprintf(str, "Genome: %s, Fitness: %.4f\n", genome, i.fitness);
+	sprintf(str, "Genome: %s, Fitness: %s\n", genome, fitness_str);
 
 	return str;
 }
@@ -181,9 +211,9 @@ bool symbol_is_valid(char sym, struct hashmap *arities) {
 *	   `terminals`: An array of strings (symbols) with arity 0.
 *	   `functions`: An array of string (symbols) with arity > 0.
 */
-struct symbols *get_symbols() {
+struct symbols *get_symbols(struct hashmap *arities) {
 	struct symbols *symbols = malloc(sizeof(struct symbols));
-	symbols->arities = get_arities();
+	symbols->arities = arities;
 
 	int num_terminals = hashmap_get_num_with_value(symbols->arities, 0);
 	int size = hashmap_get_size(symbols->arities);
@@ -213,26 +243,6 @@ struct symbols *get_symbols() {
 
 	return symbols;
 }
-
-/**
-* Temporary function to get arities. Will modify to read from
-* a config document.
-*/
-struct hashmap *get_arities() {
-	struct hashmap *h = hashmap_init();
-
-	hashmap_put(h, "+", 2);
-	hashmap_put(h, "*", 2);
-	hashmap_put(h, "/", 2);
-	hashmap_put(h, "-", 2);
-	hashmap_put(h, "0", 0);
-	hashmap_put(h, "1", 0);
-	hashmap_put(h, "a", 0);
-	hashmap_put(h, "b", 0);
-
-	return h;
-}
-
 
 
 /**

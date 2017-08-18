@@ -21,6 +21,16 @@ csv_reader *init_csv(char *file_name, char delimeter) {
 }
 
 /**
+* Deallocate space created for the csv_reader.
+*	 r: The csv_reader.
+*/
+void deinit_csv(csv_reader *r) {
+	r->file = NULL;
+
+	free(r);
+}
+
+/**
 * Return a new csv_line.
 *	 content: The content of the line.
 *	    size: The size in characters of the line.
