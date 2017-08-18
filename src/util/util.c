@@ -4,10 +4,13 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include "util.h"
+#include "hashmap.h"
+#include "config_parser.h"
+#include "csv_reader.h"
+#include "include/params.h"
 
 #define ARR_SIZE(arr) ((int)(sizeof(arr) / sizeof(0[arr])))
 #define MAX_LINE_LENGTH 2048
@@ -415,4 +418,279 @@ double max_value(double *values, int size) {
 	}
 
 	return max;
+}
+
+/**
+* Add the constants from the header of a csv file to
+* a hashmap of arities.
+*	 arities: The hashmap to add to.
+*/
+void add_constants_from_csv(struct hashmap *arities) {
+	csv_reader *reader = init_csv(get_fitness_file(), ',');
+
+	csv_line *header = get_header(reader);
+	char **line = header->content;
+	int size = header->size;
+
+	for (int i = 0; i < size - 1; i++) {
+		hashmap_put(arities, line[i], 0);
+	}
+
+	deinit_csv(reader);
+}
+
+/**
+* Return the fitness file. Automatically found by CMake
+* If not using CMake, manually input it in this function.
+* Fitness file must be in <root>/data
+*/
+char *get_fitness_file() {
+#ifdef CSV_DIR
+	return CSV_DIR;
+#endif
+
+	fprintf(stderr, "CSV file not found. Please include in the folder <root>/data");
+	abort();
+}
+
+/**
+* Parse a config file. The extension must be .ini
+*/
+struct hashmap **parse_config() {
+	struct hashmap *arities = hashmap_init();
+	struct hashmap *params = hashmap_init();
+
+	ini_parser *p = create_ini_parser(get_config_file());
+
+	for (int i = 0; i < p->num_sections; i++) {
+		ini_section section = p->sections[i];
+
+		for (int k = 0; k < section.num_pairs; k++) {
+			if (!strcmp(section.header, "[arities]")) {
+				hashmap_put(arities, section.pairs[k].key, section.pairs[k].values[0]);
+			}
+			else if (!strcmp(section.header, "[search_parameters]")) {
+				hashmap_put(params, section.pairs[k].key, section.pairs[k].values[0]);
+			}
+			else if (!strcmp(section.header, "[constants]")) {
+				for (int x = 0; x < section.pairs->num_values; x++) {
+					double d = section.pairs[0].values[x];
+
+					char *str = int_to_string((int)d);
+
+					hashmap_put(arities, str, 0);
+				}
+			}
+		}
+	}
+
+	free_parser(p);
+	add_constants_from_csv(arities);
+
+	// Verbose printing defaults to zero.
+	if (isnan(hashmap_get(params, "verbose"))) hashmap_put(params, "verbose", 0);
+
+	struct hashmap **config = malloc(2 * sizeof(struct hashmap *));
+	config[0] = arities;
+	config[1] = params;
+
+	return config;
+}
+
+
+
+/**
+* Return the config file. Automatically found by CMake
+* If not using CMake, manually input it in this function.
+* Fitness file must be in <root>/data. File must have extension
+* .ini
+*/
+char *get_config_file() {
+#ifdef INI_DIR
+	return INI_DIR;
+#endif
+
+	fprintf(stderr, "Config file not found. Please include in the folder <root>/data");
+	abort();
+}
+
+
+
+/**
+* Parse a CSV file. Parse the fitness case and split the data into
+* test and train data. in the fitness case file each row is an exemplar
+* and each dimension is in a column. The last column is the target value
+* of the exemplar.
+*	 file_name: Name of CSV file with a header.
+*/
+double ***parse_exemplars(char *file_name) {
+	csv_reader *reader = init_csv(file_name, ',');
+
+	double **fitness_cases, *targets;
+	int num_columns = get_num_column(reader);
+	int num_lines = get_num_lines(reader);
+
+	// leave space for NULL
+	fitness_cases = malloc(sizeof(double *) * (num_lines));
+
+	for (int i = 0; i < num_lines; i++) {
+		fitness_cases[i] = malloc(sizeof(double) * (num_columns - 1));
+	}
+
+	// leave space for NAN
+	targets = malloc(sizeof(double) * (num_lines));
+
+	csv_line *row;
+	int f_i = 0;
+	int t_i = 0;
+
+	// Ignore the header
+	next_line(reader);
+
+	while ((row = readline(reader))) {
+		int i;
+		for (i = 0; i < num_columns; i++) {
+			if (i == num_columns - 1) {
+				targets[t_i++] = atof(row->content[i]);
+			}
+			else {
+				fitness_cases[f_i][i] = atof(row->content[i]);
+			}
+		}
+		fitness_cases[f_i][i - 1] = NAN;
+		f_i++;
+	}
+	fitness_cases[f_i] = NULL;
+	targets[t_i] = NAN;
+
+	double ***results = malloc(sizeof(double **) * 2);
+	double *tmp[] = { targets };
+	results[0] = fitness_cases;
+	results[1] = tmp;
+
+	free(row);
+	free(reader);
+
+	return results;
+}
+
+/**
+* Return test and train data. Random selection or exemplars(ros)
+* from file containing data.
+*	  file_name: Name of CSV file with a header.
+*		  split: Percentage of exemplar data used for training.
+*/
+struct csv_data *get_test_and_train_data(char *file_name, double split) {
+	double ***exemplars = parse_exemplars(file_name);
+
+	double **fitness = exemplars[0];
+	double *targs = *exemplars[1];
+
+	int fitness_len = get_2d_arr_length(fitness);
+	int targs_len = get_double_arr_length(targs);
+
+	int col_size = get_double_arr_length(fitness[0]);
+
+	// randomize the index order
+	int fits_split_i = (int)(floor(fitness_len * split));
+	int *fits_rand_idxs = random_indexes(fitness_len);
+
+	double **training_cases = malloc((sizeof(double *) * fits_split_i) + 1);
+	double **test_cases = malloc((sizeof(double *) * (fitness_len - fits_split_i)) + 1);
+
+	for (int i = 0; i < 2; i++) {
+		training_cases[i] = malloc(sizeof(double) * col_size);
+		test_cases[i] = malloc(sizeof(double) * col_size);
+	}
+
+	double *training_targets = malloc((sizeof(double) * fits_split_i) + 1);
+	double *test_targets = malloc(sizeof(double) * (targs_len - fits_split_i) + 1);
+
+	int rand_i;
+	int i;
+
+	for (i = 0; i < fitness_len; i++) {
+		rand_i = fits_rand_idxs[i];
+
+		if (i >= fits_split_i) {
+			test_cases[i - fits_split_i] = fitness[rand_i];
+			test_targets[i - fits_split_i] = targs[rand_i];
+		}
+		else {
+			training_cases[i] = fitness[rand_i];
+			training_targets[i] = targs[rand_i];
+		}
+	}
+	// Set last index to NULL/NAN to allow for easier looping of arrays
+	training_cases[fits_split_i] = NULL;
+	test_cases[fitness_len - fits_split_i] = NULL;
+	training_targets[fits_split_i] = NAN;
+	test_targets[targs_len - fits_split_i] = NAN;
+
+	struct csv_data *results = malloc(sizeof(struct csv_data));
+	results->test_cases = test_cases;
+	results->training_cases = training_cases;
+	results->training_targets = training_targets;
+	results->test_targets = test_targets;
+
+	free(exemplars);
+	free(fits_rand_idxs);
+
+	return results;
+}
+
+/**
+* Return is a symbol is valid.
+*	 sym: The symbol to verify.
+*	 arities: Hashmap of symbols and their arities.
+*/
+bool symbol_is_valid(char sym, struct hashmap *arities) {
+	char symbol_str[] = { sym, '\0' };
+	return (!isnan(hashmap_get(arities, symbol_str)));
+}
+
+
+/**
+* Set the symbols. Helper method keep the code clean.
+*
+* The nodes in a GP tree consists of different symbols. The symbols
+* are either functions (internal nodes with arity > 0) or terminals
+* (leaf nodes with arity = 0). The symbols are represented as a struct
+* with the values:
+*	     `arities`: A hashmap where a key is a symbol
+*		     		and the value is the arity.
+*	   `terminals`: An array of strings (symbols) with arity 0.
+*	   `functions`: An array of string (symbols) with arity > 0.
+*/
+struct symbols *get_symbols(struct hashmap *arities) {
+	struct symbols *symbols = malloc(sizeof(struct symbols));
+	symbols->arities = arities;
+
+	int num_terminals = hashmap_get_num_with_value(symbols->arities, 0);
+	int size = hashmap_get_size(symbols->arities);
+
+	char *functions = malloc((size)-num_terminals + 1);
+	char *terminals = malloc(num_terminals + 1);
+	int f_i = 0;
+	int t_i = 0;
+
+	for (int i = 0; i < size; i++) {
+		char *key = hashmap_get_key(symbols->arities, i);
+		int value = (int)hashmap_get(symbols->arities, key);
+
+		if (!value) {
+			terminals[f_i++] = *key;
+		}
+		else {
+			functions[t_i++] = *key;
+		}
+	}
+
+	functions[f_i] = '\0';
+	terminals[t_i] = '\0';
+
+	symbols->functions = functions;
+	symbols->terminals = terminals;
+
+	return symbols;
 }

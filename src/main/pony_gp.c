@@ -1,3 +1,7 @@
+#ifdef _WIN32
+#define _CRT_SECURE_NO_DEPRECATE
+#endif
+
 #include <stdlib.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,12 +12,24 @@
 #include <ctype.h>
 #include <time.h>
 #include <math.h>
-#include "binary_tree.h"
 #include "util.h"
+#include "binary_tree.h"
+#include "queue.h"
 #include "hashmap.h"
 #include "csv_reader.h"
-#include "queue.h"
-#include "pony_gp_util.h"
+
+#define DEFAULT_FITNESS -DBL_MAX
+#define PRINT_SPACE 4
+
+/**
+* An individual is a struct that contains:
+*		 genome: A tree.
+*		fitness: The fitness of the evaluated tree.
+*/
+struct individual {
+	struct node *genome;
+	double fitness;
+};
 
 // User defined program parameters
 struct hashmap *params;
@@ -24,6 +40,14 @@ struct csv_data *data;
 // Symbols to use in the program
 struct symbols *symbols;
 
+char *individual_to_string(struct individual i);
+void print_individuals(struct individual *individuals, int size);
+char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols *symbols);
+int best_ever_index(struct individual *individuals, int size);
+int fitness_comp(const void *elem1, const void *elem2);
+void sort_population(struct individual **population, struct hashmap *params);
+void print_stats(int generation, struct individual *individuals, int size, double duration, struct hashmap *params);
+struct individual *new_individual(struct node *genome, double fitness);
 void grow(struct node *node, int curr_depth, int max_depth, bool full);
 void subtree_mutation(struct node **node);
 struct node **subtree_crossover(struct node *parent1, struct node *parent2);
@@ -37,6 +61,193 @@ struct individual *search_loop(struct individual *population);
 struct individual *run(void);
 void out_of_sample_test(struct individual *individual);
 void setup(void);
+void exit_and_cleanup(void);
+
+/**
+* Return a new individual.
+*	  genome: The individuals tree.
+*	 fitness: The fitness evaluation of the genome.
+*/
+struct individual *new_individual(struct node *genome, double fitness) {
+	struct individual *new_ind = malloc(sizeof(struct individual));
+
+	new_ind->genome = genome;
+	new_ind->fitness = fitness;
+
+	return new_ind;
+}
+
+/**
+* Return a string representation of an individual.
+*	 i: The individual.
+*/
+char *individual_to_string(struct individual i) {
+	char *genome = tree_to_string(i.genome);
+	char *fitness_str = double_to_string(i.fitness, "%.4f", 4);
+
+	int genome_length = (int)strlen(genome);
+	int str_outline_len = (int)strlen("Genome: , Fitness: ,\n");
+	int fitness_length = (int)strlen(fitness_str);
+
+	char *str = malloc(genome_length + str_outline_len + fitness_length + 1); // Leave space for '\0'
+
+	sprintf(str, "Genome: %s, Fitness: %s\n", genome, fitness_str);
+
+	return str;
+}
+
+/**
+* Print an array of individuals.
+*	 individuals: The array to print.
+*	        size: The size of the array.
+*/
+void print_individuals(struct individual *individuals, int size) {
+	for (int i = 0; i < size; i++) {
+		struct individual ind = individuals[i];
+		printf("Genome: %s, Fitness: %f\n", tree_to_string(ind.genome), ind.fitness);
+	}
+}
+
+/**
+* Return a randomly chosen symbol. The depth determines if a terminal
+* must be chosen. If `full` is specified a function will be chosen
+* until the max depth is reached. The symbol is picked with a uniform
+* probability.
+*	   curr_depth: The current depth. Must be passed in as 0 to perform
+*				   as intended.
+*	    max_depth: The max depth that the tree is allowed to reach.
+*	         full: True if function symbols should be used until max depth
+*				   is reached.
+*/
+char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols *symbols) {
+	char symbol;
+	int n;
+
+	// Pick a terminal if max depth has been reached
+	if (curr_depth >= (max_depth - 1)) {
+		n = rand_index(get_char_arr_length(symbols->terminals) - 1);
+		symbol = symbols->terminals[n];
+	}
+	else {
+		// 50% chance it will be a terminal if max depth has
+		// not been reached
+		if (!full && get_randint(0, 1)) {
+			n = rand_index(get_char_arr_length(symbols->terminals) - 1);
+			symbol = symbols->terminals[n];
+
+		}
+		else {
+			// Pick a random function
+			n = rand_index(get_char_arr_length(symbols->functions) - 1);
+			symbol = symbols->functions[n];
+		}
+	}
+
+	assert(symbol_is_valid(symbol, symbols->arities));
+
+	return symbol;
+}
+
+/**
+* Return the index of the individual with the best fitness.
+*	  individuals: The population.
+*			 size: Size of the population.
+*/
+int best_ever_index(struct individual *individuals, int size) {
+	double best_fitness = individuals[0].fitness;
+	int best_index = 0;
+
+	for (int i = 1; i < size; i++) {
+		if (individuals[i].fitness > best_fitness) {
+			best_fitness = individuals[i].fitness;
+			best_index = i;
+		}
+	}
+
+	return best_index;
+}
+
+/**
+* Helper function to compare individuals in terms of their fitnessses.
+* For sorting in reverse order
+* Use for qsort()
+*	 elem1: The first individual to compare.
+*	 elem2: The second individual.
+*/
+int fitness_comp(const void *elem1, const void *elem2) {
+	struct individual *i1 = (struct individual *)elem1;
+	struct individual *i2 = (struct individual *)elem2;
+
+	if (i1->fitness < i2->fitness) return 1;
+	if (i1->fitness > i2->fitness) return -1;
+
+	return 0;
+}
+
+/**
+* Sort population in reverse order in terms of fitness.
+*	 population: The population to sort.
+*/
+void sort_population(struct individual **population, struct hashmap *params) {
+	int pop_size = (int)hashmap_get(params, "population_size");
+	qsort(*population, pop_size, sizeof(struct individual), fitness_comp);
+}
+
+/**
+* Print the statistics for the generation and population.
+*	  generation: The generation number
+*	 individuals: Population to get statistics for
+*	    duration: Duration of computation
+*	      params: User parameters
+*/
+void print_stats(int generation, struct individual *individuals,
+	int size, double duration, struct hashmap *params) {
+
+	sort_population(&individuals, params);
+
+	if (hashmap_get(params, "verbose")) {
+		printf("-------------POPULATION:-------------\n");
+		print_individuals(individuals, size);
+	}
+
+	double *fitness_values = malloc(sizeof(double) * size);
+	double *size_values = malloc(sizeof(double) * size);
+	double *depth_values = malloc(sizeof(double) * size);
+
+	for (int i = 0; i < size; i++) {
+		fitness_values[i] = individuals[i].fitness;
+		size_values[i] = (double)get_number_of_nodes(individuals[i].genome);
+		depth_values[i] = (double)get_max_tree_depth(individuals[i].genome);
+		//assert(depth_values[i] <= hashmap_get(params, "max_depth"));
+	}
+
+	double *fit_stats = get_ave_and_std(fitness_values, size);
+	double *size_stats = get_ave_and_std(size_values, size);
+	double *depth_stats = get_ave_and_std(depth_values, size);
+
+	int max_size = (int)max_value(size_values, size);
+	int max_depth = (int)max_value(depth_values, size);
+	double max_fitness = max_value(fitness_values, size);
+
+
+	char *ind_string = individual_to_string(individuals[0]);
+
+	printf(
+		"Generation: %d, Duration: %.4f, fit ave: %.2f+/-%.3f, size ave: %.2f+/-%.3f "
+		"depth ave: %.2f+/-%.3f, max size: %d, max depth: %d, max fit:%f "
+		"best solution: %s",
+		generation, duration, fit_stats[0], fit_stats[1], size_stats[0], size_stats[1],
+		depth_stats[0], depth_stats[1], max_size, max_depth, max_fitness, ind_string
+	);
+
+	free(fitness_values);
+	free(size_values);
+	free(depth_values);
+	free(fit_stats);
+	free(size_stats);
+	free(depth_stats);
+	free(ind_string);
+}
 
 /*
 * Recursively grow a node to max depth in a pre-order, ie. depth-first
@@ -516,6 +727,18 @@ void setup() {
 	data = get_test_and_train_data(get_fitness_file(), hashmap_get(params, "test_train_split"));
 }
 
+/**
+* Wrapper for deallocating memory and exiting.
+*/
+void exit_and_cleanup() {
+	free(symbols->arities);
+	free(symbols->functions);
+	free(symbols->terminals);
+	free(params);
+	free(data);
+
+	exit(EXIT_SUCCESS);
+}
 
 /**
 * Return the best solution. Create an initial
@@ -536,7 +759,6 @@ struct individual *run() {
 */
 int main() {
 	setup();
-	parse_config();
 
 	struct individual *best_ever = run();
 	printf("Best solution on train data: %s\n", individual_to_string(*best_ever));
@@ -548,5 +770,5 @@ int main() {
 	printf("\nPress enter to exit...");
 	getchar();
 
-	exit_and_cleanup(symbols, params, data);
+	exit_and_cleanup();
 }

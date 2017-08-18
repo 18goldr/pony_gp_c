@@ -1,3 +1,6 @@
+#ifndef BINARY_TREE_H
+#define BINARY_TREE_H
+
 #include <stdbool.h>
 
 #define LEFT_SIDE 0
@@ -34,3 +37,4 @@ int get_num_children(struct node *root);
 struct node *tree_deep_copy(struct node *root);
 char *tree_to_string(struct node *root);
 
+#endif

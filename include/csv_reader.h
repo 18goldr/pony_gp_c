@@ -1,14 +1,10 @@
-#ifdef _WIN32
-#define _CRT_SECURE_NO_DEPRECATE
-#endif
+
+#ifndef CSV_READER_H
+#define CSV_READER_H
+
+#include <stdlib.h>
 
 #define DEFAULT_CSV_LINE_LENGTH 3
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include "util.h"
 
 /**
 * A struct to hold the necessary components to parse an csv file.
@@ -20,6 +16,21 @@ typedef struct csv_reader {
 	char delimiter;
 } csv_reader;
 
+
+/**
+* A struct to contain the data collected from the CSV file.
+*	        test_cases: The test cases.
+*	      test_targets: The test targets.
+*	    training_cases: The training cases.
+*	  training_targets: The training targets.
+*/
+struct csv_data {
+	double **test_cases;
+	double *test_targets;
+	double **training_cases;
+	double *training_targets;
+};
+
 /**
 * A container to hold a lines content and its size.
 * The lines content is not just a string of the line,
@@ -28,7 +39,7 @@ typedef struct csv_reader {
 * delimeters, spaces or anything else that is not
 * strictly data.
 *	 content: The data contained in the line.
-*	    size:
+*	    size: The number of data elements.
 */
 typedef struct csv_line {
 	char **content;
@@ -43,3 +54,5 @@ csv_line *new_line(char **content, int size);
 void next_line(csv_reader *reader);
 int get_num_column(csv_reader *reader);
 int get_num_lines(csv_reader *reader);
+
+#endif
