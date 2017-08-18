@@ -13,44 +13,78 @@
 #define DEFAULT_FILE_LENGTH 20
 #define MAX_LINE_LENGTH 2048
 
+static int get_num_sections(FILE *file);
+
+/**
+* Deallocate memory for parser.
+*/
+void free_parser(ini_parser *p) {
+	p->file = NULL;
+
+	free(p->sections);
+}
+
+/**
+* Return a new ini_parser.
+*	 file: The file to parse.
+*/
 ini_parser *create_ini_parser(char *file) {
 	ini_parser *p = malloc(sizeof(struct ini_parser));
 
 	p->file = fopen(file, "r");
 	p->sections = get_sections(p->file);
+	p->num_sections = get_num_sections(p->file);
 
 	return p;
 }
 
-ini_section *create_ini_section(char *header, ini_key_value *pairs) {
+/**
+* Return a new ini_section.
+*	    header: The header of the section with format [content]
+*	     pairs: The pairs contained in the section.
+*	 num_pairs: The number of pairs in the section.
+*/
+ini_section *create_ini_section(char *header, ini_pair *pairs, int num_pairs) {
 	ini_section *s = malloc(sizeof(struct ini_section));
 	s->header = header;
 	s->pairs = pairs;
+	s->num_pairs = num_pairs;
 	return s;
 }
 
-ini_key_value *create_ini_key_value(char *key, double *values) {
-	ini_key_value *kv = malloc(sizeof(struct ini_key_value));
+/**
+* Return a new ini_pair.
+*	        key: The key of the pair.
+*	     values: The values of the key.
+*	 num_values: The number of values for the key.
+*/
+ini_pair *create_ini_pair(char *key, double *values, int num_values) {
+	ini_pair *kv = malloc(sizeof(struct ini_pair));
 
 	kv->key = key;
 	kv->values = values;
+	kv->num_values = num_values;
 
 	return kv;
 }
 
+/**
+* Return the sections in a file.
+*	 file: The file to parse.
+*/
 ini_section *get_sections(FILE *file) {
 	char **lines = get_lines(file);
 	int n = num_lines(lines);
 
-	ini_section *sections = malloc(sizeof(struct ini_section) * num_sections(file));
+	ini_section *sections = malloc(sizeof(struct ini_section) * get_num_sections(file));
 	int sec_i = 0;
 	int i = 0;
 	while (i < n) {
 		int len = len_section(lines, i);
-		char *header = lines[0];
-		ini_key_value *pairs = get_key_values(lines, i);
+		char *header = lines[i];
+		ini_pair *pairs = get_pairs(lines, i);
 
-		ini_section *section = create_ini_section(header, pairs);
+		ini_section *section = create_ini_section(header, pairs, len-1);
 		sections[sec_i++] = *section;
 		i += len;
 	}
@@ -58,14 +92,19 @@ ini_section *get_sections(FILE *file) {
 	return sections;
 }
 
-ini_key_value *get_key_values(char **lines, int start) {
+/**
+* Return the ini_pairs in a file.
+*	 lines: The lines of the file seperated in an array of strings.
+*	 start: The line number to start on.
+*/
+ini_pair *get_pairs(char **lines, int start) {
 	int len = len_section(lines, start) - 1;
 
 	start++;
 	const char colon[2] = { ':', '\0' };
 	const char comma[2] = { ',', '\0' };
 
-	ini_key_value *pairs = malloc(sizeof(struct ini_key_value) * len);
+	ini_pair *pairs = malloc(sizeof(struct ini_pair) * len);
 
 	for (int i = start; i < (start + len); i++) {
 		// Seperate the string
@@ -73,24 +112,26 @@ ini_key_value *get_key_values(char **lines, int start) {
 		char *values_str = str_sep(&lines[i], colon);
 
 		// Get all values seperated by commas
-		int size = 2;
+		int size = 1;
 		double *values = calloc(size, sizeof(double));
 		char *token;
 
 		if (strchr(values_str, ',')) {
 			while ((token = str_sep(&values_str, comma))) {
+				values = realloc(values, sizeof(double) * size++);
 				values[size - 2] = atof(token);
 
-				values = realloc(values, sizeof(double) * size++);
+
 			}
-			values[size - 2] = NAN;
+
+			values[size - 1] = NAN;
 		}
 		else {
 			values[0] = atof(values_str);
 			values[1] = NAN;
 		}
 
-		ini_key_value pair = *create_ini_key_value(key, values);
+		ini_pair pair = *create_ini_pair(key, values, size - 1);
 
 		pairs[i - start] = pair;
 	}
@@ -115,9 +156,10 @@ int len_section(char **lines, int start) {
 	return count;
 }
 
-
-
-
+/**
+* Return the lines in a file.
+*	 file: The file to parse.
+*/
 char **get_lines(FILE *file) {
 	rewind(file);
 	char **doc = malloc(sizeof(char *) * DEFAULT_FILE_LENGTH);
@@ -126,6 +168,7 @@ char **get_lines(FILE *file) {
 
 	while ((line = getline(file))) {
 		remove_spaces(line);
+
 		if (line[0] != '#') {
 			doc[i] = malloc(strlen(line));
 			doc[i++] = line;
@@ -141,7 +184,10 @@ char **get_lines(FILE *file) {
 	return doc;
 }
 
-
+/**
+* Return the number of lines in a file.
+*	 lines: The lines of the file seperated in a string array.
+*/
 int num_lines(char **lines) {
 	int count = 0;
 
@@ -152,7 +198,14 @@ int num_lines(char **lines) {
 	return count;
 }
 
-int num_sections(FILE *file) {
+/**
+* Get the number of sections in a file.
+* Should not be called except before or during the constructor.
+* To get number of sections elsewhere, use the readily define variable
+* in the ini_parser (ini_parser.num_selections).
+*	 file: The file to parse.
+*/
+static int get_num_sections(FILE *file) {
 	rewind(file);
 	int count = 0;
 
@@ -165,3 +218,4 @@ int num_sections(FILE *file) {
 
 	return count;
 }
+

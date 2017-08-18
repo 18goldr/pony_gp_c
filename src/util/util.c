@@ -1,3 +1,7 @@
+#ifdef _WIN32
+#define _CRT_SECURE_NO_DEPRECATE
+#endif
+
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
@@ -5,6 +9,7 @@
 #include <math.h>
 #include "util.h"
 
+#define ARR_SIZE(arr) ((int)(sizeof(arr) / sizeof(0[arr])))
 #define MAX_LINE_LENGTH 2048
 
 // the seed to pass to the random function
@@ -18,6 +23,37 @@ double SEED = 0;
 */
 void set_seed(double s) {
 	SEED = s;
+}
+
+/**
+* Convert a double to a string.
+*	 sig_decimal_places: The number of significant figures in the decimal part
+*						 of the double to represent. Must match the format
+*				         specifier.
+*			          d: The double to convert.
+*				 format: The format specifier for string interpolation.
+*/
+char *double_to_string(double d, char *format, int sig_decimal_places) {
+	int d_len = double_length(d, sig_decimal_places) + 1; // Allow for decimal place
+	
+	if (d < 0) d_len++; // Allow for negative sign
+	
+	char *str = malloc(d_len + 1); // Allow space for null character
+	sprintf(str, format, d);
+
+	return str;
+}
+
+/**
+* Convert an int to a string.
+*	 i: The integer to convert.
+*/
+char *int_to_string(int i) {
+	char *str = malloc(int_length(i));
+
+	sprintf(str, "%d", i);
+
+	return str;
 }
 
 /**
@@ -358,6 +394,13 @@ int double_length(double d, int d_places) {
 	return n_digs + d_places;
 }
 
+/**
+* Get the length of an integer.
+*	 i: The integer to check.
+*/
+int int_length(int i) {
+	return double_length((double)i, 0);
+}
 
 /**
 * Get the max value of all doubles in an array.

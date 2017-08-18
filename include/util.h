@@ -1,8 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define ARR_SIZE(arr) ((int)(sizeof(arr) / sizeof(0[arr])))
-
+char *double_to_string(double d, char *format, int sig_decimal_places);
 char *getline(FILE *file);
 int get_char_arr_length(char *arr);
 int get_double_arr_length(double *arr);
@@ -25,4 +24,6 @@ double sum_doubles(double *values, int size);
 double get_std(double *values, int size, double ave);
 double max_value(double *values, int size);
 void swap(int *a, int *b);
-
+int double_length(double d, int d_places);
+int int_length(int i);
+char *int_to_string(int i);
