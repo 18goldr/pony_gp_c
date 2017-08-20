@@ -166,7 +166,7 @@ char **get_lines(FILE *file) {
 	char *line;
 	int i = 0;
 
-	while ((line = getline(file))) {
+	while ((line = get_line(file))) {
 		remove_spaces(line);
 
 		if (line[0] != '#') {

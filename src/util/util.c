@@ -63,7 +63,7 @@ char *int_to_string(int i) {
 * Return the next non-empty line of a file.
 *	file: The file to read.
 */
-char *getline(FILE *file) {
+char *get_line(FILE *file) {
 	char *f_line = calloc(MAX_LINE_LENGTH, sizeof(char));
 
 	fgets(f_line, MAX_LINE_LENGTH, file);
