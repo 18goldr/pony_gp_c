@@ -585,7 +585,7 @@ struct individual *generational_replacement(struct individual *new_population,
 		population[i] = new_population[i];
 	}
 
-	for (i; i < elite_size; i++) {
+	for (i = 0; i < elite_size; i++) {
 		population[i] = old_population[i];
 	}
 

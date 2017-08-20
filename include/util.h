@@ -18,7 +18,7 @@ struct symbols {
 };
 
 char *double_to_string(double d, char *format, int sig_decimal_places);
-char *getline(FILE *file);
+char *get_line(FILE *file);
 int get_char_arr_length(char *arr);
 int get_double_arr_length(double *arr);
 int get_randint(int min, int max);
