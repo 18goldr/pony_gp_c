@@ -61,9 +61,6 @@ Parameters:
 ## Output
 Runs for `generations`
 
-## Output
-Runs for `generations`
-
 ### Individual Statistics
 
 `Initial individual nr`:individual number nodes: amount of nodes or
