@@ -13,16 +13,14 @@
 /**
 * Return a new csv_reader.
 *	 file_name: Name of the file that the csv_reader will rad.
-*	 delimeter: The character that the file will differentiate 
+*	 delimeter: The character that the file will differentiate
 *				 collumns with.
 */
 csv_reader *init_csv(char *file_name, char delimeter) {
 	csv_reader *reader = malloc(sizeof(struct csv_reader));
 
 	reader->file = fopen(file_name, "r");
-
 	reader->delimiter = delimeter;
-
 	assert(reader->file);
 
 	return reader;
@@ -33,7 +31,7 @@ csv_reader *init_csv(char *file_name, char delimeter) {
 *	 r: The csv_reader.
 */
 void deinit_csv(csv_reader *r) {
-	r->file = NULL;
+	fclose(r->file);
 
 	free(r);
 }
@@ -54,18 +52,20 @@ csv_line *new_line(char **content, int size) {
 }
 
 /**
-* Get the number of lines in a csv file. 
+* Get the number of lines in a csv file.
 *	 reader: The csv_reader containing the file to parse.
 */
 int get_num_lines(csv_reader *reader) {
 	rewind(reader->file);
 
+    if (getc(reader->file) == EOF) return 0;
+
 	char c;
 	int line_length = 0;
-	int line_num = 0;
+	int line_num = 1;
 
 	while ((c = getc(reader->file)) != EOF) {
-		if (c == '\n' && line_length > 0) {
+		if (c == '\n' && line_length > 0) { // ignore empty lines
 			line_num++;
 			line_length = 0;
 		}
@@ -86,6 +86,7 @@ int get_num_lines(csv_reader *reader) {
 */
 int get_num_column(csv_reader *reader) {
 	rewind(reader->file);
+
 	char line[MAX_LINE_LENGTH];
 	fgets(line, MAX_LINE_LENGTH, reader->file);
 
@@ -122,7 +123,8 @@ csv_line *readline(csv_reader *reader) {
 	char *token;
 	int i = 0;
 
-	while ((token = str_sep(&f_line, &reader->delimiter))) {
+    char delimeter[] = {reader->delimiter, '\0'};
+	while ((token = str_sep(&f_line, delimeter))) {
 		if (i >= curr_size - 1) {
 			curr_size += DEFAULT_CSV_LINE_LENGTH;
 			values = realloc(values, curr_size * sizeof(char *));

@@ -6,7 +6,7 @@
 struct hashmap {
 	char *keys[MAX_SIZE];
 	double values[MAX_SIZE];
-	int curr_index;
+	int curr_index; // Current max index of keys and values
 };
 
 int hashmap_put(struct hashmap *h, char *key, const double value);

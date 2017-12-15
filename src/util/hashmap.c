@@ -10,6 +10,11 @@
 */
 struct hashmap *hashmap_init() {
 	struct hashmap *h = malloc(sizeof(struct hashmap));
+
+	for (int i = 0; i < MAX_SIZE; i++) {
+		h->keys[i] = NULL;
+	}
+
 	h->curr_index = 0;
 
 	return h;
@@ -29,6 +34,9 @@ int hashmap_get_size(struct hashmap *h) {
 *	 h: The hashmap to deallocate.
 */
 void hashmap_deinit(struct hashmap *h) {
+	for (int i = 0; i < h->curr_index; i++) {
+		free(h->keys[i]);
+	}
 	free(h);
 }
 
@@ -57,6 +65,8 @@ int hashmap_put(struct hashmap *h, char *key, const double value) {
 *	 key: The key to search for.
 */
 double hashmap_get(struct hashmap *h, char *key) {
+	if (!h->keys[0]) return NAN;
+
 	for (int i = 0; i < h->curr_index; i++) {
 		if (!strcmp(h->keys[i], key)) {
 			return h->values[i];
@@ -86,7 +96,7 @@ int hashmap_get_num_with_value(struct hashmap *h, int value) {
 
 	for (int i = 0; i < h->curr_index; i++) {
 		int curr_value = (int)hashmap_get(h, h->keys[i]);
-		
+
 		if (curr_value == value) {
 			count++;
 		}

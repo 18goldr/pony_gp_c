@@ -115,7 +115,7 @@ int get_max_tree_depth(struct node *root) {
 
 		while (node_count > 0) {
 			struct node *node = q->front->value;
-			dequeue(q);
+			free(dequeue(q));
 
 			if (node->left) {
 				enqueue(q, node->left);
@@ -132,8 +132,7 @@ int get_max_tree_depth(struct node *root) {
 	free(q);
 
 	 //Height is one more than it should be.
-	height--;
-	return height;
+	return height-1;
 
 }
 
@@ -296,6 +295,13 @@ struct node *new_node(char v) {
 	return node;
 }
 
+void free_node(struct node *node) {
+	if (node->left) free_node(node->left);
+	if (node->right) free_node(node->right);
+
+	free(node);
+}
+
 /**
 * Replace a subtree.
 *	 old_tree: The old subtree to replace.
@@ -390,7 +396,7 @@ void print_nodes_index_order(struct node *root) {
 }
 
 /**
-* Utility to get a string of a trees nodes in index order
+* Utility to get a string of a tree nodes in index order
 * (ie. top-bottom right-to-left traversal).
 *	    root: The root node of the tree.
 *	     str: The str to modify, usually an empty string.
@@ -416,7 +422,7 @@ static char *to_string_util(struct node *root, char *str, int *cur_pos) {
 */
 char *tree_to_string(struct node *root) {
 	int num_nodes = get_number_of_nodes(root);
-	char *str = malloc(num_nodes);
+	char *str = malloc(num_nodes + 1); // Leave space for null character
 	int pos = 0;
 
 	str = to_string_util(root, str, &pos);

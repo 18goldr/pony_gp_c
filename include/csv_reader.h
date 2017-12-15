@@ -32,6 +32,17 @@ struct csv_data {
 };
 
 /**
+* Container for exemplars (fitness cases and targets).
+*	fitness_cases: Array of inputs/arguments.
+*	      targets: Array of outputs.
+*/
+struct exemplars {
+	double **fitness_cases;
+	double *targets;
+};
+
+
+/**
 * A container to hold a lines content and its size.
 * The lines content is not just a string of the line,
 * it is a pointer to an array of all the values of each

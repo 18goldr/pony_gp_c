@@ -16,5 +16,14 @@ include_directories(${pony_gp_INCLUDE_DIRS})
 add_executable (pony_gpExe ${pony_gp_SOURCES})
 
 if (CMAKE_COMPILER_IS_GNUCC)
+	
 	target_link_libraries(pony_gpExe m)
+	
+	find_program(MEMORYCHECK_COMMAND valgrind)
+	set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full")
+	set(MEMORYCHECK_SUPPRESSIONS_FILE "${DIR}/valgrind_suppress.txt")
 endif()
+
+include(CTest)
+add_test(test pony_gpExe)
+

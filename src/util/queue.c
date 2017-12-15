@@ -78,3 +78,15 @@ struct q_node *dequeue(struct queue *q) {
 int queue_size(struct queue *q) {
 	return q->size;
 }
+
+/**
+* Free memory allocated for the queue.
+*	q: The queue to free.
+*/
+void deinit_queue(struct queue *q) {
+	while (q->front) {
+		struct queue *tmp = q->front;
+		q->front = q->front->next;
+		free(tmp);
+	}
+}

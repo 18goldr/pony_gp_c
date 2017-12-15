@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 
 include/params.h
+build/

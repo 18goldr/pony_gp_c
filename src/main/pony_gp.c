@@ -62,6 +62,7 @@ struct individual *run(void);
 void out_of_sample_test(struct individual *individual);
 void setup(void);
 void exit_and_cleanup(void);
+void free_individual(struct individual *i);
 
 /**
 * Return a new individual.
@@ -75,6 +76,11 @@ struct individual *new_individual(struct node *genome, double fitness) {
 	new_ind->fitness = fitness;
 
 	return new_ind;
+}
+
+void free_individual(struct individual *i) {
+	free_node(i->genome);
+	free(i);
 }
 
 /**
@@ -92,6 +98,9 @@ char *individual_to_string(struct individual i) {
 	char *str = malloc(genome_length + str_outline_len + fitness_length + 1); // Leave space for '\0'
 
 	sprintf(str, "Genome: %s, Fitness: %s\n", genome, fitness_str);
+
+	free(fitness_str);
+	free(genome);
 
 	return str;
 }
@@ -273,7 +282,7 @@ void grow(struct node *node, int curr_depth, int max_depth, bool must_fill) {
 	// grow is called recursively in the loop. The loop iterates
 	// "arity" number of times, given by the node symbol.
 	for (int side = 0; side < hashmap_get(symbols->arities, node_arr); side++) {
-		
+
 		symbol = get_random_symbol(curr_depth, max_depth, must_fill, symbols);
 
 		// new_node is not set with append_node() because it returns a copy of
@@ -307,7 +316,7 @@ void subtree_mutation(struct node **root) {
 
 	// Get new subtree
 	int node_depth = get_depth_at_index(*root, node_i);
-		
+
 	char new_symbol = get_random_symbol(
 			node_depth, (int)hashmap_get(params, "max_depth") - node_depth, false, symbols
 	);
@@ -354,7 +363,7 @@ struct node **subtree_crossover(struct node *parent1, struct node *parent2) {
 		int max_depth = (int)hashmap_get(params, "max_depth");
 
 		// Make sure the trees will not exceed the max depth
-		if ((node_depths[0][1] + node_depths[1][0] > max_depth) || 
+		if ((node_depths[0][1] + node_depths[1][0] > max_depth) ||
 			(node_depths[1][1] + node_depths[0][0] > max_depth)) {
 			if (hashmap_get(params, "verbose")) {
 				printf("\n-----------------Crossover too deep-----------------\n");
@@ -496,7 +505,7 @@ void evaluate_individual(struct individual *individual) {
 	// the target for each input.
 	for (int i = 0; i < targs_len; i++) {
 		double output = evaluate(individual->genome,data->training_cases[i]);
-		
+
 		// Get the squared error
 		double error = output -data->training_targets[i];
 		fitness += error * error;
@@ -560,8 +569,9 @@ struct individual *tournament_selection(struct individual *population) {
 		}
 
 		winners[win_i++] = population[best_ever_index(competitors, tourn_size)];
-	}
 
+	}
+	free(competitors);
 	free(samples);
 
 	return winners;
@@ -577,21 +587,22 @@ struct individual *generational_replacement(struct individual *new_population,
 
 	int elite_size = (int)hashmap_get(params, "elite_size");
 
-	struct individual *population = malloc(sizeof(struct individual) * (elite_size + size));
+	sort_population(&new_population, params);
+	sort_population(&old_population, params);
 
 	int i;
+
+	for (i = 0; i < elite_size; i++) {
+		if (old_population[i].fitness > new_population[size - i - 1].fitness) {
+			new_population[size - i - 1] = old_population[i];
+		}
+	}
+
+	struct individual *population = malloc(sizeof(struct individual) * size);
 
 	for (i = 0; i < size; i++) {
 		population[i] = new_population[i];
 	}
-
-	for (i = 0; i < elite_size; i++) {
-		population[i] = old_population[i];
-	}
-
-	sort_population(&population, params);
-
-	population = realloc(population, sizeof(struct individual) * size);
 
 	return population;
 }
@@ -655,17 +666,25 @@ struct individual *search_loop(struct individual *population) {
 
 			// Generate nodes by crossing over the parents
 			struct node **children = subtree_crossover(parent1.genome, parent2.genome);
+
 			struct node *child1 = children[0];
 			struct node *child2 = children[1];
 
+			free(children);
+
 			// Append the child to the new population
-			struct individual i1 = *new_individual(child1, parent1.fitness);
+			struct individual *tmp = new_individual(child1, parent1.fitness);
+			struct individual i1 = *tmp;
+			free(tmp);
+
 			new_population[new_pop_i++] = i1;
 
 			// Ensure that too many elements can't be added.
 			// Handles uneven population sizes, since crossover returns 2 offspring
 			if (new_pop_i < pop_size) {
-				struct individual i2 = *new_individual(child2, parent2.fitness);
+				struct individual *tmp = new_individual(child2, parent2.fitness);
+				struct individual i2 = *tmp;
+				free(tmp);
 				new_population[new_pop_i++] = i2;
 			}
 		}
@@ -694,7 +713,7 @@ struct individual *search_loop(struct individual *population) {
 
 		// Increase the generation counter
 		generation++;
-	
+
 	}
 
 	free(cache);
@@ -734,6 +753,7 @@ void exit_and_cleanup() {
 	free(symbols->arities);
 	free(symbols->functions);
 	free(symbols->terminals);
+	free(symbols);
 	free(params);
 	free(data);
 
@@ -761,14 +781,11 @@ int main() {
 	setup();
 
 	struct individual *best_ever = run();
-	printf("Best solution on train data: %s\n", individual_to_string(*best_ever));
-
+	char *best_ever_string = individual_to_string(*best_ever);
+	printf("Best solution on train data: %s\n", best_ever_string);
 	out_of_sample_test(best_ever);
-
 	free(best_ever);
-
-	printf("\nPress enter to exit...");
-	getchar();
+	free(best_ever_string);
 
 	exit_and_cleanup();
 }

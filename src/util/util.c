@@ -6,6 +6,7 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 #include "util.h"
 #include "hashmap.h"
 #include "config_parser.h"
@@ -14,6 +15,7 @@
 
 #define ARR_SIZE(arr) ((int)(sizeof(arr) / sizeof(0[arr])))
 #define MAX_LINE_LENGTH 2048
+#define MAX_STRING_LENGTH 2048
 
 // the seed to pass to the random function
 // default to 0
@@ -38,9 +40,9 @@ void set_seed(double s) {
 */
 char *double_to_string(double d, char *format, int sig_decimal_places) {
 	int d_len = double_length(d, sig_decimal_places) + 1; // Allow for decimal place
-	
+
 	if (d < 0) d_len++; // Allow for negative sign
-	
+
 	char *str = malloc(d_len + 1); // Allow space for null character
 	sprintf(str, format, d);
 
@@ -52,7 +54,7 @@ char *double_to_string(double d, char *format, int sig_decimal_places) {
 *	 i: The integer to convert.
 */
 char *int_to_string(int i) {
-	char *str = malloc(int_length(i));
+	char *str = malloc(sizeof(int) * int_length(i));
 
 	sprintf(str, "%d", i);
 
@@ -107,9 +109,8 @@ int get_char_arr_length(char *arr) {
 int get_double_arr_length(double *arr) {
 	int length = 0;
 
-	while (!isnan(*arr)) {
+	while (!isnan(*arr++)) {
 		length++;
-		arr++;
 	}
 
 	return length;
@@ -117,8 +118,7 @@ int get_double_arr_length(double *arr) {
 
 /**
 * Get the length of a 2 dimensional array of doubles. Each outer array must end
-* with a NULL pointer. Each inner array must end with the NAN value
-* defined in <math.h>
+* with a NULL pointer.
 *	 arr: The 2D array to parse.
 */
 int get_2d_arr_length(double **arr) {
@@ -208,7 +208,7 @@ int *random_sample(int length, int sample_size) {
 		int tmp = all_indexes[rand_i];
 		all_indexes[rand_i] = all_indexes[length - 1];
 		all_indexes[length - 1] = tmp;
-		
+
 		// Make the last value unavailable
 		length--;
 	}
@@ -324,7 +324,7 @@ void print_2d_array(double **arr) {
 *		size: The size of the array of strings.
 */
 bool str_in_arr(char **strings, char *str, int size) {
-	
+
 	for (int i = 0; i < size; i++) {
 		if (!strcmp(strings[i], str)) {
 			return true;
@@ -390,7 +390,7 @@ double get_std(double *values, int size, double ave) {
 int double_length(double d, int d_places) {
 	int d_int = (int)d;
 
-	if (!d_int) return 1 + d_places;
+	if (!d_int) return 2 + d_places;
 
 	int n_digs = (int)floor(log10(abs(d_int))) + 1;
 
@@ -477,14 +477,13 @@ struct hashmap **parse_config() {
 					double d = section.pairs[0].values[x];
 
 					char *str = int_to_string((int)d);
-
 					hashmap_put(arities, str, 0);
 				}
 			}
 		}
 	}
 
-	free_parser(p);
+
 	add_constants_from_csv(arities);
 
 	// Verbose printing defaults to zero.
@@ -493,7 +492,7 @@ struct hashmap **parse_config() {
 	struct hashmap **config = malloc(2 * sizeof(struct hashmap *));
 	config[0] = arities;
 	config[1] = params;
-
+	free_parser(p);
 	return config;
 }
 
@@ -501,29 +500,31 @@ struct hashmap **parse_config() {
 
 /**
 * Return the config file. Automatically found by CMake
-* If not using CMake, manually input it in this function.
-* Fitness file must be in <root>/data. File must have extension
-* .ini
+* If not using CMake, manually define the macro INI_DIR
+* with the path to the file. Fitness file must be in
+* <root>/data. The file must have the extension .ini
 */
 char *get_config_file() {
-#ifdef INI_DIR
+	#ifdef INI_DIR
 	return INI_DIR;
-#endif
+	#endif
 
 	fprintf(stderr, "Config file not found. Please include in the folder <root>/data");
 	abort();
 }
 
 
-
 /**
 * Parse a CSV file. Parse the fitness case and split the data into
 * test and train data. in the fitness case file each row is an exemplar
 * and each dimension is in a column. The last column is the target value
-* of the exemplar.
+* of the exemplar. The function returns a third degree pointer with the
+* fitness data as the first element and the targets as the second element.
+* The fitness data is structured as a 2D array and the target data is
+* represented as a one dimensional array.
 *	 file_name: Name of CSV file with a header.
 */
-double ***parse_exemplars(char *file_name) {
+struct exemplars *parse_exemplars(char *file_name) {
 	csv_reader *reader = init_csv(file_name, ',');
 
 	double **fitness_cases, *targets;
@@ -531,10 +532,10 @@ double ***parse_exemplars(char *file_name) {
 	int num_lines = get_num_lines(reader);
 
 	// leave space for NULL
-	fitness_cases = malloc(sizeof(double *) * (num_lines));
+	fitness_cases = malloc(sizeof(double *) * num_lines);
 
 	for (int i = 0; i < num_lines; i++) {
-		fitness_cases[i] = malloc(sizeof(double) * (num_columns - 1));
+		fitness_cases[i] = malloc(sizeof(double) * num_columns);
 	}
 
 	// leave space for NAN
@@ -547,80 +548,93 @@ double ***parse_exemplars(char *file_name) {
 	// Ignore the header
 	next_line(reader);
 
+    // Loop through to get target and fitness values.
 	while ((row = readline(reader))) {
 		int i;
 		for (i = 0; i < num_columns; i++) {
-			if (i == num_columns - 1) {
+			if (i == num_columns - 1) { // Last element of array is the target/desired output.
 				targets[t_i++] = atof(row->content[i]);
 			}
 			else {
+				// The arguments/inputs.
 				fitness_cases[f_i][i] = atof(row->content[i]);
 			}
 		}
-		fitness_cases[f_i][i - 1] = NAN;
+
+        // take the [i-1]th index because fitness cases has [num_columns-1] elements.
+		fitness_cases[f_i][i-1] = (double)NAN;
 		f_i++;
 	}
+
+	// Set last index to NULL/NAN for easier looping.
 	fitness_cases[f_i] = NULL;
-	targets[t_i] = NAN;
+	targets[t_i] = (double)NAN;
 
-	double ***results = malloc(sizeof(double **) * 2);
-	double *tmp[] = { targets };
-	results[0] = fitness_cases;
-	results[1] = tmp;
+    struct exemplars *results = malloc(sizeof(struct exemplars));
+    results->fitness_cases = fitness_cases;
+    results->targets = targets;
 
+	deinit_csv(reader);
 	free(row);
-	free(reader);
 
 	return results;
 }
 
+
 /**
-* Return test and train data. Random selection or exemplars(ros)
+* Return test and train data. Random selection of exemplars(ros)
 * from file containing data.
 *	  file_name: Name of CSV file with a header.
 *		  split: Percentage of exemplar data used for training.
 */
 struct csv_data *get_test_and_train_data(char *file_name, double split) {
-	double ***exemplars = parse_exemplars(file_name);
+	struct exemplars *exemplars = parse_exemplars(file_name);
+	double **fitness = exemplars->fitness_cases;
+	double *targs = exemplars->targets;
 
-	double **fitness = exemplars[0];
-	double *targs = *exemplars[1];
-
+	// Get lengths of the arrays.
 	int fitness_len = get_2d_arr_length(fitness);
-	int targs_len = get_double_arr_length(targs);
-
+	int targs_len =  get_double_arr_length(targs);
 	int col_size = get_double_arr_length(fitness[0]);
 
 	// randomize the index order
 	int fits_split_i = (int)(floor(fitness_len * split));
 	int *fits_rand_idxs = random_indexes(fitness_len);
 
-	double **training_cases = malloc((sizeof(double *) * fits_split_i) + 1);
-	double **test_cases = malloc((sizeof(double *) * (fitness_len - fits_split_i)) + 1);
+	// Split the cases and targets up according to the index at which to split.
+	// Leave space for NULL/NAN at the end.
+	double **training_cases = malloc(sizeof(double *) * (fits_split_i + 1));
+	double **test_cases = malloc(sizeof(double *) * (fitness_len - fits_split_i + 1));
+	double *training_targets = malloc(sizeof(double) * (fits_split_i + 1));
+	double *test_targets = malloc(sizeof(double) * (targs_len - fits_split_i + 1));
 
-	for (int i = 0; i < 2; i++) {
+	// Allocate the inner arrays.
+	for (int i = 0; i < fits_split_i; i++) {
 		training_cases[i] = malloc(sizeof(double) * col_size);
-		test_cases[i] = malloc(sizeof(double) * col_size);
+
+		if (i >= fitness_len) {
+			test_cases[i - fits_split_i] = malloc(sizeof(double) * col_size);
+		}
 	}
 
-	double *training_targets = malloc((sizeof(double) * fits_split_i) + 1);
-	double *test_targets = malloc(sizeof(double) * (targs_len - fits_split_i) + 1);
-
 	int rand_i;
-	int i;
 
-	for (i = 0; i < fitness_len; i++) {
+	// Split the fitness and target data into training and test cases.
+	for (int i = 0; i < fitness_len; i++) {
+
+
 		rand_i = fits_rand_idxs[i];
 
 		if (i >= fits_split_i) {
 			test_cases[i - fits_split_i] = fitness[rand_i];
 			test_targets[i - fits_split_i] = targs[rand_i];
-		}
-		else {
+
+		} else {
 			training_cases[i] = fitness[rand_i];
 			training_targets[i] = targs[rand_i];
 		}
 	}
+
 	// Set last index to NULL/NAN to allow for easier looping of arrays
 	training_cases[fits_split_i] = NULL;
 	test_cases[fitness_len - fits_split_i] = NULL;
@@ -640,12 +654,13 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 }
 
 /**
-* Return is a symbol is valid.
+* Return if a symbol is valid.
 *	 sym: The symbol to verify.
 *	 arities: Hashmap of symbols and their arities.
 */
 bool symbol_is_valid(char sym, struct hashmap *arities) {
 	char symbol_str[] = { sym, '\0' };
+
 	return (!isnan(hashmap_get(arities, symbol_str)));
 }
 

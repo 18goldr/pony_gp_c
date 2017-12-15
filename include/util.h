@@ -1,6 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#define MAX_LINE_LENGTH 2048
+#define MAX_STRING_LENGTH 2048
+
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -46,8 +49,8 @@ char *int_to_string(int i);
 void add_constants_from_csv(struct hashmap *params);
 char *get_fitness_file(void);
 struct hashmap **parse_config(void);
-char *get_config_file(void); 
-double ***parse_exemplars(char *file_name);
+char *get_config_file(void);
+struct exemplars *parse_exemplars(char *file_name);
 struct csv_data *get_test_and_train_data(char *file_name, double split);
 bool symbol_is_valid(char sym, struct hashmap *arities);
 struct symbols *get_symbols(struct hashmap *arities);

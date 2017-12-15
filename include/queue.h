@@ -19,5 +19,6 @@ struct queue *create_queue(void);
 void enqueue(struct queue *queue, struct node *node);
 struct q_node *dequeue(struct queue *q);
 int queue_size(struct queue *q);
+void deinit_queue(struct queue *q);
 
 #endif
