@@ -68,10 +68,17 @@ different symbols in the individual, `max_depth`: max depth of
 individual(refer to usage): individual generated
 
 ### Generation Statistics
-`Generation`: generation number, `duration`: evaluation time, `fit_ave`: average fitness of the generation, `size_ave`: average number of nodes in the genearation amongst all solutions, `depth_ave`: average max_tree depth, max_size`: maximum number of nodes, `max_depth`: maximum depth, `max_fit`: maximum fitnessm `best_solution`: {`'genome'`: individual formula/tree, `'fitness'`: fitness of genome}
+`Generation`: generation number, `duration`: evaluation time, `fit_ave`: average fitness of the generation, `size_ave`: average number of nodes in the generation amongst all solutions, `depth_ave`: average max_tree depth,`max_size`: maximum number of nodes, `max_depth`: maximum depth, `max_fit`: maximum fitnessm `best_solution`: {`'genome'`: individual formula/tree, `'fitness'`: fitness of genome}
 
 ### Best Solution Statistics
 ```
 Best solution on train data:{'genome': individual formula/tree, 'fitness': fitness of genome}
 Best solution on test data:{'genome':individual formula/tree, 'fitness':fitness of genome}
+```
+
+# Test
+Run. Generator type can be anything.
+```
+cmake -G <Generator type> 
+./pony_gpExe
 ```
