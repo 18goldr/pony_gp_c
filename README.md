@@ -1,6 +1,6 @@
-`pony_gp_c` is an implementation of Genetic Programming(GP), see e.g. 
-<http://geneticprogramming.com>. The purpose of `pony_gp_c` is to describe how 
-the GP algorithm works and to compatible with emscripten. The intended use is for 
+`pony_gp_c` is an implementation of Genetic Programming(GP), 
+(see <http://geneticprogramming.com>). The purpose of `pony_gp_c` is to describe how 
+the GP algorithm works and to be compatible with emscripten. The intended use is for 
 teaching. The aim is to allow the developer to quickly start using and developing. 
 The design is supposed to be simple, self contained and use core C libraries. The original
 project, written in python, can be found here: https://github.com/flexgp/pony_gp
