@@ -18,7 +18,7 @@
 #define MAX_STRING_LENGTH 2048
 
 // the seed to pass to the random function
-// default to 0
+// defaults to 0
 double SEED = 0;
 
 /**
@@ -50,8 +50,8 @@ char *double_to_string(double d, char *format, int sig_decimal_places) {
 }
 
 /**
-* Convert an int to a string.
-*	 i: The integer to convert.
+* Return a string representation of an integer.
+*	 i: The integer to parse.
 */
 char *int_to_string(int i) {
 	char *str = malloc(sizeof(int) * int_length(i));
@@ -63,6 +63,8 @@ char *int_to_string(int i) {
 
 /**
 * Return the next non-empty line of a file.
+* Returns null if the end of the file has been
+* reached.
 *	file: The file to read.
 */
 char *get_line(FILE *file) {
@@ -147,7 +149,7 @@ void start_srand() {
 }
 
 /*
-* Return a random int between min and max inclusive.
+* Return a random int between min and max (inclusive).
 *	min: The minimum value.
 *	max: The maxmium value.
 */
@@ -160,7 +162,7 @@ int get_randint(int min, int max) {
 
 
 /**
-* Return a random probability. Values are 0.0 to 1.0 inclusive.
+* Return a random probability. Values are 0.0 to 1.0 (inclusive).
 */
 double get_rand_probability() {
 	start_srand();
@@ -218,7 +220,7 @@ int *random_sample(int length, int sample_size) {
 }
 
 /**
-* Return an array filled with numbers 1 through length-1.
+* Return an array filled with numbers 0 through length-1.
 *	 length: The length of the array to return.
 */
 int *fill_array_indexes(int length) {
@@ -293,6 +295,7 @@ void remove_spaces(char *str) {
 	char* i = str;
 	char* j = str;
 
+	// Create a new string with all spaces removed.
 	while (*j) {
 		*i = *j++;
 		if (*i != ' ') i++;
@@ -305,7 +308,7 @@ void remove_spaces(char *str) {
 * Print a 2 dimensional array of doubles. Each outer array must end
 * with a NULL pointer. Each inner array must end with the NAN value
 * defined in <math.h>
-	 arr: The 2D array to print.
+*	 arr: The 2D array to print.
 */
 void print_2d_array(double **arr) {
 	while (*arr) {
@@ -324,7 +327,6 @@ void print_2d_array(double **arr) {
 *		size: The size of the array of strings.
 */
 bool str_in_arr(char **strings, char *str, int size) {
-
 	for (int i = 0; i < size; i++) {
 		if (!strcmp(strings[i], str)) {
 			return true;
@@ -384,7 +386,7 @@ double get_std(double *values, int size, double ave) {
 /**
 * Get the length of a double, provided the user knows
 * the  number of digits after the decimal point to use.
-*	 d: The double.
+*	        d: The double.
 *	 d_places: The number of digits after the decimal point
 */
 int double_length(double d, int d_places) {
@@ -441,13 +443,13 @@ void add_constants_from_csv(struct hashmap *arities) {
 
 /**
 * Return the fitness file. Automatically found by CMake
-* If not using CMake, manually input it in this function.
+* If not using CMake, manually define CSV_DIR located in params.h.
 * Fitness file must be in <root>/data
 */
 char *get_fitness_file() {
-#ifdef CSV_DIR
+	#ifdef CSV_DIR
 	return CSV_DIR;
-#endif
+	#endif
 
 	fprintf(stderr, "CSV file not found. Please include in the folder <root>/data");
 	abort();
@@ -492,7 +494,9 @@ struct hashmap **parse_config() {
 	struct hashmap **config = malloc(2 * sizeof(struct hashmap *));
 	config[0] = arities;
 	config[1] = params;
+
 	free_parser(p);
+
 	return config;
 }
 
@@ -501,7 +505,7 @@ struct hashmap **parse_config() {
 /**
 * Return the config file. Automatically found by CMake
 * If not using CMake, manually define the macro INI_DIR
-* with the path to the file. Fitness file must be in
+* with the path to the file in params.h. Fitness file must be in
 * <root>/data. The file must have the extension .ini
 */
 char *get_config_file() {
@@ -516,12 +520,10 @@ char *get_config_file() {
 
 /**
 * Parse a CSV file. Parse the fitness case and split the data into
-* test and train data. in the fitness case file each row is an exemplar
+* test and train data. In the fitness case file each row is an exemplar
 * and each dimension is in a column. The last column is the target value
-* of the exemplar. The function returns a third degree pointer with the
-* fitness data as the first element and the targets as the second element.
-* The fitness data is structured as a 2D array and the target data is
-* represented as a one dimensional array.
+* of the exemplar. The function returns a struct that contains the
+* fitness cases and targets.
 *	 file_name: Name of CSV file with a header.
 */
 struct exemplars *parse_exemplars(char *file_name) {
@@ -564,6 +566,8 @@ struct exemplars *parse_exemplars(char *file_name) {
         // take the [i-1]th index because fitness cases has [num_columns-1] elements.
 		fitness_cases[f_i][i-1] = (double)NAN;
 		f_i++;
+
+        free(row);
 	}
 
 	// Set last index to NULL/NAN for easier looping.
@@ -575,14 +579,13 @@ struct exemplars *parse_exemplars(char *file_name) {
     results->targets = targets;
 
 	deinit_csv(reader);
-	free(row);
 
 	return results;
 }
 
 
 /**
-* Return test and train data. Random selection of exemplars(ros)
+* Return test and train data. Random selection of exemplars (ros)
 * from file containing data.
 *	  file_name: Name of CSV file with a header.
 *		  split: Percentage of exemplar data used for training.
@@ -621,8 +624,6 @@ struct csv_data *get_test_and_train_data(char *file_name, double split) {
 
 	// Split the fitness and target data into training and test cases.
 	for (int i = 0; i < fitness_len; i++) {
-
-
 		rand_i = fits_rand_idxs[i];
 
 		if (i >= fits_split_i) {

@@ -24,7 +24,6 @@ typedef struct ini_pair {
 * to an array). Keys can point to one or more values. The values
 * must be numbers.
 * Example section:
-*
 *	 [header]
 *		 key: value
 *		key1: value1 

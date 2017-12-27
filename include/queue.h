@@ -3,14 +3,25 @@
 
 #include <stdbool.h>
 
-struct q_node {
-	struct node *value;
-	struct q_node *next;
-};
-
+/**
+* An implementation of the queue data structure.
+*	front: The front of the queue.
+*	 rear: The rear of the queue.
+*	 size: The size of the queue.
+*/
 struct queue {
 	struct q_node *front, *rear;
 	int size;
+};
+
+/**
+* A binary tree member of a queue.
+*	value: The value of the member.
+*	 next: The next member in the queue.
+*/
+struct q_node {
+	struct node *value;
+	struct q_node *next;
 };
 
 bool is_empty(struct queue *queue);

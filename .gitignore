@@ -262,3 +262,5 @@ __pycache__/
 
 include/params.h
 build/
+.vs/
+Debug/

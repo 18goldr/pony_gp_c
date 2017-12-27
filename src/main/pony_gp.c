@@ -2,6 +2,43 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
 
+/**
+* Implementation of Genetic Programming(GP), the purpose of this
+* code is to describe how the algorithm works. The intended use is for
+* teaching. The design is supposed to be simple, self contained and use
+* core C libraries.
+*
+* Genetic Programming
+* ===================
+* An individual is a struct with two keys :
+*   -genome  -- A tree
+*   -fitness -- The fitness of the evaluated tree
+* The fitness is maximized.
+* The nodes in a GP tree consist of different symbols. The symbols are either
+* functions (internal nodes with arity > 0) or terminals (leaf nodes with arity = 0) 
+* The symbols are represented as a struct with the keys:
+*   -arities   -- A hashmap where a key is a symbol and the value is the arity
+*   -terminals -- An of characters (symbols) with arity 0
+*   -functions -- A list of characters (symbols) with arity > 0
+*
+* Fitness Function
+* ----------------
+* Find a symbolic expression (function) which yields the lowest error
+* for a given set of inputs.
+* Inputs have explanatory variables that have a corresponding
+* output. The input data is split into test and training data.The
+* training data is used to generate symbolic expressions and the test
+* data is used to evaluate the out - of - sample performance of the
+* evaluated expressions.
+*
+* Pony GP Parameters
+* ------------------
+* The parameters for Pony GP are in a hashmap.
+* 
+* code author :: Robert Gold <18goldr@my.weston.org>
+* original project author :: Erik Hemberg <hembergerik@csail.mit.edu>
+*/
+
 #include <stdlib.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -20,6 +57,7 @@
 
 #define DEFAULT_FITNESS -DBL_MAX
 #define PRINT_SPACE 4
+#define MAX_ARRAY_LENGTH 2048
 
 /**
 * An individual is a struct that contains:
@@ -41,28 +79,29 @@ struct csv_data *data;
 struct symbols *symbols;
 
 char *individual_to_string(struct individual i);
-void print_individuals(struct individual *individuals, int size);
-char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols *symbols);
-int best_ever_index(struct individual *individuals, int size);
+void free_individual(struct individual *i);
+void print_individuals(struct individual **individuals, int size);
+char get_random_symbol(int curr_depth, int max_depth, bool full);
+int best_ever_index(struct individual **individuals, int size);
 int fitness_comp(const void *elem1, const void *elem2);
-void sort_population(struct individual **population, struct hashmap *params);
-void print_stats(int generation, struct individual *individuals, int size, double duration, struct hashmap *params);
+void sort_population(struct individual **population);
+void print_stats(int generation, struct individual **individuals, int size, double duration, struct hashmap *params);
 struct individual *new_individual(struct node *genome, double fitness);
 void grow(struct node *node, int curr_depth, int max_depth, bool full);
 void subtree_mutation(struct node **node);
 struct node **subtree_crossover(struct node *parent1, struct node *parent2);
-struct individual *init_population(void);
+void init_population(struct individual **population, int pop_size);
 double evaluate(struct node *node, double *fitness_case);
 void evaluate_individual(struct individual *individual);
-void evaluate_fitness(struct individual *individuals, int size, struct hashmap *cache);
-struct individual *tournament_selection(struct individual *population);
-struct individual *generational_replacement(struct individual *new_population, int size, struct individual *old_population);
-struct individual *search_loop(struct individual *population);
-struct individual *run(void);
+void evaluate_fitness(struct individual **individuals, int size, struct hashmap *cache);
+struct individual **tournament_selection(struct individual **population);
+struct individual **generational_replacement(struct individual **new_population, struct individual **old_population, int size);
+struct individual *search_loop(struct individual **population);
+struct individual *run(struct individual **population, int pop_size);
 void out_of_sample_test(struct individual *individual);
 void setup(void);
-void exit_and_cleanup(void);
-void free_individual(struct individual *i);
+void cleanup(void);
+
 
 /**
 * Return a new individual.
@@ -78,6 +117,10 @@ struct individual *new_individual(struct node *genome, double fitness) {
 	return new_ind;
 }
 
+/**
+* Deallocate the individual.
+*	i: The individual to deallocate.
+*/
 void free_individual(struct individual *i) {
 	free_node(i->genome);
 	free(i);
@@ -110,10 +153,9 @@ char *individual_to_string(struct individual i) {
 *	 individuals: The array to print.
 *	        size: The size of the array.
 */
-void print_individuals(struct individual *individuals, int size) {
+void print_individuals(struct individual **individuals, int size) {
 	for (int i = 0; i < size; i++) {
-		struct individual ind = individuals[i];
-		printf("Genome: %s, Fitness: %f\n", tree_to_string(ind.genome), ind.fitness);
+		printf("Genome: %s, Fitness: %f\n", tree_to_string(individuals[i]->genome), individuals[i]->fitness);
 	}
 }
 
@@ -128,7 +170,7 @@ void print_individuals(struct individual *individuals, int size) {
 *	         full: True if function symbols should be used until max depth
 *				   is reached.
 */
-char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols *symbols) {
+char get_random_symbol(int curr_depth, int max_depth, bool full) {
 	char symbol;
 	int n;
 
@@ -162,13 +204,13 @@ char get_random_symbol(int curr_depth, int max_depth, bool full, struct symbols 
 *	  individuals: The population.
 *			 size: Size of the population.
 */
-int best_ever_index(struct individual *individuals, int size) {
-	double best_fitness = individuals[0].fitness;
+int best_ever_index(struct individual **individuals, int size) {
+	double best_fitness = individuals[0]->fitness;
 	int best_index = 0;
 
 	for (int i = 1; i < size; i++) {
-		if (individuals[i].fitness > best_fitness) {
-			best_fitness = individuals[i].fitness;
+		if (individuals[i]->fitness > best_fitness) {
+			best_fitness = individuals[i]->fitness;
 			best_index = i;
 		}
 	}
@@ -178,14 +220,13 @@ int best_ever_index(struct individual *individuals, int size) {
 
 /**
 * Helper function to compare individuals in terms of their fitnessses.
-* For sorting in reverse order
-* Use for qsort()
+* Use with qsort().
 *	 elem1: The first individual to compare.
 *	 elem2: The second individual.
 */
 int fitness_comp(const void *elem1, const void *elem2) {
-	struct individual *i1 = (struct individual *)elem1;
-	struct individual *i2 = (struct individual *)elem2;
+	struct individual *i1 = *(struct individual **)elem1;
+	struct individual *i2 = *(struct individual **)elem2;
 
 	if (i1->fitness < i2->fitness) return 1;
 	if (i1->fitness > i2->fitness) return -1;
@@ -197,22 +238,22 @@ int fitness_comp(const void *elem1, const void *elem2) {
 * Sort population in reverse order in terms of fitness.
 *	 population: The population to sort.
 */
-void sort_population(struct individual **population, struct hashmap *params) {
+void sort_population(struct individual **population) {
 	int pop_size = (int)hashmap_get(params, "population_size");
-	qsort(*population, pop_size, sizeof(struct individual), fitness_comp);
+	qsort(population, pop_size, sizeof(*population), fitness_comp);
 }
 
 /**
 * Print the statistics for the generation and population.
-*	  generation: The generation number
-*	 individuals: Population to get statistics for
-*	    duration: Duration of computation
-*	      params: User parameters
+*	  generation: The generation number.
+*	 individuals: Population to print statistics for.
+*	    duration: Duration of computation.
+*	      params: User parameters.
 */
-void print_stats(int generation, struct individual *individuals,
+void print_stats(int generation, struct individual **individuals,
 	int size, double duration, struct hashmap *params) {
 
-	sort_population(&individuals, params);
+	sort_population(individuals);
 
 	if (hashmap_get(params, "verbose")) {
 		printf("-------------POPULATION:-------------\n");
@@ -224,10 +265,9 @@ void print_stats(int generation, struct individual *individuals,
 	double *depth_values = malloc(sizeof(double) * size);
 
 	for (int i = 0; i < size; i++) {
-		fitness_values[i] = individuals[i].fitness;
-		size_values[i] = (double)get_number_of_nodes(individuals[i].genome);
-		depth_values[i] = (double)get_max_tree_depth(individuals[i].genome);
-		//assert(depth_values[i] <= hashmap_get(params, "max_depth"));
+		fitness_values[i] = individuals[i]->fitness;
+		size_values[i] = (double)get_number_of_nodes(individuals[i]->genome);
+		depth_values[i] = (double)get_max_tree_depth(individuals[i]->genome);
 	}
 
 	double *fit_stats = get_ave_and_std(fitness_values, size);
@@ -238,14 +278,21 @@ void print_stats(int generation, struct individual *individuals,
 	int max_depth = (int)max_value(depth_values, size);
 	double max_fitness = max_value(fitness_values, size);
 
-
-	char *ind_string = individual_to_string(individuals[0]);
+	char *ind_string = individual_to_string(*individuals[0]);
 
 	printf(
-		"Generation: %d, Duration: %.4f, fit ave: %.2f+/-%.3f, size ave: %.2f+/-%.3f "
-		"depth ave: %.2f+/-%.3f, max size: %d, max depth: %d, max fit:%f "
+		"Generation: %d, " 
+		"Duration: %.4f, " 
+		"fit ave: %.2f+/-%.3f, " 
+		"size ave: %.2f+/-%.3f "
+		"depth ave: %.2f+/-%.3f, " 
+		"max size: %d, "
+		"max depth: %d, "
+		"max fit:%f "
 		"best solution: %s",
-		generation, duration, fit_stats[0], fit_stats[1], size_stats[0], size_stats[1],
+		generation, 
+		duration, 
+		fit_stats[0], fit_stats[1], size_stats[0], size_stats[1],
 		depth_stats[0], depth_stats[1], max_size, max_depth, max_fitness, ind_string
 	);
 
@@ -266,7 +313,7 @@ void print_stats(int generation, struct individual *individuals,
 *				     intended.
 *	 max_tree_depth: The current max depth that the function has reached.
 *	                 Must be passed in initially as 0 to work as intended.
-*	    should_fill: Grows the tree to max depth when true.
+*	      must_fill: Grows the tree to max depth when true.
 */
 void grow(struct node *node, int curr_depth, int max_depth, bool must_fill) {
 	char node_symbol = node->value;
@@ -283,7 +330,7 @@ void grow(struct node *node, int curr_depth, int max_depth, bool must_fill) {
 	// "arity" number of times, given by the node symbol.
 	for (int side = 0; side < hashmap_get(symbols->arities, node_arr); side++) {
 
-		symbol = get_random_symbol(curr_depth, max_depth, must_fill, symbols);
+		symbol = get_random_symbol(curr_depth, max_depth, must_fill);
 
 		// new_node is not set with append_node() because it returns a copy of
 		// the pointer to the new node, not the new node itself.
@@ -318,7 +365,7 @@ void subtree_mutation(struct node **root) {
 	int node_depth = get_depth_at_index(*root, node_i);
 
 	char new_symbol = get_random_symbol(
-			node_depth, (int)hashmap_get(params, "max_depth") - node_depth, false, symbols
+		node_depth, (int)hashmap_get(params, "max_depth") - node_depth, false
 	);
 
 	struct node *new_subtree = new_node(new_symbol);
@@ -331,13 +378,13 @@ void subtree_mutation(struct node **root) {
 }
 
 /**
-* Swap two random nodes from the parents and swapping the subtrees.
-*	 parent1: Parent to crossover
-*	 parent2: Other parent to crossover
+* Swap two random nodes from the parents and swap the subtrees.
+*	 p1: Parent to crossover.
+*	 p2: Other parent to crossover.
 */
-struct node **subtree_crossover(struct node *parent1, struct node *parent2) {
-	parent1 = tree_deep_copy(parent1);
-	parent2 = tree_deep_copy(parent2);
+struct node **subtree_crossover(struct node *p1, struct node *p2) {
+	struct node *parent1 = tree_deep_copy(p1);
+	struct node *parent2 = tree_deep_copy(p2);
 
 	// Check if crossover will occur
 	if (get_rand_probability() < hashmap_get(params, "crossover_probability")) {
@@ -357,7 +404,6 @@ struct node **subtree_crossover(struct node *parent1, struct node *parent2) {
 
 			node_depths[i][0] = get_depth_at_index(parent, node_i);
 			node_depths[i][1] = get_max_tree_depth(xo_nodes[i]);
-
 		}
 
 		int max_depth = (int)hashmap_get(params, "max_depth");
@@ -368,9 +414,7 @@ struct node **subtree_crossover(struct node *parent1, struct node *parent2) {
 			if (hashmap_get(params, "verbose")) {
 				printf("\n-----------------Crossover too deep-----------------\n");
 			}
-
-		}
-		else {
+		} else {
 			// Swap the nodes
 			struct node tmp = *xo_nodes[0];
 
@@ -382,7 +426,6 @@ struct node **subtree_crossover(struct node *parent1, struct node *parent2) {
 				get_max_tree_depth(xo_nodes[1]) <= max_depth
 			);
 		}
-
 	}
 
 	struct node **parents = malloc(sizeof(struct node *) * 2);
@@ -396,12 +439,10 @@ struct node **subtree_crossover(struct node *parent1, struct node *parent2) {
 * Ramped half-half initialization. The individuals in the population
 * are initialized using the grow or the full method for each depth
 * value (ramped) up to max_depth.
+*	population: The population to initialize.
+*	  pop_size: The size of the population.
 */
-struct individual *init_population() {
-	int pop_size = (int)hashmap_get(params, "population_size");
-
-	struct individual *population = malloc(sizeof(struct individual) * pop_size);
-
+void init_population(struct individual **population, int pop_size) {
 	bool full;
 	int max_depth;
 	char symbol;
@@ -416,7 +457,7 @@ struct individual *init_population() {
 		max_depth = (i % (int)hashmap_get(params, "max_depth")) + 1;
 
 		// Create the root node
-		symbol = get_random_symbol(0, max_depth, full, symbols);
+		symbol = get_random_symbol(0, max_depth, full);
 		tree = new_node(symbol);
 
 		// Grow the tree if the root is a function symbol.
@@ -426,19 +467,16 @@ struct individual *init_population() {
 			assert(get_max_tree_depth(tree) < max_depth + 1);
 		}
 
-		struct individual individual = *new_individual(tree, DEFAULT_FITNESS);
+		struct individual *individual = new_individual(tree, DEFAULT_FITNESS);
 
 		population[i] = individual;
-
 	}
-
-	return population;
 }
 
 /**
-* Evaluate a node recursively. The node's symbol char is evaluated.
-*	         node: The evaluate node.
-*	 fitness_case: Current fitness case.
+* Evaluate a node recursively. The node's symbol (char) is evaluated.
+*	         node: The node to evaluate.
+*	 fitness_case: Current fitness case to test against.
 */
 double evaluate(struct node *node, double *fitness_case) {
 
@@ -469,7 +507,6 @@ double evaluate(struct node *node, double *fitness_case) {
 	}
 
 	else if (isalpha(symbol)) {
-
 		// Fitness case variables must be in alphabetical order
 		// for this to work correctly.
 		if (symbol >= 'A') {
@@ -487,11 +524,10 @@ double evaluate(struct node *node, double *fitness_case) {
 
 /**
 * Evaulate fitness based on fitness cases and target values. Fitness
-* cases are a set of exemplars (input and ouput points) by
-* comparing the error between the output of an individual (symbolic
-* expression) and the target values.
-* Evaluates and sets the fitness in an individual. Fitness is the
-* negative mean square error (MSE).
+* cases are a set of exemplars (input and ouput points) by comparing 
+* the error between the output of an individual (symbolic expression)
+* and the target values. Evaluates and sets the fitness in an individual.
+* Fitness is the negative mean square error (MSE).
 *	    individual: The individual solution to evaluate.
 *	 fitness_cases: Input for the evaluation.
 *	       targets: Output corresponding to the input.
@@ -511,8 +547,6 @@ void evaluate_individual(struct individual *individual) {
 		fitness += error * error;
 	}
 
-	assert(fitness >= 0);
-
 	// Get the mean fitness and assign it to the individual.
 	individual->fitness = (fitness * -1) / targs_len;
 
@@ -521,46 +555,43 @@ void evaluate_individual(struct individual *individual) {
 
 /**
 * Evaluate each individual of the population.
-* Uses a simple cache for reducing unmber evaluations of individuals.
+* Uses a simple cache for reducing number evaluations of individuals.
 *	 individuals: Population to evaluate.
 *	        size: Population size.
 *		   cache: Cache for fitness evaluation.
 */
-void evaluate_fitness(struct individual *individuals, int size, struct hashmap *cache) {
+void evaluate_fitness(struct individual **individuals, int size, struct hashmap *cache) {
 	for (int i = 0; i < size; i++) {
-
-		char *key = tree_to_string(individuals[i].genome);
+		char *key = tree_to_string(individuals[i]->genome);
 		double fitness = hashmap_get(cache, key);
 
 		if (!isnan(fitness)) {
-			individuals[i].fitness = fitness;
+			individuals[i]->fitness = fitness;
 		}
 		else {
-			evaluate_individual(&individuals[i]);
-			hashmap_put(cache, key, individuals[i].fitness);
+			evaluate_individual(individuals[i]);
+			hashmap_put(cache, key, individuals[i]->fitness);
 		}
 	}
 }
 
 /**
-* Return individuals from a population by drawing
-* `tournament_size` competitors randomly and selecting the best
-* of the competitors. `population_size` number of tournaments are
-* held.
+* Return individuals from a population by drawing `tournament_size` 
+* competitors randomly and selecting the best of the competitors. 
+* `population_size` number of tournaments are held.
 *	 population: Population to select from
 */
-struct individual *tournament_selection(struct individual *population) {
+struct individual **tournament_selection(struct individual **population) {
 	int pop_size = (int)hashmap_get(params, "population_size");
-	struct individual *winners = malloc(sizeof(struct individual) * pop_size);
+	struct individual **winners = malloc(sizeof(struct individual *) * pop_size);
 
 	int win_i = 0;
-	struct individual *competitors;
+	struct individual *competitors[MAX_ARRAY_LENGTH];
 	int tourn_size;
 	int *samples;
 
 	while (win_i < pop_size) {
 		tourn_size = (int)hashmap_get(params, "tournament_size");
-		competitors = malloc(sizeof(struct individual) * tourn_size);
 
 		samples = random_sample(pop_size, tourn_size);
 
@@ -570,49 +601,53 @@ struct individual *tournament_selection(struct individual *population) {
 
 		winners[win_i++] = population[best_ever_index(competitors, tourn_size)];
 
+		free(samples);
 	}
-	free(competitors);
-	free(samples);
 
 	return winners;
 }
 
 /**
-* Return a new population. The `elite_size` best old_population
-* are appended to the new population. They are kept in the new
-* population if they are better than the worst.
+* Return a new population. The `elite_size` best of the old_population
+* replace the `elite_size` worst of the new_population, if their fitness
+* is higher.
+*	new_population: The new population.
+*	old_population: The old population.
+*			  size: The size of the new population.
 */
-struct individual *generational_replacement(struct individual *new_population,
-	int size, struct individual *old_population) {
+struct individual **generational_replacement(struct individual **new_population,
+	struct individual **old_population, int size) {
 
 	int elite_size = (int)hashmap_get(params, "elite_size");
 
-	sort_population(&new_population, params);
-	sort_population(&old_population, params);
+	sort_population(new_population);
+	sort_population(old_population);
 
 	int i;
 
 	for (i = 0; i < elite_size; i++) {
-		if (old_population[i].fitness > new_population[size - i - 1].fitness) {
+		if (old_population[i]->fitness > new_population[size - i - 1]->fitness) {
+			free_individual(new_population[size - i - 1]); // free the ones that are not used
 			new_population[size - i - 1] = old_population[i];
 		}
 	}
 
-	struct individual *population = malloc(sizeof(struct individual) * size);
+	// Temporary fix
+	struct individual **pop = malloc(sizeof(struct individual *) * size);
 
-	for (i = 0; i < size; i++) {
-		population[i] = new_population[i];
+	for (int i = 0; i < size; i++) {
+		pop[i] = new_population[i];
 	}
 
-	return population;
+	return pop;
 }
 
 /**
 * Return the best individual from the evolutionary search
-* loop. Starting from the intitial popualtion.
+* loop. Starting from the intitial population.
 *	 population: Initial population of individuals.
 */
-struct individual *search_loop(struct individual *population) {
+struct individual *search_loop(struct individual **population) {
 
 	/////////////////////
 	//Evaluate Fitness //
@@ -622,20 +657,19 @@ struct individual *search_loop(struct individual *population) {
 	int pop_size = (int)hashmap_get(params, "population_size");
 	int tourn_size = (int)hashmap_get(params, "tournament_size");
 
-
 	evaluate_fitness(population, pop_size, cache);
 
 	// Print stats of the population
 	print_stats(0, population, pop_size, difftime(time(NULL), tic), params);
 
 	// Set best solution
-	sort_population(&population, params);
-	struct individual *best_ever = &population[0];
+	sort_population(population);
+	struct individual *best_ever = population[0];
 
 	int generation = 1;
 
-	struct individual *new_population = malloc(sizeof(struct individual) * pop_size);
-	struct individual *parents;
+	struct individual **new_population = malloc(sizeof(struct individual *) * pop_size);
+	struct individual **parents;
 
 	/////////////////////
 	// Generation Loop //
@@ -661,11 +695,11 @@ struct individual *search_loop(struct individual *population) {
 			// Select parents
 			int *rand_idxs = random_sample(pop_size, 2);
 
-			struct individual parent1 = parents[rand_idxs[0]];
-			struct individual parent2 = parents[rand_idxs[1]];
+			struct individual *parent1 = parents[rand_idxs[0]];
+			struct individual *parent2 = parents[rand_idxs[1]];
 
 			// Generate nodes by crossing over the parents
-			struct node **children = subtree_crossover(parent1.genome, parent2.genome);
+			struct node **children = subtree_crossover(parent1->genome, parent2->genome);
 
 			struct node *child1 = children[0];
 			struct node *child2 = children[1];
@@ -673,25 +707,22 @@ struct individual *search_loop(struct individual *population) {
 			free(children);
 
 			// Append the child to the new population
-			struct individual *tmp = new_individual(child1, parent1.fitness);
-			struct individual i1 = *tmp;
-			free(tmp);
-
+			struct individual *i1 = new_individual(child1, DEFAULT_FITNESS);
+			evaluate_individual(i1);
 			new_population[new_pop_i++] = i1;
 
 			// Ensure that too many elements can't be added.
 			// Handles uneven population sizes, since crossover returns 2 offspring
 			if (new_pop_i < pop_size) {
-				struct individual *tmp = new_individual(child2, parent2.fitness);
-				struct individual i2 = *tmp;
-				free(tmp);
+				struct individual *i2 = new_individual(child2, DEFAULT_FITNESS);
+				evaluate_individual(i2);
 				new_population[new_pop_i++] = i2;
 			}
 		}
 
 		// Vary the population by mutation
 		for (int i = 0; i < pop_size; i++) {
-			subtree_mutation(&new_population[i].genome);
+			subtree_mutation(&new_population[i]->genome);
 		}
 
 		////////////////////
@@ -702,11 +733,11 @@ struct individual *search_loop(struct individual *population) {
 		/////////////////////////////////////////////////////////////////
 		// Replacement. Replace individual solutions in the population //
 		/////////////////////////////////////////////////////////////////
-		population = generational_replacement(new_population, pop_size, population);
+		population = generational_replacement(new_population, population, pop_size);
 
 		// Set best solution
-		sort_population(&population, params);
-		best_ever = &population[0];
+		sort_population(population);
+		best_ever = population[0];
 
 		// Print the stats of the population
 		print_stats(generation, population, pop_size, difftime(time(NULL), tic), params);
@@ -716,7 +747,7 @@ struct individual *search_loop(struct individual *population) {
 
 	}
 
-	free(cache);
+	hashmap_deinit(cache);
 	free(parents);
 	free(new_population);
 
@@ -747,29 +778,15 @@ void setup() {
 }
 
 /**
-* Wrapper for deallocating memory and exiting.
+* Return the best solution. Initialize a population. 
+* Perform an evolutionary search.
+*	population: The population to initialize.
+*	  pop_size: The size of the population.
 */
-void exit_and_cleanup() {
-	free(symbols->arities);
-	free(symbols->functions);
-	free(symbols->terminals);
-	free(symbols);
-	free(params);
-	free(data);
-
-	exit(EXIT_SUCCESS);
-}
-
-/**
-* Return the best solution. Create an initial
-* population. Perform an evolutionary search.
-*/
-struct individual *run() {
-	struct individual *population = init_population();
+struct individual *run(struct individual **population, int pop_size) {
+	init_population(population, pop_size);
 
 	struct individual *best_ever = search_loop(population);
-
-	free(population);
 
 	return best_ever;
 }
@@ -780,12 +797,38 @@ struct individual *run() {
 int main() {
 	setup();
 
-	struct individual *best_ever = run();
+	int pop_size = (int)hashmap_get(params, "population_size");
+
+	struct individual **population = malloc(sizeof(struct individual *) * pop_size);
+	struct individual *best_ever = run(population, pop_size);
+
 	char *best_ever_string = individual_to_string(*best_ever);
+
 	printf("Best solution on train data: %s\n", best_ever_string);
 	out_of_sample_test(best_ever);
-	free(best_ever);
+
+	free_individual(best_ever);
 	free(best_ever_string);
 
-	exit_and_cleanup();
+	for (int i = 0; i < pop_size; i++) {
+		free_individual(population[i]);
+	}
+
+	free(population);
+
+	cleanup();
+	exit(EXIT_SUCCESS);
+}
+
+/**
+* Wrapper for deallocating memory and exiting.
+*/
+void cleanup() {
+	free(symbols->arities);
+	free(symbols->functions);
+	free(symbols->terminals);
+	free(symbols);
+	free(params);
+	free(data);
+
 }

@@ -29,8 +29,7 @@ int hashmap_get_size(struct hashmap *h) {
 }
 
 /**
-* Deallocate the hashmap. Must be called in order to avoid
-* memory leaks.
+* Deallocate the hashmap.
 *	 h: The hashmap to deallocate.
 */
 void hashmap_deinit(struct hashmap *h) {

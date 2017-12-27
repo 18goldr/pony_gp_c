@@ -1,6 +1,6 @@
-`pony_gp_c` is an implementation of Genetic Programming(GP), see e.g. 
-<http://geneticprogramming.com>. The purpose of `pony_gp_c` is to describe how 
-the GP algorithm works and to compatible with emscripten. The intended use is for 
+`pony_gp_c` is an implementation of Genetic Programming(GP), 
+(see <http://geneticprogramming.com>). The purpose of `pony_gp_c` is to describe how 
+the GP algorithm works and to be compatible with emscripten. The intended use is for 
 teaching. The aim is to allow the developer to quickly start using and developing. 
 The design is supposed to be simple, self contained and use core C libraries. The original
 project, written in python, can be found here: https://github.com/flexgp/pony_gp
@@ -63,15 +63,20 @@ Runs for `generations`
 
 ### Individual Statistics
 
-`Initial individual nr`:individual number nodes: amount of nodes or
-different symbols in the individual, `max_depth`: max depth of
-individual(refer to usage): individual generated
+`Initial tree nr`: number `nodes`: number of nodes in tree `max_depth`: max tree depth `tree`: symbols in tree
 
 ### Generation Statistics
-`Generation`: generation number, `duration`: evaluation time, `fit_ave`: average fitness of the generation, `size_ave`: average number of nodes in the genearation amongst all solutions, `depth_ave`: average max_tree depth, max_size`: maximum number of nodes, `max_depth`: maximum depth, `max_fit`: maximum fitnessm `best_solution`: {`'genome'`: individual formula/tree, `'fitness'`: fitness of genome}
+`Generation`: generation number, `duration`: evaluation time, `fit_ave`: average fitness of the generation, `size_ave`: average number of nodes in the generation amongst all solutions, `depth_ave`: average max_tree depth,`max_size`: maximum number of nodes, `max_depth`: maximum depth, `max_fit`: maximum fitness `best_solution`: {`'genome'`: individual formula/tree, `'fitness'`: fitness of genome}
 
 ### Best Solution Statistics
 ```
 Best solution on train data:{'genome': individual formula/tree, 'fitness': fitness of genome}
 Best solution on test data:{'genome':individual formula/tree, 'fitness':fitness of genome}
+```
+
+# Test
+Run. Generator type can be anything.
+```
+cmake -G <Generator type> 
+./pony_gpExe
 ```

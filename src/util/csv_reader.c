@@ -109,42 +109,49 @@ int get_num_column(csv_reader *reader) {
 *	 reader: The csv_reader containing the file to parse.
 */
 csv_line *readline(csv_reader *reader) {
-	char *f_line = calloc(MAX_LINE_LENGTH, sizeof(char));
-	fgets(f_line, MAX_LINE_LENGTH, reader->file);
 
-	// Removes newline character from fgets
-	f_line[strcspn(f_line, "\n")] = 0;
+	// Get the line as a string.
+	char *line = calloc(MAX_LINE_LENGTH, sizeof(char));
+	fgets(line, MAX_LINE_LENGTH, reader->file);
 
-	if (!f_line[0]) return NULL;
+	if (!line[0]) return NULL;
 
-	int curr_size = DEFAULT_CSV_LINE_LENGTH;
-	char **values = calloc(curr_size, sizeof(char *));
-
-	char *token;
-	int i = 0;
+	// Remove all new line escapes.
+	line[strcspn(line, "\n")] = 0;
 
     char delimeter[] = {reader->delimiter, '\0'};
-	while ((token = str_sep(&f_line, delimeter))) {
+	int curr_size = DEFAULT_CSV_LINE_LENGTH;
+
+	char **values = calloc(curr_size, sizeof(char *));
+
+	int i = 0;
+
+	// Seperate the line by the given delimeter.
+    for (char *t = strtok(line, delimeter); t != NULL; t = strtok(NULL, delimeter)) {
 		if (i >= curr_size - 1) {
 			curr_size += DEFAULT_CSV_LINE_LENGTH;
 			values = realloc(values, curr_size * sizeof(char *));
 		}
 
-		remove_spaces(token);
+        char *token = strdup(t);
 
-		values[i++] = token;
-	}
+        remove_spaces(token);
 
-	values[i] = NULL;
+        values[i++] = token;
+    }
 
-	csv_line *line = new_line(values, i);
+    free(line);
 
-	return line;
+    values[i] = NULL;
+
+	csv_line *c_line = new_line(values, i);
+
+    return c_line;
 
 }
 
 /**
-* Skip the current line the file.
+* Skip the current line of the file.
 *	 reader: The csv_reader containing the document.
 */
 void next_line(csv_reader *reader) {

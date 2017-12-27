@@ -62,16 +62,18 @@ int get_number_of_nodes(struct node *root) {
 *	   goal: Pointer to the pointer of the node that will be returned.
 *			 Must be initialized to work properly.
 */
-static struct node *get_node_at_index_util(struct node **root, int goal_i, int *curr_i, struct node **goal) {
+static struct node *get_node_at_index_util(
+	struct node **root, int goal_i, int *curr_i, struct node **goal) {
 
 	if (goal_i < 0) return NULL;
 	if (goal_i == 0) return *root;
 
+	struct node **children = get_children(root);
+
 	// Recursively loop through the tree
 	// until the index is reached.
 	for (int i = 0; i < get_num_children(*root); i++) {
-		struct node *child = malloc(sizeof(struct node));
-		child = get_children(root)[i];
+		struct node *child = children[i];
 
 		(*curr_i)++;
 
@@ -79,12 +81,14 @@ static struct node *get_node_at_index_util(struct node **root, int goal_i, int *
 		else get_node_at_index_util(&child, goal_i, curr_i, goal);
 	}
 
+	free(children);
+	
 	return *goal;
 }
 
 
 /**
-* A wrapper function to make calling get_node_at_index_util() simpler.
+* A wrapper function to make calling get_node_at_index_util simpler.
 *	root: The root node.
 *	goal: The index to search for.
 */
@@ -146,6 +150,7 @@ int get_max_tree_depth(struct node *root) {
 *	     curr_i: The current_index in the tree. This is necessary to be a pointer
 *			     as it must maintain value throughout seperate recursion loops.
 *	 curr_depth: The current depth in the tree. 
+*		i_depth: The max depth so far.
 */
 static int get_depth_at_index_util(struct node *root, int goal_i,
 	int *curr_i, int curr_depth, int *i_depth) {
@@ -156,13 +161,17 @@ static int get_depth_at_index_util(struct node *root, int goal_i,
 		*i_depth = curr_depth;
 	}
 
+	struct node **children = get_children(&root);
+	
 	for (int i = 0; (*i_depth == -1) && i < get_num_children(root); i++) {
-		struct node *child = get_children(&root)[i];
+		struct node *child = children[i];
 
 		(*curr_i)++;
 
 		*i_depth = get_depth_at_index_util(child, goal_i, curr_i, curr_depth + 1, i_depth);
 	}
+
+	free(children);
 
 	return *i_depth;
 }
@@ -190,7 +199,7 @@ int get_depth_at_index(struct node *node, int goal_i) {
 *				0 = left side
 *				1 = right side
 *			Use the macros LEFT_SIDE and RIGHT_SIDE defined in
-*			the header.
+*			binary_tree.h
 */
 static struct node *append_node_util(struct node **node, char value, bool side) {
 	struct node *node_new = new_node(value);
@@ -262,6 +271,7 @@ bool matches(struct node *n1, struct node *n2) {
 */
 struct node **get_children(struct node **root) {
 	short l = 0, r = 0;
+
 	// Check that the root has a left and right descendent.
 	if ((*root)->left)  l = 1;
 	if ((*root)->right) r = 1;
@@ -295,6 +305,10 @@ struct node *new_node(char v) {
 	return node;
 }
 
+/**
+* Recursively deallocate a node.
+*	node: The node to deallocate.
+*/
 void free_node(struct node *node) {
 	if (node->left) free_node(node->left);
 	if (node->right) free_node(node->right);

@@ -8,12 +8,12 @@
 
 /**
 * A structure to represent a binary tree node
-value: The value of the node. Can be any mathematical terminal or
-function with an arity of 2 or less.
-left: The child of this node in its left branch. Can be any valid
-pointer value to a struct node (such as NULL).
-right: The child of this node in its left branch. Can be any valid
-pointer value to a struct node (such as NULL).
+* value: The value of the node. Can be any mathematical terminal or
+* function with an arity of 2 or less.
+*      left: The child of this node in its left branch. Can be any valid
+*		     pointer value to a struct node (such as NULL).
+*     right: The child of this node in its left branch. Can be any valid
+*			 pointer value to a struct node (such as NULL).
 */
 struct node {
 	char value;

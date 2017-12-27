@@ -30,7 +30,8 @@ ini_parser *create_ini_parser(char *file) {
 }
 
 /**
-* Deallocate memory for parser.
+* Deallocate a parser.
+*	p: The parser to deallocate.
 */
 void free_parser(ini_parser *p) {
 	for (int i = 0; i < p->num_sections; i++) {
@@ -84,6 +85,7 @@ ini_section *get_sections(FILE *file) {
 	ini_section *sections = malloc(sizeof(struct ini_section) * get_num_sections(file));
 	int sec_i = 0;
 	int i = 0;
+	
 	while (i < n) {
 		int len = len_section(lines, i);
 		char *header = lines[i];
@@ -211,8 +213,8 @@ int num_lines(char **lines) {
 /**
 * Get the number of sections in a file.
 * Should not be called except before or during the constructor.
-* To get number of sections elsewhere, use the readily defined variable
-* in the ini_parser (ini_parser.num_selections).
+* To get number of sections elsewhere, use the integer member 
+* "num_selections".
 *	 file: The file to parse.
 */
 static int get_num_sections(FILE *file) {

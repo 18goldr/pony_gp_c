@@ -14,11 +14,11 @@ bool is_empty(struct queue *q) {
 *	 node: The value of the q_node.
 */
 struct q_node *new_q_node(struct node *node) {
-	struct q_node *tmp = malloc(sizeof(struct q_node));
-	tmp->value = node;
-	tmp->next = NULL;
+	struct q_node *q = malloc(sizeof(struct q_node));
+	q->value = node;
+	q->next = NULL;
 
-	return tmp;
+	return q;
 }
 
 /**
@@ -85,8 +85,8 @@ int queue_size(struct queue *q) {
 */
 void deinit_queue(struct queue *q) {
 	while (q->front) {
-		struct queue *tmp = q->front;
+		struct q_node *front = q->front;
 		q->front = q->front->next;
-		free(tmp);
+		free(front);
 	}
 }
