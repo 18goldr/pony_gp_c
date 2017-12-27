@@ -66,7 +66,11 @@ Runs for `generations`
 `Initial tree nr`: number `nodes`: number of nodes in tree `max_depth`: max tree depth `tree`: symbols in tree
 
 ### Generation Statistics
+<<<<<<< HEAD
 `Generation`: generation number, `duration`: evaluation time, `fit_ave`: average fitness of the generation, `size_ave`: average number of nodes in the generation amongst all solutions, `depth_ave`: average max_tree depth,`max_size`: maximum number of nodes, `max_depth`: maximum depth, `max_fit`: maximum fitness `best_solution`: {`'genome'`: individual formula/tree, `'fitness'`: fitness of genome}
+=======
+`Generation`: generation number, `duration`: evaluation time, `fit_ave`: average fitness of the generation, `size_ave`: average number of nodes in the generation amongst all solutions, `depth_ave`: average max_tree depth,`max_size`: maximum number of nodes, `max_depth`: maximum depth, `max_fit`: maximum fitnessm `best_solution`: {`'genome'`: individual formula/tree, `'fitness'`: fitness of genome}
+>>>>>>> 9c56a56480caebc127ca9217bba103eb2a5a1d8f
 
 ### Best Solution Statistics
 ```
