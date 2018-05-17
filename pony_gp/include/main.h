@@ -15,6 +15,7 @@
 #include "../include/params.h"
 #include "../include/config_parser.h"
 #include "../include/csv_parser.h"
+#include "include/data.h"
 
 struct individual {
     struct node *genome;

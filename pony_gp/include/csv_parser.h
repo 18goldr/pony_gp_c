@@ -3,6 +3,8 @@
 #define PONY_GP_CSV_PARSER_H
 
 #include <stdio.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include "../include/file_util.h"
 #include "../include/misc_util.h"
 #include "../include/csv_data.h"
