@@ -1,4 +1,3 @@
-IN ORDER TO RUN, YOU MUST CHANGE THE VARIABLES CONFIG_DIR AND CSV_DIR TO MATCH THE PATH TO YOUR CSV FILE AND CONFIG FILE.
 
 `pony_gp` is an implementation of Genetic Programming(GP), 
 (see <http://geneticprogramming.com>). The purpose of `pony_gp` is to describe how 
