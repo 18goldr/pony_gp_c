@@ -45,7 +45,7 @@ void enqueue(struct queue *q, struct node *node) {
 
     q->size++;
 
-    if (!q->rear) { // TODO check if this is equivalent to is_empty()
+    if (!q->rear) {
         q->front = q->rear = n;
         return;
     }
@@ -60,7 +60,7 @@ void enqueue(struct queue *q, struct node *node) {
  * @return The front node that was removed.
  */
 struct q_node *dequeue(struct queue *q) {
-    if (!q->front) { // TODO check if this is equivalent to is_empty()
+    if (!q->front) {
         return NULL;
     }
 

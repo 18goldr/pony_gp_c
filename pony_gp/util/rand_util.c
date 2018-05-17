@@ -30,8 +30,6 @@ void start_srand() {
  * @return The randomly generated integer.
  */
 int get_randint(int min, int max) {
-    start_srand();
-
     return (rand() % (max + 1 - min)) + min;
 }
 
@@ -40,7 +38,36 @@ int get_randint(int min, int max) {
  * @return A randomly generated double.
  */
 double get_rand_probability() {
-    start_srand();
-
     return (double)rand() / (double)RAND_MAX;
+}
+
+/**
+ * Return an an of random indexes of `n` length.
+ * @param n Length of the array.
+ * @return The random indexes.
+ */
+int *rand_indexes(int n) {
+    int *indexes = allocate_m(sizeof(int) * n);
+
+    for (int i=0; i < n; i++) {
+        indexes[i] = i;
+    }
+
+    shuffle(indexes, n);
+
+    return indexes;
+}
+
+/**
+ * Randomly rearrange `n` elements of an array.
+ * In order to work effectively, `n` must be smaller than RAND_MAX.
+ * @param a The array to shuffle.
+ * @param n The length of the array.
+ */
+void shuffle(int *a, int n) {
+    for (int i = n - 1; i > 0; i--) {
+        int j = get_randint(0, i + 1);
+
+        swap(&a[i], &a[j]);
+    }
 }

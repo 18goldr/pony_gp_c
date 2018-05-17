@@ -31,3 +31,13 @@ void remove_spaces(char *str) {
 
     *i = 0;
 }
+
+/**
+ * Swap two integers.
+ * @param a, b Integers to swap.
+ */
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}

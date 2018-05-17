@@ -5,45 +5,46 @@
 		<Option title="pony_gp"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\include\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug"/>
+				<Option working_dir="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug"/>
+				<Option working_dir="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug"/>
+				<Option working_dir="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="pony_gp">
-				<Option output="/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/pony_gp" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug"/>
+				<Option output="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/pony_gp" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
@@ -51,19 +52,20 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 pony_gp"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 pony_gp"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="pony_gp/fast">
-				<Option output="/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/pony_gp" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug"/>
+				<Option output="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/pony_gp" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
@@ -71,81 +73,87 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 pony_gp/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 pony_gp/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/binary_tree.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/binary_tree.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/config_parser.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/config_parser.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/csv_data.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/csv_data.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/csv_parser.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/csv_parser.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/file_util.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/file_util.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/hashmap.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/hashmap.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/main.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/main.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/memmngr.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/memmngr.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/misc_util.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/misc_util.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/params.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/params.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/queue.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/queue.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/include/rand_util.h">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/rand_util.h">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/main.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/main.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/binary_tree.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/binary_tree.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/config_parser.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/config_parser.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/csv_parser.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/csv_parser.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/file_util.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/file_util.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/hashmap.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/hashmap.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/memmngr.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/memmngr.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/misc_util.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/misc_util.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/queue.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/queue.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/util/rand_util.c">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/rand_util.c">
 			<Option target="pony_gp"/>
 		</Unit>
-		<Unit filename="/home/robbie/Dropbox/CLionProjects/pony_gp/CMakeLists.txt">
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\include\"/>
+		</Unit>
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/data.h.in">
+			<Option virtualFolder="CMake Files\include\"/>
 		</Unit>
 	</Project>
 </CodeBlocks_project_file>

@@ -43,10 +43,10 @@ RM = /home/robbie/Downloads/clion-2017.3.3/bin/cmake/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/robbie/Dropbox/CLionProjects/pony_gp
+CMAKE_SOURCE_DIR = /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug
+CMAKE_BINARY_DIR = /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/pony_gp.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/pony_gp.dir/flags.make
 
 CMakeFiles/pony_gp.dir/main.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/main.c.o: ../main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/pony_gp.dir/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/main.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/pony_gp.dir/main.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/main.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/main.c
 
 CMakeFiles/pony_gp.dir/main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/main.c > CMakeFiles/pony_gp.dir/main.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/main.c > CMakeFiles/pony_gp.dir/main.c.i
 
 CMakeFiles/pony_gp.dir/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/main.c -o CMakeFiles/pony_gp.dir/main.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/main.c -o CMakeFiles/pony_gp.dir/main.c.s
 
 CMakeFiles/pony_gp.dir/main.c.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/pony_gp.dir/main.c.o.provides.build: CMakeFiles/pony_gp.dir/main.c.o
 
 CMakeFiles/pony_gp.dir/util/memmngr.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/memmngr.c.o: ../util/memmngr.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/pony_gp.dir/util/memmngr.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/memmngr.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/memmngr.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/pony_gp.dir/util/memmngr.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/memmngr.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/memmngr.c
 
 CMakeFiles/pony_gp.dir/util/memmngr.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/memmngr.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/memmngr.c > CMakeFiles/pony_gp.dir/util/memmngr.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/memmngr.c > CMakeFiles/pony_gp.dir/util/memmngr.c.i
 
 CMakeFiles/pony_gp.dir/util/memmngr.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/memmngr.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/memmngr.c -o CMakeFiles/pony_gp.dir/util/memmngr.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/memmngr.c -o CMakeFiles/pony_gp.dir/util/memmngr.c.s
 
 CMakeFiles/pony_gp.dir/util/memmngr.c.o.requires:
 
@@ -107,16 +107,16 @@ CMakeFiles/pony_gp.dir/util/memmngr.c.o.provides.build: CMakeFiles/pony_gp.dir/u
 
 CMakeFiles/pony_gp.dir/util/binary_tree.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/binary_tree.c.o: ../util/binary_tree.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/pony_gp.dir/util/binary_tree.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/binary_tree.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/binary_tree.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/pony_gp.dir/util/binary_tree.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/binary_tree.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/binary_tree.c
 
 CMakeFiles/pony_gp.dir/util/binary_tree.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/binary_tree.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/binary_tree.c > CMakeFiles/pony_gp.dir/util/binary_tree.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/binary_tree.c > CMakeFiles/pony_gp.dir/util/binary_tree.c.i
 
 CMakeFiles/pony_gp.dir/util/binary_tree.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/binary_tree.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/binary_tree.c -o CMakeFiles/pony_gp.dir/util/binary_tree.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/binary_tree.c -o CMakeFiles/pony_gp.dir/util/binary_tree.c.s
 
 CMakeFiles/pony_gp.dir/util/binary_tree.c.o.requires:
 
@@ -131,16 +131,16 @@ CMakeFiles/pony_gp.dir/util/binary_tree.c.o.provides.build: CMakeFiles/pony_gp.d
 
 CMakeFiles/pony_gp.dir/util/queue.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/queue.c.o: ../util/queue.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/pony_gp.dir/util/queue.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/queue.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/queue.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/pony_gp.dir/util/queue.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/queue.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/queue.c
 
 CMakeFiles/pony_gp.dir/util/queue.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/queue.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/queue.c > CMakeFiles/pony_gp.dir/util/queue.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/queue.c > CMakeFiles/pony_gp.dir/util/queue.c.i
 
 CMakeFiles/pony_gp.dir/util/queue.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/queue.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/queue.c -o CMakeFiles/pony_gp.dir/util/queue.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/queue.c -o CMakeFiles/pony_gp.dir/util/queue.c.s
 
 CMakeFiles/pony_gp.dir/util/queue.c.o.requires:
 
@@ -155,16 +155,16 @@ CMakeFiles/pony_gp.dir/util/queue.c.o.provides.build: CMakeFiles/pony_gp.dir/uti
 
 CMakeFiles/pony_gp.dir/util/rand_util.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/rand_util.c.o: ../util/rand_util.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/pony_gp.dir/util/rand_util.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/rand_util.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/rand_util.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/pony_gp.dir/util/rand_util.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/rand_util.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/rand_util.c
 
 CMakeFiles/pony_gp.dir/util/rand_util.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/rand_util.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/rand_util.c > CMakeFiles/pony_gp.dir/util/rand_util.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/rand_util.c > CMakeFiles/pony_gp.dir/util/rand_util.c.i
 
 CMakeFiles/pony_gp.dir/util/rand_util.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/rand_util.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/rand_util.c -o CMakeFiles/pony_gp.dir/util/rand_util.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/rand_util.c -o CMakeFiles/pony_gp.dir/util/rand_util.c.s
 
 CMakeFiles/pony_gp.dir/util/rand_util.c.o.requires:
 
@@ -179,16 +179,16 @@ CMakeFiles/pony_gp.dir/util/rand_util.c.o.provides.build: CMakeFiles/pony_gp.dir
 
 CMakeFiles/pony_gp.dir/util/hashmap.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/hashmap.c.o: ../util/hashmap.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/pony_gp.dir/util/hashmap.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/hashmap.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/hashmap.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/pony_gp.dir/util/hashmap.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/hashmap.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/hashmap.c
 
 CMakeFiles/pony_gp.dir/util/hashmap.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/hashmap.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/hashmap.c > CMakeFiles/pony_gp.dir/util/hashmap.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/hashmap.c > CMakeFiles/pony_gp.dir/util/hashmap.c.i
 
 CMakeFiles/pony_gp.dir/util/hashmap.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/hashmap.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/hashmap.c -o CMakeFiles/pony_gp.dir/util/hashmap.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/hashmap.c -o CMakeFiles/pony_gp.dir/util/hashmap.c.s
 
 CMakeFiles/pony_gp.dir/util/hashmap.c.o.requires:
 
@@ -203,16 +203,16 @@ CMakeFiles/pony_gp.dir/util/hashmap.c.o.provides.build: CMakeFiles/pony_gp.dir/u
 
 CMakeFiles/pony_gp.dir/util/misc_util.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/misc_util.c.o: ../util/misc_util.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/pony_gp.dir/util/misc_util.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/misc_util.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/misc_util.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/pony_gp.dir/util/misc_util.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/misc_util.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/misc_util.c
 
 CMakeFiles/pony_gp.dir/util/misc_util.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/misc_util.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/misc_util.c > CMakeFiles/pony_gp.dir/util/misc_util.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/misc_util.c > CMakeFiles/pony_gp.dir/util/misc_util.c.i
 
 CMakeFiles/pony_gp.dir/util/misc_util.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/misc_util.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/misc_util.c -o CMakeFiles/pony_gp.dir/util/misc_util.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/misc_util.c -o CMakeFiles/pony_gp.dir/util/misc_util.c.s
 
 CMakeFiles/pony_gp.dir/util/misc_util.c.o.requires:
 
@@ -227,16 +227,16 @@ CMakeFiles/pony_gp.dir/util/misc_util.c.o.provides.build: CMakeFiles/pony_gp.dir
 
 CMakeFiles/pony_gp.dir/util/config_parser.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/config_parser.c.o: ../util/config_parser.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/pony_gp.dir/util/config_parser.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/config_parser.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/config_parser.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/pony_gp.dir/util/config_parser.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/config_parser.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/config_parser.c
 
 CMakeFiles/pony_gp.dir/util/config_parser.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/config_parser.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/config_parser.c > CMakeFiles/pony_gp.dir/util/config_parser.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/config_parser.c > CMakeFiles/pony_gp.dir/util/config_parser.c.i
 
 CMakeFiles/pony_gp.dir/util/config_parser.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/config_parser.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/config_parser.c -o CMakeFiles/pony_gp.dir/util/config_parser.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/config_parser.c -o CMakeFiles/pony_gp.dir/util/config_parser.c.s
 
 CMakeFiles/pony_gp.dir/util/config_parser.c.o.requires:
 
@@ -251,16 +251,16 @@ CMakeFiles/pony_gp.dir/util/config_parser.c.o.provides.build: CMakeFiles/pony_gp
 
 CMakeFiles/pony_gp.dir/util/file_util.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/file_util.c.o: ../util/file_util.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/pony_gp.dir/util/file_util.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/file_util.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/file_util.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/pony_gp.dir/util/file_util.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/file_util.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/file_util.c
 
 CMakeFiles/pony_gp.dir/util/file_util.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/file_util.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/file_util.c > CMakeFiles/pony_gp.dir/util/file_util.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/file_util.c > CMakeFiles/pony_gp.dir/util/file_util.c.i
 
 CMakeFiles/pony_gp.dir/util/file_util.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/file_util.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/file_util.c -o CMakeFiles/pony_gp.dir/util/file_util.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/file_util.c -o CMakeFiles/pony_gp.dir/util/file_util.c.s
 
 CMakeFiles/pony_gp.dir/util/file_util.c.o.requires:
 
@@ -275,16 +275,16 @@ CMakeFiles/pony_gp.dir/util/file_util.c.o.provides.build: CMakeFiles/pony_gp.dir
 
 CMakeFiles/pony_gp.dir/util/csv_parser.c.o: CMakeFiles/pony_gp.dir/flags.make
 CMakeFiles/pony_gp.dir/util/csv_parser.c.o: ../util/csv_parser.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/pony_gp.dir/util/csv_parser.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/csv_parser.c.o   -c /home/robbie/Dropbox/CLionProjects/pony_gp/util/csv_parser.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/pony_gp.dir/util/csv_parser.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/pony_gp.dir/util/csv_parser.c.o   -c /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/csv_parser.c
 
 CMakeFiles/pony_gp.dir/util/csv_parser.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pony_gp.dir/util/csv_parser.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/CLionProjects/pony_gp/util/csv_parser.c > CMakeFiles/pony_gp.dir/util/csv_parser.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/csv_parser.c > CMakeFiles/pony_gp.dir/util/csv_parser.c.i
 
 CMakeFiles/pony_gp.dir/util/csv_parser.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pony_gp.dir/util/csv_parser.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/CLionProjects/pony_gp/util/csv_parser.c -o CMakeFiles/pony_gp.dir/util/csv_parser.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/csv_parser.c -o CMakeFiles/pony_gp.dir/util/csv_parser.c.s
 
 CMakeFiles/pony_gp.dir/util/csv_parser.c.o.requires:
 
@@ -325,7 +325,7 @@ pony_gp: CMakeFiles/pony_gp.dir/util/file_util.c.o
 pony_gp: CMakeFiles/pony_gp.dir/util/csv_parser.c.o
 pony_gp: CMakeFiles/pony_gp.dir/build.make
 pony_gp: CMakeFiles/pony_gp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking C executable pony_gp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking C executable pony_gp"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/pony_gp.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -351,6 +351,6 @@ CMakeFiles/pony_gp.dir/clean:
 .PHONY : CMakeFiles/pony_gp.dir/clean
 
 CMakeFiles/pony_gp.dir/depend:
-	cd /home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robbie/Dropbox/CLionProjects/pony_gp /home/robbie/Dropbox/CLionProjects/pony_gp /home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug /home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug /home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/CMakeFiles/pony_gp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/CMakeFiles/pony_gp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/pony_gp.dir/depend
 

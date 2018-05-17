@@ -1,4 +1,4 @@
-# Install script for directory: /home/robbie/Dropbox/CLionProjects/pony_gp
+# Install script for directory: /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/robbie/Dropbox/CLionProjects/pony_gp/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -4,6 +4,17 @@
 double **fitness_cases;
 double *targets;
 
+int fitness_len;
+int targets_len;
+int num_lines;
+int num_columns;
+
+double **test_cases;
+double *test_targets;
+double **training_cases;
+double *training_targets;
+
+
 /**
  * Parse a CSV file for any variables/constants then add them
  * to a symbols instance. Ignore the last column because that is
@@ -98,4 +109,53 @@ void parse_exemplars(FILE *file) {
 
     fitness_cases[f_i] = NULL;
     targets[t_i] = NAN;
+
+    fitness_len = f_i;
+    targets_len = t_i;
+}
+
+/**
+ * Split the exemplars into testing and training data.
+ * @param file The examplar file to parse.
+ */
+void set_test_and_train_data(FILE *file) {
+
+    parse_exemplars(file);
+
+    int fitness_split = (int)floor(fitness_len * TEST_TRAIN_SPLIT);
+
+    training_cases = allocate_m(sizeof(double *) * (fitness_split));
+    test_cases = allocate_m(sizeof(double *) * (fitness_len - fitness_split));
+    training_targets = allocate_m(sizeof(double) * (fitness_split));
+    test_targets = allocate_m(sizeof(double) * (targets_len - fitness_split));
+
+    // Allocate the inner arrays.
+    for (int i=0; i < fitness_split; i++) {
+        training_cases[i] = allocate_m(sizeof(double) * num_columns);
+
+        if (i >= fitness_len) {
+            test_cases[i - fitness_split] = allocate_m(sizeof(double) * num_columns);
+        }
+    }
+
+    // Randomize index order access.
+    // This function call is what causes the error. Specifically,
+    // the call to rand() within the function results in the errors.
+    int *fit_rand_idxs = rand_indexes(fitness_len);
+
+    int rand_i;
+
+    // Split fitness and target data into training and test cases.
+    for (int i=0; i < fitness_len; i++) {
+        rand_i = fit_rand_idxs[i];
+
+        if (i >= fitness_split) {
+            test_cases[i - fitness_split] = fitness_cases[rand_i];
+            test_targets[i - fitness_split] = targets[rand_i];
+        } else {
+            training_cases[i] = fitness_cases[rand_i];
+            training_targets[i] = targets[rand_i];
+        }
+    }
+
 }

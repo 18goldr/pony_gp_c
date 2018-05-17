@@ -2,10 +2,6 @@
 
 struct symbols *symbols;
 
-// TODO implement automatic file finder.
-char *CONFIG_DIR = "/home/robbie/Dropbox/CLionProjects/pony_gp/data/configs.ini";
-char *CSV_DIR = "/home/robbie/Dropbox/CLionProjects/pony_gp/data/fitness_cases.csv";
-
 int main() {
     setup();
 
@@ -30,13 +26,14 @@ void setup() {
     set_params(config, symbols);
     fclose(config);
 
-    FILE *csv = fopen(CSV_DIR, "r");
-    csv_add_constants(csv, symbols);
-    parse_exemplars(csv);
-    fclose(csv);
-
     // Set the seed
     set_seed(SEED);
+    start_srand();
+
+    FILE *csv = fopen(CSV_DIR, "r");
+    csv_add_constants(csv, symbols);
+    set_test_and_train_data(csv);
+    fclose(csv);
 
     // TODO implement the rest of this function.
 }

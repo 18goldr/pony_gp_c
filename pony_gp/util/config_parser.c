@@ -131,3 +131,4 @@ void set_params(FILE *file, struct symbols *s) {
     s->term_size = t_i;
     s->func_size = f_i;
 }
+

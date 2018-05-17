@@ -6,5 +6,5 @@ C_FLAGS = -g   -std=gnu99
 
 C_DEFINES = 
 
-C_INCLUDES = 
+C_INCLUDES = -I/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug 
 

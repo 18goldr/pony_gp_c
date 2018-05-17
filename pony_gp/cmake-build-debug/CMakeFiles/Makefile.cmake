@@ -26,6 +26,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "../CMakeLists.txt"
   "CMakeFiles/3.9.6/CMakeCCompiler.cmake"
   "CMakeFiles/3.9.6/CMakeSystem.cmake"
+  "../include/CMakeLists.txt"
+  "../include/data.h.in"
   )
 
 # The corresponding makefile is:
@@ -36,6 +38,7 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
+  "include/data.h"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
