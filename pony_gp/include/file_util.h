@@ -15,6 +15,5 @@ char *get_line(FILE *file);
 char **get_lines(FILE *file);
 int get_num_lines(FILE *file);
 void reset_file_position(FILE *file);
-void rmnl(char *line);
 
 #endif //PONY_GP_FILE_UTIL_H

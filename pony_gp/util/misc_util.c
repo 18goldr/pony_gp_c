@@ -32,6 +32,11 @@ void remove_spaces(char *str) {
     *i = 0;
 }
 
+void remove_last_newline(char *str) {
+    str[strcspn(str, "\n")] = '\0';
+}
+
+
 /**
  * Swap two integers.
  * @param a, b Integers to swap.

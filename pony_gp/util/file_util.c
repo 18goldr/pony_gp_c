@@ -1,6 +1,6 @@
 #include "../include/file_util.h"
 
-int MAX_LINE_LENGTH = 2048;
+int MAX_LINE_LENGTH = 4096;
 char comment_sym = '#';
 const char delimeter[2] = ":";
 const char const_delimeter[2] = ",";
@@ -42,8 +42,9 @@ int get_num_lines(FILE *file) {
     return count;
 }
 
+
 /**
- * Get the next line of a file.
+ * Get the next line of a file. Remove newline character.
  * @param file The file to parse.
  * @return The next line of the file.
  */
@@ -60,8 +61,6 @@ char *get_line(FILE *file) {
         // If end of file, return NULL.
         if (!fgets(line, MAX_LINE_LENGTH, file)) return NULL;
 
-        // Remove newline character
-        line[strcspn(line, "\n")] = '\0';
     }
 
     return line;
@@ -73,32 +72,30 @@ char *get_line(FILE *file) {
  * @return The array of lines.
  */
 char **get_lines(FILE *file) {
+    // TODO fix last line entry from being NULL
+
+    char **lines = allocate_m(sizeof(char *) * get_num_lines(file));
+
     reset_file_position(file);
 
-    char **lines = allocate_m(sizeof(char *) * (get_num_lines(file) + 1)); // Leave space for NULL.
+    char line[MAX_LINE_LENGTH];
 
-    reset_file_position(file);
+    int i = 0;
 
-    char *line;
-
-    int i=0;
-
-    while ((line = get_line(file))) {
-        if (line[0] != comment_sym) {
-            lines[i] = allocate_m(strlen(line));
-            lines[i++] = line;
+    while (fgets(line, MAX_LINE_LENGTH, file)) {
+        if (line[0] != comment_sym && strcmp(line, "\n")) { // TODO make sure newline works for all operating systems
+            lines[i] = strdup(line);
+            i++;
         }
     }
-
-    lines[i] = NULL;
-
     return lines;
 }
+
 
 /**
  * Reset the file position to the beginning of the file.
  * A wrapper function for fseek. Use this instead of rewind.
- * @param file
+ * @param file The file pointer.
  */
 void reset_file_position(FILE *file) {
     fseek(file, 0L, SEEK_SET);

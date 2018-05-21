@@ -4,8 +4,6 @@
 
 #include <stdbool.h>
 
-// DEFAULT VALUES
-// SHOULD ONLY BE MODIFIED IN CONFIG.INI
 extern bool VERBOSE;
 extern int POPULATION_SIZE;
 extern int MAX_DEPTH;

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "../include/config_parser.h"
 
 bool VERBOSE;
@@ -30,9 +31,16 @@ void set_params(FILE *file, struct symbols *s) {
 
     char **lines = get_lines(file);
 
-    for (int i=0; i < get_num_lines(file); i++) {
+    for (int i = 0; i < get_num_lines(file); i++) {
+        printf("%s", lines[i]);
+    }
+
+    for (int i = 0; i < get_num_lines(file); i++) {
 
         char *line = lines[i];
+
+        if (!line) continue;
+
         // The side of the delimeter you are on.
         // false = left, true = right.
         bool side = false;
@@ -41,25 +49,30 @@ void set_params(FILE *file, struct symbols *s) {
 
             // Advance to the next line.
             line = lines[++i];
-            remove_spaces(line);
 
             // Keep adding key-value pairs until the program
             // reaches the next section (signified by square brackets).
-            while (line[0] != '[') {
+            while (line && line[0] != '[') {
+                remove_spaces(line);
+                remove_last_newline(line);
+
                 char *key;
                 char *value;
 
                 for (char *t = strtok(line, delimeter); t != NULL; t = strtok(NULL, delimeter), side = !side) {
-                    if (!side) key = t;
-                    else value = t;
+                    if (!side) {
+                        key = strdup(t);
+                    }
+                    else {
+                        value = strdup(t);
+                    }
                 }
 
                 put_hashmap(s->arities, key, atof(value));
-
+                free(value);
                 s->functions[f_i++] = key[0];
 
                 line = lines[++i];
-                remove_spaces(line);
             }
         }
 
@@ -67,6 +80,7 @@ void set_params(FILE *file, struct symbols *s) {
 
             line = lines[++i];
             remove_spaces(line);
+            remove_last_newline(line);
 
             // Seperate by the colon.
             for (char *t = strtok(line, delimeter); t != NULL; t = strtok(NULL, delimeter), side = !side) {
@@ -84,23 +98,25 @@ void set_params(FILE *file, struct symbols *s) {
         if (strstr(line, "search_parameters")) {
             // Seperate by the colon.
             line = lines[++i];
-            remove_spaces(line);
 
-            while(line != NULL) {
+            while (line) {
+                remove_spaces(line);
+                remove_last_newline(line);
+
                 for (char *t = strtok(line, delimeter); t != NULL; t = strtok(NULL, delimeter), side = !side) {
                     if (side) {
                         double td = atof(t);
 
                         if (strstr(line, "population_size")) {
-                            POPULATION_SIZE = (int)td;
+                            POPULATION_SIZE = (int) td;
                         } else if (strstr(line, "max_depth")) {
-                            MAX_DEPTH = (int)td;
+                            MAX_DEPTH = (int) td;
                         } else if (strstr(line, "elite_size")) {
-                            ELITE_SIZE = (int)td;
+                            ELITE_SIZE = (int) td;
                         } else if (strstr(line, "generations")) {
-                            GENERATIONS = (int)td;
+                            GENERATIONS = (int) td;
                         } else if (strstr(line, "tournament_size")) {
-                            TOURNAMENT_SIZE = (int)td;
+                            TOURNAMENT_SIZE = (int) td;
                         } else if (strstr(line, "seed")) {
                             SEED = td;
                         } else if (strstr(line, "crossover_probability")) {
@@ -114,7 +130,7 @@ void set_params(FILE *file, struct symbols *s) {
                         // Default verbose to false unless defined
                         // in the config file.
                         if (strstr(line, "verbose")) {
-                            VERBOSE = (bool)td;
+                            VERBOSE = (bool) td;
                         } else {
                             VERBOSE = false;
                         }
@@ -122,10 +138,14 @@ void set_params(FILE *file, struct symbols *s) {
                 }
 
                 line = lines[++i];
-                remove_spaces(line);
             }
         }
     }
+
+    for (int i = 0; i < get_num_lines(file); i++) { // TODO make automatic
+        free(lines[i]);
+    }
+
     s->functions[f_i] = '\0';
     s->terminals[t_i] = '\0';
     s->term_size = t_i;

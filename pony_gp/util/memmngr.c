@@ -145,8 +145,13 @@ void print_malloc_error() {
  * @param p The pointer to the memory address.
  */
 void free_pointer(void *p) {
+    if (!p) {
+        printf("Memory address is NULL");
+        return;
+    }
+
     bool found = false;
-    for (int i=0; i < num_elements; i++) {
+    for (int i = 0; i < num_elements; i++) {
         if (p == memory[i]) {
             found = true;
             free(memory[i]);

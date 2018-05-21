@@ -155,6 +155,8 @@ include/main.h
 /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/binary_tree.h
 
 /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/config_parser.c
+assert.h
+-
 ../include/config_parser.h
 /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/config_parser.h
 

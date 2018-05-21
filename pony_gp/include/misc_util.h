@@ -26,5 +26,6 @@ struct symbols {
 bool symbol_is_valid(char sym, struct hashmap *arities);
 void remove_spaces(char *str);
 void swap(int *a, int *b);
+void remove_last_newline(char *str);
 
 #endif //PONY_GP_MISC_UTIL_H

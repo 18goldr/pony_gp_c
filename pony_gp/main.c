@@ -5,7 +5,7 @@ struct symbols *symbols;
 int main() {
     setup();
 
-    run_tests();
+//    run_tests();
 
     destroy_memory();
 
@@ -25,14 +25,14 @@ void setup() {
     FILE *config = fopen(CONFIG_DIR, "r");
     set_params(config, symbols);
     fclose(config);
-
+    print_hashmap(symbols->arities);
     // Set the seed
     set_seed(SEED);
     start_srand();
 
     FILE *csv = fopen(CSV_DIR, "r");
     csv_add_constants(csv, symbols);
-    set_test_and_train_data(csv);
+//    set_test_and_train_data(csv);
     fclose(csv);
 
     // TODO implement the rest of this function.

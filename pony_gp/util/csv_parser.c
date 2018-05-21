@@ -86,6 +86,7 @@ void parse_exemplars(FILE *file) {
     for (int i=1; i < num_lines; i++) {
         line = lines[i];
         remove_spaces(line);
+        remove_last_newline(line);
 
         // Current column
         int c = 0;
@@ -116,7 +117,7 @@ void parse_exemplars(FILE *file) {
 
 /**
  * Split the exemplars into testing and training data.
- * @param file The examplar file to parse.
+ * @param file The exemplar file to parse.
  */
 void set_test_and_train_data(FILE *file) {
 
@@ -141,21 +142,21 @@ void set_test_and_train_data(FILE *file) {
     // Randomize index order access.
     // This function call is what causes the error. Specifically,
     // the call to rand() within the function results in the errors.
-    int *fit_rand_idxs = rand_indexes(fitness_len);
-
-    int rand_i;
-
-    // Split fitness and target data into training and test cases.
-    for (int i=0; i < fitness_len; i++) {
-        rand_i = fit_rand_idxs[i];
-
-        if (i >= fitness_split) {
-            test_cases[i - fitness_split] = fitness_cases[rand_i];
-            test_targets[i - fitness_split] = targets[rand_i];
-        } else {
-            training_cases[i] = fitness_cases[rand_i];
-            training_targets[i] = targets[rand_i];
-        }
-    }
+//    int *fit_rand_idxs = rand_indexes(fitness_len);
+//
+//    int rand_i;
+//
+//    // Split fitness and target data into training and test cases.
+//    for (int i=0; i < fitness_len; i++) {
+//        rand_i = fit_rand_idxs[i];
+//
+//        if (i >= fitness_split) {
+//            test_cases[i - fitness_split] = fitness_cases[rand_i];
+//            test_targets[i - fitness_split] = targets[rand_i];
+//        } else {
+//            training_cases[i] = fitness_cases[rand_i];
+//            training_targets[i] = targets[rand_i];
+//        }
+//    }
 
 }
