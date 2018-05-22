@@ -44,35 +44,11 @@ int get_num_lines(FILE *file) {
 
 
 /**
- * Get the next line of a file. Remove newline character.
- * @param file The file to parse.
- * @return The next line of the file.
- */
-char *get_line(FILE *file) {
-    char *line = allocate_m(MAX_LINE_LENGTH);
-
-    fgets(line, MAX_LINE_LENGTH, file);
-
-    // Remove newline character
-    line[strcspn(line, "\n")] = '\0';
-
-    // Ignore line if blank
-    while (!line[0]) {
-        // If end of file, return NULL.
-        if (!fgets(line, MAX_LINE_LENGTH, file)) return NULL;
-
-    }
-
-    return line;
-}
-
-/**
  * Return an array of strings containing each line of the file.
  * @param file The file to parse.
  * @return The array of lines.
  */
 char **get_lines(FILE *file) {
-    // TODO fix last line entry from being NULL
 
     char **lines = allocate_m(sizeof(char *) * get_num_lines(file));
 
@@ -83,11 +59,15 @@ char **get_lines(FILE *file) {
     int i = 0;
 
     while (fgets(line, MAX_LINE_LENGTH, file)) {
-        if (line[0] != comment_sym && strcmp(line, "\n")) { // TODO make sure newline works for all operating systems
-            lines[i] = strdup(line);
-            i++;
+        if (line[0] != comment_sym && strcmp(line, "\n")) {
+
+            // Leave space for null terminating character
+            lines[i] = allocate_m(strlen(line) + 1);
+            strncpy(lines[i++], line, strlen(line) + 1);
+
         }
     }
+
     return lines;
 }
 

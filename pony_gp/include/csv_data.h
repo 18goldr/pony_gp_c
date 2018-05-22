@@ -8,6 +8,8 @@ extern double *targets;
 extern int fitness_len;
 extern int targets_len;
 
+extern int fitness_split;
+
 extern double **test_cases;
 extern double *test_targets;
 extern double **training_cases;

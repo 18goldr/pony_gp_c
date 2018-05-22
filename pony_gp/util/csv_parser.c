@@ -9,6 +9,8 @@ int targets_len;
 int num_lines;
 int num_columns;
 
+int fitness_split;
+
 double **test_cases;
 double *test_targets;
 double **training_cases;
@@ -25,7 +27,9 @@ double *training_targets;
 void csv_add_constants(FILE *file, struct symbols *s) {
     fseek(file, 0L, SEEK_SET);
 
-    char *line = get_line(file);
+    char *line = allocate_m(MAX_LINE_LENGTH);
+    fgets(line, MAX_LINE_LENGTH, file);
+
     remove_spaces(line);
 
     int t_i = s->term_size;
@@ -49,7 +53,9 @@ void csv_add_constants(FILE *file, struct symbols *s) {
 int get_num_columns(FILE *file) {
     reset_file_position(file);
 
-    char *line = get_line(file);
+    char *line = allocate_m(MAX_LINE_LENGTH);
+    fgets(line, MAX_LINE_LENGTH, file);
+
     int count = 0;
 
     for (char *t = strtok(line, const_delimeter); t != NULL; t = strtok(NULL, const_delimeter)) {
@@ -123,7 +129,7 @@ void set_test_and_train_data(FILE *file) {
 
     parse_exemplars(file);
 
-    int fitness_split = (int)floor(fitness_len * TEST_TRAIN_SPLIT);
+    fitness_split = (int)floor(fitness_len * TEST_TRAIN_SPLIT);
 
     training_cases = allocate_m(sizeof(double *) * (fitness_split));
     test_cases = allocate_m(sizeof(double *) * (fitness_len - fitness_split));
@@ -142,21 +148,21 @@ void set_test_and_train_data(FILE *file) {
     // Randomize index order access.
     // This function call is what causes the error. Specifically,
     // the call to rand() within the function results in the errors.
-//    int *fit_rand_idxs = rand_indexes(fitness_len);
-//
-//    int rand_i;
-//
-//    // Split fitness and target data into training and test cases.
-//    for (int i=0; i < fitness_len; i++) {
-//        rand_i = fit_rand_idxs[i];
-//
-//        if (i >= fitness_split) {
-//            test_cases[i - fitness_split] = fitness_cases[rand_i];
-//            test_targets[i - fitness_split] = targets[rand_i];
-//        } else {
-//            training_cases[i] = fitness_cases[rand_i];
-//            training_targets[i] = targets[rand_i];
-//        }
-//    }
+    int *fit_rand_idxs = rand_indexes(fitness_len);
+
+    int rand_i;
+
+    // Split fitness and target data into training and test cases.
+    for (int i=0; i < fitness_len; i++) {
+        rand_i = fit_rand_idxs[i];
+
+        if (i >= fitness_split) {
+            test_cases[i - fitness_split] = fitness_cases[rand_i];
+            test_targets[i - fitness_split] = targets[rand_i];
+        } else {
+            training_cases[i] = fitness_cases[rand_i];
+            training_targets[i] = targets[rand_i];
+        }
+    }
 
 }

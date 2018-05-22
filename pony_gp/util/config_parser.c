@@ -32,10 +32,6 @@ void set_params(FILE *file, struct symbols *s) {
     char **lines = get_lines(file);
 
     for (int i = 0; i < get_num_lines(file); i++) {
-        printf("%s", lines[i]);
-    }
-
-    for (int i = 0; i < get_num_lines(file); i++) {
 
         char *line = lines[i];
 
@@ -61,15 +57,14 @@ void set_params(FILE *file, struct symbols *s) {
 
                 for (char *t = strtok(line, delimeter); t != NULL; t = strtok(NULL, delimeter), side = !side) {
                     if (!side) {
-                        key = strdup(t);
+                        key = t;
                     }
                     else {
-                        value = strdup(t);
+                        value = t;
                     }
                 }
 
                 put_hashmap(s->arities, key, atof(value));
-                free(value);
                 s->functions[f_i++] = key[0];
 
                 line = lines[++i];
@@ -140,10 +135,6 @@ void set_params(FILE *file, struct symbols *s) {
                 line = lines[++i];
             }
         }
-    }
-
-    for (int i = 0; i < get_num_lines(file); i++) { // TODO make automatic
-        free(lines[i]);
     }
 
     s->functions[f_i] = '\0';

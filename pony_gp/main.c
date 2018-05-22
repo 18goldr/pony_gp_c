@@ -25,14 +25,14 @@ void setup() {
     FILE *config = fopen(CONFIG_DIR, "r");
     set_params(config, symbols);
     fclose(config);
-    print_hashmap(symbols->arities);
+
     // Set the seed
     set_seed(SEED);
     start_srand();
 
     FILE *csv = fopen(CSV_DIR, "r");
     csv_add_constants(csv, symbols);
-//    set_test_and_train_data(csv);
+    set_test_and_train_data(csv);
     fclose(csv);
 
     // TODO implement the rest of this function.
@@ -228,10 +228,18 @@ void print_individual(struct individual *i) {
  *      MAX_DEPTH             = 5
  */
 void run_tests() {
-    get_node_at_index_test();
-    get_max_tree_depth_test();
-    subtree_mutation_test();
-    subtree_crossover_test();
+    if (MUTATION_PROBABILITY != 1.0 ||
+        CROSSOVER_PROBABILITY != 1.0 ||
+        MAX_DEPTH != 5 || SEED != 2.0) {
+        printf("In order to run tests, please refer to the "
+               "parameters detailed in the documentation.");
+    } else {
+        subtree_mutation_test();
+        subtree_crossover_test();
+        get_node_at_index_test();
+        get_max_tree_depth_test();
+    }
+
 }
 
 void get_node_at_index_test() {
