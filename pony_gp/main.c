@@ -33,8 +33,6 @@ void setup() {
     csv_add_constants(csv, symbols);
     set_test_and_train_data(csv);
     fclose(csv);
-
-    // TODO implement the rest of this function.
 }
 
 /**

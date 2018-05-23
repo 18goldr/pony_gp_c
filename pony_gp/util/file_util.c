@@ -7,6 +7,7 @@ const char const_delimeter[2] = ",";
 
 /**
  * Get the number of lines in a file, ignoring comments and empty lines.
+ * Counts the number of new lines.
  * @param file The file to parse.
  * @return The number of lines.
  */
@@ -15,7 +16,7 @@ int get_num_lines(FILE *file) {
 
     if (!file) return 0;
 
-    int count = 1; // If the file is not empty, it will be at least one line long.
+    int count = 0;
     char c;
 
     // Flag to see if line is a comment. If so, ignore.
@@ -30,7 +31,9 @@ int get_num_lines(FILE *file) {
         if (c == comment_sym) comment = true;
 
         if (c == '\n') {
-            if (!comment && prev_char != '\n') count++;
+            if (!comment && prev_char != '\n') {
+                count++;
+            }
 
             if (comment) comment = false;
 
@@ -38,6 +41,9 @@ int get_num_lines(FILE *file) {
 
         prev_char = c;
     }
+
+    // Files without leading empty lines do not end in '\n'.
+    if (prev_char != '\n') count++;
 
     return count;
 }

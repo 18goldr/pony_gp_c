@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 #include "../include/file_util.h"
 #include "../include/misc_util.h"
 #include "../include/csv_data.h"

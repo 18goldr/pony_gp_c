@@ -41,6 +41,8 @@ stdio.h
 -
 math.h
 -
+assert.h
+-
 ../include/file_util.h
 /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/file_util.h
 ../include/misc_util.h

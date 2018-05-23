@@ -92,7 +92,7 @@ void parse_exemplars(FILE *file) {
 
     char *line;
     // Ignore the header.
-    for (int i=1; i < num_lines; i++) {
+    for (int i = 1; i < num_lines; i++) {
         line = lines[i];
         remove_spaces(line);
         remove_last_newline(line);
@@ -122,6 +122,8 @@ void parse_exemplars(FILE *file) {
 
     fitness_len = f_i;
     targets_len = t_i;
+
+    assert(fitness_len == targets_len);
 }
 
 /**
