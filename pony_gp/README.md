@@ -82,4 +82,5 @@ Run. Generator type can be anything.
 cmake -G <Generator type> 
 ./pony_gpExe
 ```
+For information on the types of generators, run `cmake --help`
 
