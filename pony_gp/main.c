@@ -281,7 +281,7 @@ void evaluate_individual(struct individual *ind) {
 
     // Calculate the error between the expected value (training_targets[i])
     // and the actual value (output).
-    for (int i = 0; i < targets_len; i++) {
+    for (int i = 0; i < training_len; i++) {
         double output = evaluate(ind->genome, training_cases[i]);
 
         // Get the squared error

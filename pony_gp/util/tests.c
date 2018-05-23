@@ -45,6 +45,77 @@ void test_setup(struct symbols *s) {
     s->arities = h;
 
     start_srand();
+
+    training_len = 3;
+    test_len = 2;
+    int num_columns = 2;
+
+    targets_len = training_len + test_len;
+
+    fitness_cases = allocate_m(sizeof(double *) * targets_len);
+    targets = allocate_m(sizeof(double) * targets_len);
+
+    for (int i=0; i < training_len + test_len; i++) {
+        fitness_cases[i] = allocate_m(sizeof(double) * num_columns);
+    }
+
+    fitness_cases[0][0] = 5;
+    fitness_cases[0][1] = 2;
+
+    targets[0] = 29;
+
+    fitness_cases[1][0] = 4;
+    fitness_cases[1][1] = 2;
+
+    targets[1] = 20;
+
+    fitness_cases[2][0] = 7;
+    fitness_cases[2][1] = 4;
+
+    targets[2] = 65;
+
+    fitness_cases[3][0] = 3;
+    fitness_cases[3][1] = 4;
+
+    targets[3] = 25;
+
+    fitness_cases[4][0] = 6;
+    fitness_cases[4][0] = -3;
+
+    targets[4] = 45;
+
+    training_cases = allocate_m(sizeof(double *) * training_len);
+    training_targets = allocate_m(sizeof(double) * training_len);
+    test_cases = allocate_m(sizeof(double *) * test_len);
+    test_targets = allocate_m(sizeof(double) * test_len);
+
+    for (int i=0; i < training_len; i++) {
+        training_cases[i] = allocate_m(sizeof(double) * num_columns);
+    }
+
+    for (int i=0; i < test_len; i++) {
+        test_cases[i] = allocate_m(sizeof(double) * num_columns);
+    }
+
+    training_cases[0][0] = fitness_cases[0][0];
+    training_cases[0][1] = fitness_cases[0][1];
+    training_targets[0] = targets[0];
+
+    training_cases[1][0] = fitness_cases[1][0];
+    training_cases[1][1] = fitness_cases[1][1];
+    training_targets[1] = targets[1];
+
+    training_cases[2][0] = fitness_cases[2][0];
+    training_cases[2][1] = fitness_cases[2][1];
+    training_targets[2] = targets[2];
+
+    test_cases[0][0] = fitness_cases[3][0];
+    test_cases[0][1] = fitness_cases[3][1];
+    test_targets[0] = targets[3];
+
+    test_cases[1][0] = fitness_cases[4][0];
+    test_cases[1][0] = fitness_cases[4][1];
+    test_targets[1] = targets[4];
 }
 
 void run_tests(struct symbols *s) {
@@ -54,7 +125,7 @@ void run_tests(struct symbols *s) {
     subtree_crossover_test();
     get_node_at_index_test();
     get_max_tree_depth_test();
-
+    evaluate_individual_test();
 }
 
 void get_node_at_index_test() {
@@ -152,4 +223,20 @@ void subtree_crossover_test() {
 
     free_node(node);
     free_node(node1);
+}
+
+void evaluate_individual_test() {
+    struct node *node = new_node('*');
+    node->left = new_node('+');
+    node->right = new_node('3');
+    node->left->right = new_node('4');
+    node->left->left = new_node('5');
+
+    struct individual *i = new_individual(node, DEFAULT_FITNESS);
+
+    evaluate_individual(i);
+
+    if (i->fitness != -299.39999999999998) {
+        fprintf(stderr, "evaluate_individual has been modified and is broken.\n");
+    }
 }

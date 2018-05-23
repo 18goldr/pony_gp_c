@@ -16,6 +16,9 @@ double *test_targets;
 double **training_cases;
 double *training_targets;
 
+int training_len;
+int test_len;
+
 
 /**
  * Parse a CSV file for any variables/constants then add them
@@ -134,7 +137,7 @@ void set_test_and_train_data(FILE *file) {
     training_cases = allocate_m(sizeof(double *) * (fitness_split + 1));
     test_cases = allocate_m(sizeof(double *) * (fitness_len - fitness_split + 1));
     training_targets = allocate_m(sizeof(double) * (fitness_split + 1));
-    test_targets = allocate_m(sizeof(double) * (targets_len - fitness_split + 1));
+    test_targets = allocate_m(sizeof(double) * (fitness_len - fitness_split + 1));
 
     // Allocate the inner arrays.
     for (int i=0; i < fitness_split; i++) {
@@ -168,6 +171,8 @@ void set_test_and_train_data(FILE *file) {
     training_cases[fitness_split] = NULL;
     test_cases[fitness_len - fitness_split] = NULL;
     training_targets[fitness_split] = NAN;
-    test_targets[targets_len - fitness_split] = NAN;
+    test_targets[fitness_len - fitness_split] = NAN;
 
+    training_len = fitness_split;
+    test_len = fitness_len - fitness_split;
 }
