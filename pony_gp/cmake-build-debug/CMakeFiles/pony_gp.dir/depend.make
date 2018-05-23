@@ -13,6 +13,7 @@ CMakeFiles/pony_gp.dir/main.c.o: ../include/misc_util.h
 CMakeFiles/pony_gp.dir/main.c.o: ../include/params.h
 CMakeFiles/pony_gp.dir/main.c.o: ../include/queue.h
 CMakeFiles/pony_gp.dir/main.c.o: ../include/rand_util.h
+CMakeFiles/pony_gp.dir/main.c.o: ../include/tests.h
 CMakeFiles/pony_gp.dir/main.c.o: ../main.c
 CMakeFiles/pony_gp.dir/main.c.o: include/data.h
 
@@ -71,4 +72,20 @@ CMakeFiles/pony_gp.dir/util/rand_util.c.o: ../include/misc_util.h
 CMakeFiles/pony_gp.dir/util/rand_util.c.o: ../include/params.h
 CMakeFiles/pony_gp.dir/util/rand_util.c.o: ../include/rand_util.h
 CMakeFiles/pony_gp.dir/util/rand_util.c.o: ../util/rand_util.c
+
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/binary_tree.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/config_parser.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/csv_data.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/csv_parser.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/file_util.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/hashmap.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/main.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/memmngr.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/misc_util.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/params.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/queue.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/rand_util.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../include/tests.h
+CMakeFiles/pony_gp.dir/util/tests.c.o: ../util/tests.c
+CMakeFiles/pony_gp.dir/util/tests.c.o: include/data.h
 

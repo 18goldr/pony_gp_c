@@ -50,7 +50,7 @@ int get_num_lines(FILE *file) {
  */
 char **get_lines(FILE *file) {
 
-    char **lines = allocate_m(sizeof(char *) * get_num_lines(file));
+    char **lines = allocate_m(sizeof(char *) * (get_num_lines(file) + 1)); // Leave space for NULL
 
     reset_file_position(file);
 
@@ -59,7 +59,14 @@ char **get_lines(FILE *file) {
     int i = 0;
 
     while (fgets(line, MAX_LINE_LENGTH, file)) {
-        if (line[0] != comment_sym && strcmp(line, "\n")) {
+
+        // Ignore leading spaces.
+        int n;
+        for (n = 0; n < strlen(line); n++) {
+            if (line[n] != ' ') break;
+        }
+
+        if (line[n] != comment_sym && strcmp(line, "\n")) {
 
             // Leave space for null terminating character
             lines[i] = allocate_m(strlen(line) + 1);
@@ -67,6 +74,8 @@ char **get_lines(FILE *file) {
 
         }
     }
+
+    lines[i] = NULL;
 
     return lines;
 }

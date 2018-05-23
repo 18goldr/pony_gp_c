@@ -9,6 +9,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/pony_gp.dir/util/config_parser.c.o"
   "CMakeFiles/pony_gp.dir/util/file_util.c.o"
   "CMakeFiles/pony_gp.dir/util/csv_parser.c.o"
+  "CMakeFiles/pony_gp.dir/util/tests.c.o"
   "pony_gp.pdb"
   "pony_gp"
 )

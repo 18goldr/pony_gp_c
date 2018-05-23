@@ -393,6 +393,33 @@ util/rand_util.c.s:
 	$(MAKE) -f CMakeFiles/pony_gp.dir/build.make CMakeFiles/pony_gp.dir/util/rand_util.c.s
 .PHONY : util/rand_util.c.s
 
+util/tests.o: util/tests.c.o
+
+.PHONY : util/tests.o
+
+# target to build an object file
+util/tests.c.o:
+	$(MAKE) -f CMakeFiles/pony_gp.dir/build.make CMakeFiles/pony_gp.dir/util/tests.c.o
+.PHONY : util/tests.c.o
+
+util/tests.i: util/tests.c.i
+
+.PHONY : util/tests.i
+
+# target to preprocess a source file
+util/tests.c.i:
+	$(MAKE) -f CMakeFiles/pony_gp.dir/build.make CMakeFiles/pony_gp.dir/util/tests.c.i
+.PHONY : util/tests.c.i
+
+util/tests.s: util/tests.c.s
+
+.PHONY : util/tests.s
+
+# target to generate assembly for a file
+util/tests.c.s:
+	$(MAKE) -f CMakeFiles/pony_gp.dir/build.make CMakeFiles/pony_gp.dir/util/tests.c.s
+.PHONY : util/tests.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -432,6 +459,9 @@ help:
 	@echo "... util/rand_util.o"
 	@echo "... util/rand_util.i"
 	@echo "... util/rand_util.s"
+	@echo "... util/tests.o"
+	@echo "... util/tests.i"
+	@echo "... util/tests.s"
 .PHONY : help
 
 

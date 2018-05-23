@@ -1,13 +1,6 @@
 #include "../include/rand_util.h"
 
 /**
- * Set the seed to be given to srand.
- * @param s The value that SEED will be set to.
- */
-void set_seed(double s) {
-    SEED = s;
-}
-/**
  * A wrapper for srand. Ensures that it is only called once per execution.
  */
 void start_srand() {

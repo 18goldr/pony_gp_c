@@ -116,6 +116,9 @@
 		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/rand_util.h">
 			<Option target="pony_gp"/>
 		</Unit>
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/include/tests.h">
+			<Option target="pony_gp"/>
+		</Unit>
 		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/main.c">
 			<Option target="pony_gp"/>
 		</Unit>
@@ -144,6 +147,9 @@
 			<Option target="pony_gp"/>
 		</Unit>
 		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/rand_util.c">
+			<Option target="pony_gp"/>
+		</Unit>
+		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/util/tests.c">
 			<Option target="pony_gp"/>
 		</Unit>
 		<Unit filename="/home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/CMakeLists.txt">

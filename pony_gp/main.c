@@ -3,12 +3,16 @@
 struct symbols *symbols;
 
 int main() {
-    setup();
+    init_memory(DEFAULT_MEMORY_POOL_SIZE);
 
-//    run_tests();
+    if (RUN_TESTS) {
+        symbols = allocate_m(sizeof(struct symbols));
+        run_tests(symbols);
+    } else {
+        setup();
+    }
 
     destroy_memory();
-
     exit(EXIT_SUCCESS);
 }
 
@@ -16,9 +20,6 @@ int main() {
  * Set up memory pool, set seed, define symbols.
  */
 void setup() {
-    // Initialize memory pool.
-    init_memory(DEFAULT_MEMORY_POOL_SIZE);
-
     // Define symbols
     symbols = allocate_m(sizeof(struct symbols));
 
@@ -26,8 +27,6 @@ void setup() {
     set_params(config, symbols);
     fclose(config);
 
-    // Set the seed
-    set_seed(SEED);
     start_srand();
 
     FILE *csv = fopen(CSV_DIR, "r");
@@ -58,6 +57,7 @@ char get_random_symbol(int curr_depth, int max_depth, bool must_fill) {
     // that the symbol will be a terminal is 50%.
     if (curr_depth >= (max_depth - 1) || (!must_fill && get_rand_probability() > 0.5)) {
         rand_i = get_randint(0, symbols->term_size - 1);
+
         symbol = symbols->terminals[rand_i];
     } else {
         // Pick a random function
@@ -219,122 +219,79 @@ void print_individual(struct individual *i) {
 }
 
 /**
- * Unit tests to ensure the program is running.
- * In order for the program to run correctly,
- * the following values must be set:
- *      SEED                  = 2.0
- *      MUTATION_PROBABILITY  = 1.0
- *      CROSSOVER_PROBABILITY = 1.0
- *      MAX_DEPTH             = 5
+ * Evaluate a node recursively. The node's symbol is evaluated.
+ * @param node The node to evaluate.
+ * @param fitness_case Data to input into variables (defined in csv file).
+ * @return The value of the node on the given data.
  */
-void run_tests() {
-    if (MUTATION_PROBABILITY != 1.0 ||
-        CROSSOVER_PROBABILITY != 1.0 ||
-        MAX_DEPTH != 5 || SEED != 2.0) {
-        printf("In order to run tests, please refer to the "
-               "parameters detailed in the documentation.");
-    } else {
-        subtree_mutation_test();
-        subtree_crossover_test();
-        get_node_at_index_test();
-        get_max_tree_depth_test();
+double evaluate(struct node *node, double *fitness_case) {
+
+    if (!node) return DEFAULT_FITNESS;
+
+    char symbol = node->value;
+
+    if (symbol == '+') {
+        return evaluate(node->left, fitness_case) + evaluate(node->right, fitness_case);
     }
 
-}
+    else if (symbol == '-') {
+        return evaluate(node->left, fitness_case) - evaluate(node->right, fitness_case);
+    }
 
-void get_node_at_index_test() {
-    char values[] = {'*', '+', '5', '4', '3'};
+    else if (symbol == '*') {
+        return evaluate(node->left, fitness_case) * evaluate(node->right, fitness_case);
+    }
 
-    struct node *node = new_node('*');
-    node->left = new_node('+');
-    node->right = new_node('3');
-    node->left->right = new_node('4');
-    node->left->left = new_node('5');
+    else if (symbol == '/') {
+        double numerator = evaluate(node->left, fitness_case);
+        double denominator = evaluate(node->right, fitness_case);
 
-    for (int i=0; i < 5; i++) {
-        struct node *n = get_node_at_index_wrapper(node, i);
+        if (fabs(denominator) < 0.00001) {
+            denominator = 1.0;
+        }
 
-        if (n->value != values[i]) {
-            fprintf(stderr, "get_node_at_index has been modified and is broken.\n");
+        return numerator / denominator;
+    }
+
+    else if (isalpha(symbol)) {
+        // Fitness case variables must be in alphabetical order
+        // for this to work correctly.
+        if (symbol >= 'A') {
+            return fitness_case[symbol - 'a'];
+        }
+        else {
+            return fitness_case[symbol - 'A'];
         }
     }
 
-    free_node(node);
-
+    else {
+        return (double) (symbol - '0');
+    }
 }
 
-void get_max_tree_depth_test() {
-    struct node *node = new_node('*');
-    node->left = new_node('+');
-    node->right = new_node('3');
-    node->left->right = new_node('4');
-    node->left->left = new_node('5');
+/**
+ * Evaluate fitness by comparing the error between the output
+ * of an individual (symbolic expression) and the target values.
+ * Evaluates and sets the fitness in an individual.
+ * Fitness is the negative mean square error (MSE).
+ * @param ind The individual to evaluate.
+ */
+void evaluate_individual(struct individual *ind) {
+    double fitness = 0.0; // Initial fitness value
 
-    if (get_max_tree_depth(node) != 2 || get_max_tree_depth(NULL) != 0) {
-        fprintf(stderr, "get_max_tree_depth has been modified and is broken.\n");
+    // Calculate the error between the expected value (training_targets[i])
+    // and the actual value (output).
+    for (int i = 0; i < targets_len; i++) {
+        double output = evaluate(ind->genome, training_cases[i]);
+
+        // Get the squared error
+        double error = output - training_targets[i];
+
+        fitness += error * error;
     }
 
-    free_node(node);
+    // Get the mean fitness and assign it to the individual.
+    ind->fitness = (fitness * -1) / (double)targets_len;
 
-}
-
-void subtree_mutation_test() {
-    char values[] = {'*', '+', '5', '4', '-', '/', '1', 'b', 'b'};
-
-    struct node *node = new_node('*');
-    node->left = new_node('+');
-    node->right = new_node('3');
-    node->left->right = new_node('4');
-    node->left->left = new_node('5');
-
-    subtree_mutation(node);
-
-    for (int i=0; i < 9; i++) {
-        struct node *n = get_node_at_index_wrapper(node, i);
-
-        if (n->value != values[i]) {
-            fprintf(stderr, "subtree_mutation has been modified and is broken.\n");
-        }
-    }
-
-    free_node(node);
-}
-
-void subtree_crossover_test() {
-    char node_values[] = {'/', '+', '4', '2', '9'};
-    char node1_values[] = {'*', '+', '5', '1', '3'};
-
-    struct node *node = new_node('*');
-    node->left = new_node('+');
-    node->right = new_node('3');
-    node->left->right = new_node('4');
-    node->left->left = new_node('5');
-
-    struct node *node1 = new_node('/');
-    node1->left = new_node('+');
-    node1->right = new_node('9');
-    node1->left->right = new_node('2');
-    node1->left->left = new_node('1');
-
-    struct node **nodes = subtree_crossover(node, node1);
-
-
-    for (int i=0; i < 5; i++) {
-        struct node *n = get_node_at_index_wrapper(nodes[1], i);
-
-        if (n->value != node_values[i]) {
-            fprintf(stderr, "subtree_crossover has been modified and is broken.\n");
-        }
-    }
-
-    for (int i=0; i < 5; i++) {
-        struct node *n = get_node_at_index_wrapper(nodes[0], i);
-
-        if (n->value != node1_values[i]) {
-            fprintf(stderr, "subtree_crossover has been modified and is broken.\n");
-        }
-    }
-
-    free_node(node);
-    free_node(node1);
+    assert(ind->fitness <= 0);
 }

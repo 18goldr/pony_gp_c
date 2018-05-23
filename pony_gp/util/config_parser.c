@@ -43,12 +43,9 @@ void set_params(FILE *file, struct symbols *s) {
 
         if (strstr(line, "arities")) {
 
-            // Advance to the next line.
-            line = lines[++i];
-
             // Keep adding key-value pairs until the program
             // reaches the next section (signified by square brackets).
-            while (line && line[0] != '[') {
+            while ((line = lines[++i]) && line[0] != '[') {
                 remove_spaces(line);
                 remove_last_newline(line);
 
@@ -58,8 +55,7 @@ void set_params(FILE *file, struct symbols *s) {
                 for (char *t = strtok(line, delimeter); t != NULL; t = strtok(NULL, delimeter), side = !side) {
                     if (!side) {
                         key = t;
-                    }
-                    else {
+                    } else {
                         value = t;
                     }
                 }
@@ -67,7 +63,6 @@ void set_params(FILE *file, struct symbols *s) {
                 put_hashmap(s->arities, key, atof(value));
                 s->functions[f_i++] = key[0];
 
-                line = lines[++i];
             }
         }
 
@@ -92,47 +87,43 @@ void set_params(FILE *file, struct symbols *s) {
 
         if (strstr(line, "search_parameters")) {
             // Seperate by the colon.
-            line = lines[++i];
-
-            while (line) {
+            while ((line = lines[++i])) {
                 remove_spaces(line);
                 remove_last_newline(line);
 
                 for (char *t = strtok(line, delimeter); t != NULL; t = strtok(NULL, delimeter), side = !side) {
-                    if (side) {
-                        double td = atof(t);
+                    if (!side) continue;
 
-                        if (strstr(line, "population_size")) {
-                            POPULATION_SIZE = (int) td;
-                        } else if (strstr(line, "max_depth")) {
-                            MAX_DEPTH = (int) td;
-                        } else if (strstr(line, "elite_size")) {
-                            ELITE_SIZE = (int) td;
-                        } else if (strstr(line, "generations")) {
-                            GENERATIONS = (int) td;
-                        } else if (strstr(line, "tournament_size")) {
-                            TOURNAMENT_SIZE = (int) td;
-                        } else if (strstr(line, "seed")) {
-                            SEED = td;
-                        } else if (strstr(line, "crossover_probability")) {
-                            CROSSOVER_PROBABILITY = td;
-                        } else if (strstr(line, "mutation_probability")) {
-                            MUTATION_PROBABILITY = td;
-                        } else if (strstr(line, "test_train_split")) {
-                            TEST_TRAIN_SPLIT = td;
-                        }
+                    double td = atof(t);
 
-                        // Default verbose to false unless defined
-                        // in the config file.
-                        if (strstr(line, "verbose")) {
-                            VERBOSE = (bool) td;
-                        } else {
-                            VERBOSE = false;
-                        }
+                    if (strstr(line, "population_size")) {
+                        POPULATION_SIZE = (int) td;
+                    } else if (strstr(line, "max_depth")) {
+                        MAX_DEPTH = (int) td;
+                    } else if (strstr(line, "elite_size")) {
+                        ELITE_SIZE = (int) td;
+                    } else if (strstr(line, "generations")) {
+                        GENERATIONS = (int) td;
+                    } else if (strstr(line, "tournament_size")) {
+                        TOURNAMENT_SIZE = (int) td;
+                    } else if (strstr(line, "seed")) {
+                        SEED = td;
+                    } else if (strstr(line, "crossover_probability")) {
+                        CROSSOVER_PROBABILITY = td;
+                    } else if (strstr(line, "mutation_probability")) {
+                        MUTATION_PROBABILITY = td;
+                    } else if (strstr(line, "test_train_split")) {
+                        TEST_TRAIN_SPLIT = td;
+                    }
+
+                    // Default verbose to false unless defined
+                    // in the config file.
+                    if (strstr(line, "verbose")) {
+                        VERBOSE = (bool) td;
+                    } else {
+                        VERBOSE = false;
                     }
                 }
-
-                line = lines[++i];
             }
         }
     }

@@ -9,7 +9,6 @@
 #include "../include/memmngr.h"
 #include "../include/misc_util.h"
 
-void set_seed(double s);
 void start_srand(void);
 int get_randint(int min, int max);
 double get_rand_probability();

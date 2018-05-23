@@ -126,15 +126,15 @@ void parse_exemplars(FILE *file) {
  * @param file The exemplar file to parse.
  */
 void set_test_and_train_data(FILE *file) {
-
     parse_exemplars(file);
 
     fitness_split = (int)floor(fitness_len * TEST_TRAIN_SPLIT);
 
-    training_cases = allocate_m(sizeof(double *) * (fitness_split));
-    test_cases = allocate_m(sizeof(double *) * (fitness_len - fitness_split));
-    training_targets = allocate_m(sizeof(double) * (fitness_split));
-    test_targets = allocate_m(sizeof(double) * (targets_len - fitness_split));
+    // Leave space for NULL/NAN for easier looping
+    training_cases = allocate_m(sizeof(double *) * (fitness_split + 1));
+    test_cases = allocate_m(sizeof(double *) * (fitness_len - fitness_split + 1));
+    training_targets = allocate_m(sizeof(double) * (fitness_split + 1));
+    test_targets = allocate_m(sizeof(double) * (targets_len - fitness_split + 1));
 
     // Allocate the inner arrays.
     for (int i=0; i < fitness_split; i++) {
@@ -164,5 +164,10 @@ void set_test_and_train_data(FILE *file) {
             training_targets[i] = targets[rand_i];
         }
     }
+
+    training_cases[fitness_split] = NULL;
+    test_cases[fitness_len - fitness_split] = NULL;
+    training_targets[fitness_split] = NAN;
+    test_targets[targets_len - fitness_split] = NAN;
 
 }
