@@ -1,4 +1,4 @@
-/home/robbie/Downloads/clion-2018.1.2/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp
+/home/robbie/Downloads/clion-2017.3.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/robbie/Dropbox/MIT/repos/pony_gp_c/pony_gp/cmake-build-debug

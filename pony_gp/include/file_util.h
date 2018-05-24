@@ -6,7 +6,8 @@
 #include <string.h>
 #include "../include/memmngr.h"
 
-extern int MAX_LINE_LENGTH;
+#define MAX_LINE_LENGTH 4096
+
 extern char comment_sym;
 extern const char delimeter[2];
 extern const char const_delimeter[2];

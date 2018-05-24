@@ -1,6 +1,5 @@
 #include "../include/file_util.h"
 
-int MAX_LINE_LENGTH = 4096;
 char comment_sym = '#';
 const char delimeter[2] = ":";
 const char const_delimeter[2] = ",";
@@ -67,7 +66,7 @@ char **get_lines(FILE *file) {
     while (fgets(line, MAX_LINE_LENGTH, file)) {
 
         // Ignore leading spaces.
-        int n;
+        unsigned int n;
         for (n = 0; n < strlen(line); n++) {
             if (line[n] != ' ') break;
         }

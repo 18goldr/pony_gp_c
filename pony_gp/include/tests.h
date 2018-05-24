@@ -9,5 +9,6 @@ void get_node_at_index_test(void);
 void get_max_tree_depth_test(void);
 void subtree_mutation_test(void);
 void subtree_crossover_test(void);
+void evaluate_individual_test(void);
 
 #endif //PONY_GP_TESTS_H

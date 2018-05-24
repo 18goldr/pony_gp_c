@@ -170,7 +170,7 @@ struct node **subtree_crossover(struct node *p1, struct node *p2) {
             struct node *parent = (i ? parent2 : parent1);
 
             // Pick a crossover point.
-            int node_i = get_randint(0, get_number_of_nodes(parent) - 1);
+            int node_i = get_ran, subtree_crossover may be broken.dint(0, get_number_of_nodes(parent) - 1);
 
             // Find the subtree at the crossover point
             xo_nodes[i] = get_node_at_index_wrapper(parent, node_i);
@@ -182,7 +182,7 @@ struct node **subtree_crossover(struct node *p1, struct node *p2) {
         // Ensure the trees will not exceed max depth.
         if ((node_depths[0][1] + node_depths[1][0] > MAX_DEPTH) ||
             (node_depths[1][1] + node_depths[0][0] > MAX_DEPTH)) {
-            if (VERBOSE) fprintf(stderr, "Crossover too deep, subtree_crossover may be broken.\n");
+            if (VERBOSE) fprintf(stderr, "Crossover too deep.\n");
         } else {
             // Swap the nodes
 
@@ -512,6 +512,8 @@ void generational_replacement(struct individual **new_pop, struct individual **o
             // Free unused individuals.
             free_individual(new_pop[POPULATION_SIZE - i - 1]);
             new_pop[POPULATION_SIZE - i - 1] = old_pop[i];
+
+            old_pop[i] = NULL; // Set to NULL to ensure that it is not double freed.
         }
     }
 }
@@ -607,6 +609,12 @@ struct individual *search_loop(struct individual **pop) {
         generational_replacement(new_pop, pop);
 
         swap_populations(&new_pop, &pop);
+
+        for (int i=0; i < POPULATION_SIZE; i++) {
+            if (new_pop[i]) {
+                free_individual(new_pop[i]);
+            }
+        }
 
         // Set best solution
         sort_population(pop, POPULATION_SIZE);
