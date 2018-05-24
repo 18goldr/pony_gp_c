@@ -25,7 +25,11 @@ struct symbols {
 
 bool symbol_is_valid(char sym, struct hashmap *arities);
 void remove_spaces(char *str);
-void swap(int *a, int *b);
 void remove_last_newline(char *str);
+void swap(int *a, int *b);
+double sum_doubles(double *values, int size);
+double get_std(double *values, int size, double ave);
+double *get_ave_and_std(double *values, int size);
+double max_value(double *values, int size);
 
 #endif //PONY_GP_MISC_UTIL_H

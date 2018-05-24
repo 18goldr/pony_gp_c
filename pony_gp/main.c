@@ -19,9 +19,7 @@ int main() {
     evaluate_population(pop);
     sort_population(pop);
 
-    for (int i=0; i < POPULATION_SIZE; i++) {
-        printf("%f\n", pop[i]->fitness);
-    }
+    print_stats(0, pop, 0);
 
     destroy_memory();
     exit(EXIT_SUCCESS);
@@ -388,4 +386,73 @@ int fitness_comp(const void *elem1, const void *elem2) {
     if (i1->fitness > i2->fitness) return -1;
 
     return 0;
+}
+
+/**
+ * Print the genome and fitness of each individual in a population.
+ * @param pop The population to print.
+ */
+void print_population(struct individual **pop) {
+    for (int i=0; i < POPULATION_SIZE; i++) {
+        print_individual(pop[i]);
+        printf("\n");
+    }
+}
+
+/**
+ * Print the statistics of a population.
+ * @param generation The current generation.
+ * @param pop The population.
+ * @param duration Duration of computation.
+ */
+void print_stats(int generation, struct individual **pop, double duration) {
+    sort_population(pop);
+
+    if (VERBOSE) {
+        printf("-------------POPULATION:-------------\n");
+        print_population(pop);
+    }
+
+    double *fitness_values = allocate_m(sizeof(double) * POPULATION_SIZE);
+    double *size_values = allocate_m(sizeof(double) * POPULATION_SIZE);
+    double *depth_values = allocate_m(sizeof(double) * POPULATION_SIZE);
+
+    for (int i=0; i < POPULATION_SIZE; i++) {
+        fitness_values[i] = pop[i]->fitness;
+        size_values[i] = (double)get_number_of_nodes(pop[i]->genome);
+        depth_values[i] = (double)get_max_tree_depth(pop[i]->genome);
+    }
+
+    double *fit_stats = get_ave_and_std(fitness_values, POPULATION_SIZE);
+    double *size_stats = get_ave_and_std(size_values, POPULATION_SIZE);
+    double *depth_stats = get_ave_and_std(depth_values, POPULATION_SIZE);
+
+    int max_size = (int)max_value(size_values, POPULATION_SIZE);
+    int max_depth = (int)max_value(depth_values, POPULATION_SIZE);
+    double max_fitness = max_value(fitness_values, POPULATION_SIZE);
+
+    printf(
+            "Generation: %d, "
+                    "Duration: %.4f, "
+                    "fit ave: %.2f+/-%.3f, "
+                    "size ave: %.2f+/-%.3f "
+                    "depth ave: %.2f+/-%.3f, "
+                    "max size: %d, "
+                    "max depth: %d, "
+                    "max fit: %f, "
+                    "best solution: ",
+            generation,
+            duration,
+            fit_stats[0], fit_stats[1], size_stats[0], size_stats[1],
+            depth_stats[0], depth_stats[1], max_size, max_depth, max_fitness
+    );
+
+    print_individual(pop[0]);
+
+    free_pointer(fitness_values);
+    free_pointer(size_values);
+    free_pointer(depth_values);
+    free_pointer(fit_stats);
+    free_pointer(size_stats);
+    free_pointer(depth_stats);
 }

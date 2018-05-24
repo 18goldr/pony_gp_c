@@ -40,5 +40,7 @@ void evaluate_population(struct individual **pop);
 void init_population(struct individual **pop);
 void sort_population(struct individual **pop);
 int fitness_comp(const void *elem1, const void *elem2);
+void print_population(struct individual **pop);
+void print_stats(int generation, struct individual **pop, double duration);
 
 #endif //PONY_GP_MAIN_H
