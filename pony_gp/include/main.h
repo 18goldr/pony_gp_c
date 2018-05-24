@@ -27,9 +27,10 @@ struct individual {
     double fitness;
 };
 
-void subtree_mutation(struct node *root);
 void setup(void);
+struct individual *run(struct individual **pop);
 char get_random_symbol(int curr_depth, int max_depth, bool must_fill);
+void subtree_mutation(struct node *root);
 struct node **subtree_crossover(struct node *p1, struct node *p2);
 struct individual *new_individual(struct node *genome, double fitness);
 void free_individual(struct individual *i);
@@ -44,5 +45,8 @@ void print_population(struct individual **pop, int size);
 void print_stats(int generation, struct individual **pop, double duration);
 struct individual **tournament_selection(struct individual **pop);
 void generational_replacement(struct individual **new_pop, struct individual **old_pop);
+struct individual *search_loop(struct individual **pop);
+void swap_populations(struct individual ***pop1, struct individual ***pop2);
+void out_of_sample_test(struct individual *i);
 
 #endif //PONY_GP_MAIN_H

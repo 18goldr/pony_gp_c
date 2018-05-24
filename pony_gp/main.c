@@ -1,6 +1,6 @@
 #include "include/main.h"
 
-// TODO Add a comment describing what this is.
+// The list of symbols the program uses to generate individuals.
 struct symbols *symbols;
 
 // Cache for fitness evaluation.
@@ -9,28 +9,33 @@ struct hashmap *pop_cache;
 int main() {
     init_memory(DEFAULT_MEMORY_POOL_SIZE);
 
-    // Testing
-    // symbols = allocate_m(sizeof(struct symbols));
-    // run_tests(symbols);
-
     setup();
 
-    struct individual **pop = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
-    init_population(pop);
-    evaluate_population(pop);
-    sort_population(pop, POPULATION_SIZE);
+    struct individual **population = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
+    struct individual *best_ever = run(population);
 
-    struct individual **pop1 = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
-    init_population(pop1);
-    evaluate_population(pop1);
-    sort_population(pop1, POPULATION_SIZE);
-
-    generational_replacement(pop, pop1);
+    printf("\nBest solution on the training data: ");
+    print_individual(best_ever);
+    printf("\n");
+    out_of_sample_test(best_ever);
 
     destroy_memory();
     exit(EXIT_SUCCESS);
 }
 
+/**
+ * Return the best solution. Initialize a population.
+ * Perform an evolutionary search.
+ * @param pop The population to initialize.
+ * @return The best individual solution.
+ */
+struct individual *run(struct individual **pop) {
+    init_population(pop);
+
+    struct individual *best_ever = search_loop(pop);
+
+    return best_ever;
+}
 
 /**
  * Set up memory pool, set seed, define symbols.
@@ -161,7 +166,7 @@ struct node **subtree_crossover(struct node *p1, struct node *p2) {
         struct node *xo_nodes[2];
         int node_depths[2][2];
 
-        for (int i=0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {
             struct node *parent = (i ? parent2 : parent1);
 
             // Pick a crossover point.
@@ -248,17 +253,11 @@ double evaluate(struct node *node, double *fitness_case) {
 
     if (symbol == '+') {
         return evaluate(node->left, fitness_case) + evaluate(node->right, fitness_case);
-    }
-
-    else if (symbol == '-') {
+    } else if (symbol == '-') {
         return evaluate(node->left, fitness_case) - evaluate(node->right, fitness_case);
-    }
-
-    else if (symbol == '*') {
+    } else if (symbol == '*') {
         return evaluate(node->left, fitness_case) * evaluate(node->right, fitness_case);
-    }
-
-    else if (symbol == '/') {
+    } else if (symbol == '/') {
         double numerator = evaluate(node->left, fitness_case);
         double denominator = evaluate(node->right, fitness_case);
 
@@ -267,20 +266,15 @@ double evaluate(struct node *node, double *fitness_case) {
         }
 
         return numerator / denominator;
-    }
-
-    else if (isalpha(symbol)) {
+    } else if (isalpha(symbol)) {
         // Fitness case variables must be in alphabetical order
         // for this to work correctly.
         if (symbol >= 'A') {
             return fitness_case[symbol - 'a'];
-        }
-        else {
+        } else {
             return fitness_case[symbol - 'A'];
         }
-    }
-
-    else {
+    } else {
         return (double) (symbol - '0');
     }
 }
@@ -307,7 +301,7 @@ void evaluate_individual(struct individual *ind) {
     }
 
     // Get the mean fitness and assign it to the individual.
-    ind->fitness = (fitness * -1) / (double)targets_len;
+    ind->fitness = (fitness * -1) / (double) targets_len;
 
     assert(ind->fitness <= 0);
 }
@@ -323,7 +317,7 @@ void init_population(struct individual **pop) {
     int max_depth;
     char symbol;
 
-    for (int i=0; i < POPULATION_SIZE; i++) {
+    for (int i = 0; i < POPULATION_SIZE; i++) {
 
         // Pick full or grow method
         full = get_randint(0, 1);
@@ -355,7 +349,7 @@ void init_population(struct individual **pop) {
  * @param pop The population to evaluate.
  */
 void evaluate_population(struct individual **pop) {
-    for (int i=0; i < POPULATION_SIZE; i++) {
+    for (int i = 0; i < POPULATION_SIZE; i++) {
         char *key = tree_to_string(pop[i]->genome);
         double fitness = get_hashmap(pop_cache, key);
 
@@ -386,8 +380,8 @@ void sort_population(struct individual **pop, int size) {
  * are equal.
  */
 int fitness_comp(const void *elem1, const void *elem2) {
-    struct individual *i1 = *(struct individual **)elem1;
-    struct individual *i2 = *(struct individual **)elem2;
+    struct individual *i1 = *(struct individual **) elem1;
+    struct individual *i2 = *(struct individual **) elem2;
 
     if (i1->fitness < i2->fitness) return 1;
     if (i1->fitness > i2->fitness) return -1;
@@ -401,7 +395,7 @@ int fitness_comp(const void *elem1, const void *elem2) {
  * @param size The size of the population.
  */
 void print_population(struct individual **pop, int size) {
-    for (int i=0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         print_individual(pop[i]);
         printf("\n");
     }
@@ -425,18 +419,18 @@ void print_stats(int generation, struct individual **pop, double duration) {
     double *size_values = allocate_m(sizeof(double) * POPULATION_SIZE);
     double *depth_values = allocate_m(sizeof(double) * POPULATION_SIZE);
 
-    for (int i=0; i < POPULATION_SIZE; i++) {
+    for (int i = 0; i < POPULATION_SIZE; i++) {
         fitness_values[i] = pop[i]->fitness;
-        size_values[i] = (double)get_number_of_nodes(pop[i]->genome);
-        depth_values[i] = (double)get_max_tree_depth(pop[i]->genome);
+        size_values[i] = (double) get_number_of_nodes(pop[i]->genome);
+        depth_values[i] = (double) get_max_tree_depth(pop[i]->genome);
     }
 
     double *fit_stats = get_ave_and_std(fitness_values, POPULATION_SIZE);
     double *size_stats = get_ave_and_std(size_values, POPULATION_SIZE);
     double *depth_stats = get_ave_and_std(depth_values, POPULATION_SIZE);
 
-    int max_size = (int)max_value(size_values, POPULATION_SIZE);
-    int max_depth = (int)max_value(depth_values, POPULATION_SIZE);
+    int max_size = (int) max_value(size_values, POPULATION_SIZE);
+    int max_depth = (int) max_value(depth_values, POPULATION_SIZE);
     double max_fitness = max_value(fitness_values, POPULATION_SIZE);
 
     printf(
@@ -456,6 +450,7 @@ void print_stats(int generation, struct individual **pop, double duration) {
     );
 
     print_individual(pop[0]);
+    printf("\n");
 
     free_pointer(fitness_values);
     free_pointer(size_values);
@@ -512,7 +507,7 @@ void generational_replacement(struct individual **new_pop, struct individual **o
     sort_population(new_pop, POPULATION_SIZE);
     sort_population(old_pop, POPULATION_SIZE);
 
-    for (int i=0; i < ELITE_SIZE; i++) {
+    for (int i = 0; i < ELITE_SIZE; i++) {
         if (old_pop[i]->fitness > new_pop[POPULATION_SIZE - i - 1]->fitness) {
             // Free unused individuals.
             free_individual(new_pop[POPULATION_SIZE - i - 1]);
@@ -520,3 +515,131 @@ void generational_replacement(struct individual **new_pop, struct individual **o
         }
     }
 }
+
+/**
+ * Get the best individual from the evolutionary search loop,
+ * starting for an initial population.
+ * @param pop The initial population.
+ * @return The best individual.
+ */
+struct individual *search_loop(struct individual **pop) {
+
+    /////////////////////
+    //Evaluate Fitness //
+    /////////////////////
+    time_t tic = time(NULL);
+
+    evaluate_population(pop);
+
+    print_stats(0, pop, difftime(time(NULL), tic));
+
+    // Set best solution
+    sort_population(pop, POPULATION_SIZE);
+    struct individual *best_ever = pop[0];
+
+    int generation = 1;
+
+    struct individual **new_pop = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
+    struct individual **parents;
+
+    /////////////////////
+    // Generation Loop //
+    /////////////////////
+
+    while (generation < GENERATIONS) {
+        tic = time(NULL);
+
+        int new_pop_i = 0;
+
+        ///////////////
+        // Selection //
+        ///////////////
+
+        parents = tournament_selection(pop);
+
+        ///////////////////////////////////////////////////
+        // Variation -- Generate new individual solutions //
+        ///////////////////////////////////////////////////
+
+        // Crossover
+        while (new_pop_i < POPULATION_SIZE) {
+            int idx = get_randint(0, POPULATION_SIZE - 1);
+            struct individual *p1 = parents[idx];
+            struct individual *p2;
+
+            // Swap p1 with the last element so that it cannot be picked again
+            struct individual *tmp = parents[POPULATION_SIZE - 1];
+
+            parents[POPULATION_SIZE - 1] = p1;
+            parents[idx] = tmp;
+
+            p2 = parents[get_randint(0, POPULATION_SIZE - 2)];
+
+            struct node **children = subtree_crossover(p1->genome, p2->genome);
+
+            // Append the first child to the population.
+            struct individual *i1 = new_individual(children[0], DEFAULT_FITNESS);
+            evaluate_individual(i1);
+            new_pop[new_pop_i++] = i1;
+
+            // Ensure that too many elements can't be added.
+            // Handles uneven population sizes, since crossover returns 2 offspring.
+            if (new_pop_i < POPULATION_SIZE) {
+                struct individual *i2 = new_individual(children[1], DEFAULT_FITNESS);
+                evaluate_individual(i2);
+                new_pop[new_pop_i++] = i2;
+            }
+        }
+
+        // Vary the population by mutation
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            subtree_mutation(new_pop[i]->genome);
+        }
+
+        ////////////////////
+        //Evaluate fitness//
+        ////////////////////
+        evaluate_population(new_pop);
+
+        /////////////////////////////////////////////////////////////////
+        // Replacement. Replace individual solutions in the population //
+        /////////////////////////////////////////////////////////////////
+        generational_replacement(new_pop, pop);
+
+        swap_populations(&new_pop, &pop);
+
+        // Set best solution
+        sort_population(pop, POPULATION_SIZE);
+        best_ever = pop[0];
+
+        // Print the Stats of the population
+        print_stats(generation, pop, difftime(time(NULL), tic));
+
+        generation++;
+    }
+
+    return best_ever;
+}
+
+/**
+ * Swap the pointers of two populations.
+ * @param pop1, pop2 The populations to swap.
+ */
+void swap_populations(struct individual ***pop1, struct individual ***pop2) {
+    struct individual **tmp = *pop1;
+    *pop1 = *pop2;
+    *pop2 = tmp;
+}
+
+/**
+ * Out-of-sample test on an individual solution.
+ * @param i The solution to test.
+ */
+void out_of_sample_test(struct individual *i) {
+    evaluate_individual(i);
+
+    printf("Best solution on the test data: ");
+    print_individual(i);
+    printf("\n");
+}
+
