@@ -170,7 +170,7 @@ struct node **subtree_crossover(struct node *p1, struct node *p2) {
             struct node *parent = (i ? parent2 : parent1);
 
             // Pick a crossover point.
-            int node_i = get_ran, subtree_crossover may be broken.dint(0, get_number_of_nodes(parent) - 1);
+            int node_i = get_randint(0, get_number_of_nodes(parent) - 1);
 
             // Find the subtree at the crossover point
             xo_nodes[i] = get_node_at_index_wrapper(parent, node_i);
