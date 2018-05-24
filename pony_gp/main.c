@@ -1,5 +1,6 @@
 #include "include/main.h"
 
+// TODO Add a comment describing what this is.
 struct symbols *symbols;
 
 // Cache for fitness evaluation.
@@ -17,13 +18,14 @@ int main() {
     struct individual **pop = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
     init_population(pop);
     evaluate_population(pop);
+    sort_population(pop, POPULATION_SIZE);
 
-    struct individual **winners = tournament_selection(pop);
+    struct individual **pop1 = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
+    init_population(pop1);
+    evaluate_population(pop1);
+    sort_population(pop1, POPULATION_SIZE);
 
-    for (int i=0; i < TOURNAMENT_SIZE; i++) {
-        print_individual(winners[i]);
-        printf(", ADDRESS: %p\n", winners[i]);
-    }
+    generational_replacement(pop, pop1);
 
     destroy_memory();
     exit(EXIT_SUCCESS);
@@ -497,4 +499,24 @@ struct individual **tournament_selection(struct individual **pop) {
     free_pointer(competitors);
 
     return winners;
+}
+
+/**
+ * Return a new population. The `ELITE_SIZE` best of the old population
+ * replace the `ELITE_SIZE` worst of the new population if their fitness
+ * is higher.
+ * @param new_pop The new population
+ * @param old_pop The old population
+ */
+void generational_replacement(struct individual **new_pop, struct individual **old_pop) {
+    sort_population(new_pop, POPULATION_SIZE);
+    sort_population(old_pop, POPULATION_SIZE);
+
+    for (int i=0; i < ELITE_SIZE; i++) {
+        if (old_pop[i]->fitness > new_pop[POPULATION_SIZE - i - 1]->fitness) {
+            // Free unused individuals.
+            free_individual(new_pop[POPULATION_SIZE - i - 1]);
+            new_pop[POPULATION_SIZE - i - 1] = old_pop[i];
+        }
+    }
 }

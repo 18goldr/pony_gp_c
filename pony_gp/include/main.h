@@ -43,5 +43,6 @@ int fitness_comp(const void *elem1, const void *elem2);
 void print_population(struct individual **pop, int size);
 void print_stats(int generation, struct individual **pop, double duration);
 struct individual **tournament_selection(struct individual **pop);
+void generational_replacement(struct individual **new_pop, struct individual **old_pop);
 
 #endif //PONY_GP_MAIN_H
