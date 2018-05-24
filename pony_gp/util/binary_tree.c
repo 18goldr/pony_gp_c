@@ -288,6 +288,11 @@ int get_max_tree_depth(struct node *root) {
 
 }
 
+/**
+ * Return a deep copy of a tree.
+ * @param node The tree to copy.
+ * @return The copy of the tree.
+ */
 struct node *tree_deep_copy(struct node *node) {
     struct node *copy = NULL;
 
@@ -298,4 +303,23 @@ struct node *tree_deep_copy(struct node *node) {
     }
 
     return copy;
+}
+
+/**
+ * Return a string of a trees nodes in index order.
+ * @param root The root of the tree.
+ * @return The string.
+ */
+char *tree_to_string(struct node *root) {
+    int num_nodes = get_number_of_nodes(root);
+
+    char *str = allocate_m(num_nodes + 1);
+
+    for (int i=0; i < num_nodes; i++) {
+        str[i] = get_node_at_index_wrapper(root, i)->value;
+    }
+
+    str[num_nodes] = '\0';
+
+    return str;
 }

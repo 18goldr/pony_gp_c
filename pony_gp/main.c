@@ -2,19 +2,31 @@
 
 struct symbols *symbols;
 
+// Cache for fitness evaluation.
+struct hashmap *pop_cache;
+
 int main() {
     init_memory(DEFAULT_MEMORY_POOL_SIZE);
 
-    if (RUN_TESTS) {
-        symbols = allocate_m(sizeof(struct symbols));
-        run_tests(symbols);
-    } else {
-        setup();
+    // Testing
+    // symbols = allocate_m(sizeof(struct symbols));
+    // run_tests(symbols);
+
+    setup();
+
+    struct individual **pop = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
+    init_population(pop);
+    evaluate_population(pop);
+    sort_population(pop);
+
+    for (int i=0; i < POPULATION_SIZE; i++) {
+        printf("%f\n", pop[i]->fitness);
     }
 
     destroy_memory();
     exit(EXIT_SUCCESS);
 }
+
 
 /**
  * Set up memory pool, set seed, define symbols.
@@ -22,6 +34,8 @@ int main() {
 void setup() {
     // Define symbols
     symbols = allocate_m(sizeof(struct symbols));
+
+    pop_cache = init_hashmap();
 
     FILE *config = fopen(CONFIG_DIR, "r");
     set_params(config, symbols);
@@ -292,4 +306,86 @@ void evaluate_individual(struct individual *ind) {
     ind->fitness = (fitness * -1) / (double)targets_len;
 
     assert(ind->fitness <= 0);
+}
+
+/**
+ * Ramped half-half initialization. The individuals in the population
+ * are initialized using the grow or the full method for each depth
+ * value (ramped) up to max_depth.
+ * @param pop The population to initialize.
+ */
+void init_population(struct individual **pop) {
+    bool full;
+    int max_depth;
+    char symbol;
+
+    for (int i=0; i < POPULATION_SIZE; i++) {
+
+        // Pick full or grow method
+        full = get_randint(0, 1);
+
+        // Ramp the depth
+        max_depth = (i % MAX_DEPTH) + 1;
+
+        // Create the root node.
+        symbol = get_random_symbol(0, max_depth, full);
+        struct node *genome = new_node(symbol);
+
+        // Grow the tree if the root is a function symbol
+        if (max_depth > 0 && strchr(symbols->functions, symbol)) {
+            grow(genome, 0, max_depth, full);
+
+            assert(get_max_tree_depth(genome) < max_depth + 1);
+        }
+
+        struct individual *ind = new_individual(genome, DEFAULT_FITNESS);
+
+        pop[i] = ind;
+    }
+}
+
+/**
+ * Evaluate each individual of a population.
+ * Uses a simple cache for reducing the number of evaluations of
+ * each individual.
+ * @param pop The population to evaluate.
+ */
+void evaluate_population(struct individual **pop) {
+    for (int i=0; i < POPULATION_SIZE; i++) {
+        char *key = tree_to_string(pop[i]->genome);
+        double fitness = get_hashmap(pop_cache, key);
+
+        if (!isnan(fitness)) {
+            pop[i]->fitness = fitness;
+        } else {
+            evaluate_individual(pop[i]);
+            put_hashmap(pop_cache, key, pop[i]->fitness);
+        }
+    }
+}
+
+/**
+ * Sort population in reverse order order with regards to fitness.
+ * @param pop The population to sort.
+ */
+void sort_population(struct individual **pop) {
+    qsort(pop, POPULATION_SIZE, sizeof(*pop), fitness_comp);
+}
+
+/**
+ * Helper function to compare individuals in term of their fitness.
+ * Use with `qsort`.
+ * @param elem1, elem2 The elements to compare.
+ * @return Return 1 if `elem2` has a greater fitness,
+ * return -1 if `elem1` has a greater fitness and return 0 if they
+ * are equal.
+ */
+int fitness_comp(const void *elem1, const void *elem2) {
+    struct individual *i1 = *(struct individual **)elem1;
+    struct individual *i2 = *(struct individual **)elem2;
+
+    if (i1->fitness < i2->fitness) return 1;
+    if (i1->fitness > i2->fitness) return -1;
+
+    return 0;
 }

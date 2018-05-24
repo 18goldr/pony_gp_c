@@ -2,7 +2,7 @@
 #ifndef PONY_GP_HASHMAP_H
 #define PONY_GP_HASHMAP_H
 
-#define MAX_HASHMAP_SIZE 100
+#define MAX_HASHMAP_SIZE 1000
 
 #include <stdlib.h>
 #include <stdio.h>

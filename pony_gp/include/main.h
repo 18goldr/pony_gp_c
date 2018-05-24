@@ -36,5 +36,9 @@ void free_individual(struct individual *i);
 void print_individual(struct individual *i);
 double evaluate(struct node *node, double *fitness_case);
 void evaluate_individual(struct individual *ind);
+void evaluate_population(struct individual **pop);
+void init_population(struct individual **pop);
+void sort_population(struct individual **pop);
+int fitness_comp(const void *elem1, const void *elem2);
 
 #endif //PONY_GP_MAIN_H

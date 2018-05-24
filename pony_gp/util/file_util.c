@@ -42,7 +42,7 @@ int get_num_lines(FILE *file) {
         prev_char = c;
     }
 
-    // Files without leading empty lines do not end in '\n'.
+    // Files without trailing empty lines do not end in '\n'.
     if (prev_char != '\n') count++;
 
     return count;
