@@ -38,9 +38,10 @@ double evaluate(struct node *node, double *fitness_case);
 void evaluate_individual(struct individual *ind);
 void evaluate_population(struct individual **pop);
 void init_population(struct individual **pop);
-void sort_population(struct individual **pop);
+void sort_population(struct individual **pop, int size);
 int fitness_comp(const void *elem1, const void *elem2);
-void print_population(struct individual **pop);
+void print_population(struct individual **pop, int size);
 void print_stats(int generation, struct individual **pop, double duration);
+struct individual **tournament_selection(struct individual **pop);
 
 #endif //PONY_GP_MAIN_H

@@ -17,9 +17,13 @@ int main() {
     struct individual **pop = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
     init_population(pop);
     evaluate_population(pop);
-    sort_population(pop);
 
-    print_stats(0, pop, 0);
+    struct individual **winners = tournament_selection(pop);
+
+    for (int i=0; i < TOURNAMENT_SIZE; i++) {
+        print_individual(winners[i]);
+        printf(", ADDRESS: %p\n", winners[i]);
+    }
 
     destroy_memory();
     exit(EXIT_SUCCESS);
@@ -365,9 +369,10 @@ void evaluate_population(struct individual **pop) {
 /**
  * Sort population in reverse order order with regards to fitness.
  * @param pop The population to sort.
+ * @param size The size of the population.
  */
-void sort_population(struct individual **pop) {
-    qsort(pop, POPULATION_SIZE, sizeof(*pop), fitness_comp);
+void sort_population(struct individual **pop, int size) {
+    qsort(pop, size, sizeof(*pop), fitness_comp);
 }
 
 /**
@@ -391,9 +396,10 @@ int fitness_comp(const void *elem1, const void *elem2) {
 /**
  * Print the genome and fitness of each individual in a population.
  * @param pop The population to print.
+ * @param size The size of the population.
  */
-void print_population(struct individual **pop) {
-    for (int i=0; i < POPULATION_SIZE; i++) {
+void print_population(struct individual **pop, int size) {
+    for (int i=0; i < size; i++) {
         print_individual(pop[i]);
         printf("\n");
     }
@@ -406,11 +412,11 @@ void print_population(struct individual **pop) {
  * @param duration Duration of computation.
  */
 void print_stats(int generation, struct individual **pop, double duration) {
-    sort_population(pop);
+    sort_population(pop, POPULATION_SIZE);
 
     if (VERBOSE) {
         printf("-------------POPULATION:-------------\n");
-        print_population(pop);
+        print_population(pop, POPULATION_SIZE);
     }
 
     double *fitness_values = allocate_m(sizeof(double) * POPULATION_SIZE);
@@ -455,4 +461,40 @@ void print_stats(int generation, struct individual **pop, double duration) {
     free_pointer(fit_stats);
     free_pointer(size_stats);
     free_pointer(depth_stats);
+}
+
+/**
+ * Return individuals from a population by drawing `TOURNAMENT_SIZE`
+ * competitors randomly and selecting the best of the competitors.
+ * `POPULATION_SIZE` number of tournaments are held.
+ * @param pop The population the select from.
+ * @return The winners of the tournaments.
+ */
+struct individual **tournament_selection(struct individual **pop) {
+    struct individual **winners = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
+
+    int win_i = 0;
+    struct individual **competitors = allocate_m(sizeof(struct individual *) * TOURNAMENT_SIZE);
+
+    while (win_i < POPULATION_SIZE) {
+
+        for (int i = 0; i < TOURNAMENT_SIZE; i++) {
+            int idx = get_randint(0, POPULATION_SIZE - i - 1);
+            competitors[i] = pop[idx];
+
+            // Swap competitor with last element
+            // Ensure that they will not be picked again.
+            struct individual *tmp = pop[POPULATION_SIZE - i - 1];
+            pop[POPULATION_SIZE - i - 1] = pop[idx];
+            pop[idx] = tmp;
+        }
+
+        sort_population(competitors, TOURNAMENT_SIZE);
+
+        winners[win_i++] = competitors[0];
+    }
+
+    free_pointer(competitors);
+
+    return winners;
 }
