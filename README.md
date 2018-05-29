@@ -28,7 +28,7 @@ exemplars are generated from `y = a^2 + b^2` from range `[-5,5]`
 
 ## Requirements
 
-ANSI C and CMake
+C11 and CMake
 
 
 ## Parameters
