@@ -13,6 +13,45 @@ double MUTATION_PROBABILITY;
 double TEST_TRAIN_SPLIT;
 
 /**
+ * Parse command line arguments.
+ * @param argc The number of arguments.
+ * @param argv The list of arguments
+ */
+void arg_parse(int argc, char *argv[]) {
+    const char space[2] = " ";
+    bool side;
+
+    for (int i=1; i < argc; i++) {
+        side = false;
+        for (char *t = strtok(argv[i], space); t != NULL; t = strtok(NULL, space), side = !side) {
+            if (side) {
+                if (strstr(argv[i], "-p")) {
+                    POPULATION_SIZE = (int) atof(t);
+                } else if(strstr(argv[i], "-m")) {
+                    MAX_DEPTH = (int) atof(t);
+                } else if(strstr(argv[i], "-e")) {
+                    ELITE_SIZE = (int) atof(t);
+                } else if(strstr(argv[i], "-g")) {
+                    GENERATIONS = (int) atof(t);
+                } else if(strstr(argv[i], "-ts")) {
+                    TOURNAMENT_SIZE = (int) atof(t);
+                } else if(strstr(argv[i], "-s")) {
+                    SEED = atof(t);
+                } else if(strstr(argv[i], "-cp")) {
+                    CROSSOVER_PROBABILITY = atof(t);
+                } else if(strstr(argv[i], "-mp")) {
+                    MUTATION_PROBABILITY = atof(t);
+                } else if(strstr(argv[i], "-tts")) {
+                    TEST_TRAIN_SPLIT = atof(t);
+                } else if(strstr(argv[i], "-v")) {
+                    VERBOSE = (bool)atof(t);
+                }
+            }
+        }
+    }
+}
+
+/**
  * Parse the config file for arity values, constants and
  * search parameters. Define a hashmap of arities.
  * @param file The file to parse.
@@ -96,32 +135,34 @@ void set_params(FILE *file, struct symbols *s) {
 
                     double td = atof(t);
 
-                    if (strstr(line, "population_size")) {
+                    if (strstr(line, "population_size") && !POPULATION_SIZE) {
                         POPULATION_SIZE = (int) td;
-                    } else if (strstr(line, "max_depth")) {
+                    } else if (strstr(line, "max_depth") && !MAX_DEPTH) {
                         MAX_DEPTH = (int) td;
-                    } else if (strstr(line, "elite_size")) {
+                    } else if (strstr(line, "elite_size") && !ELITE_SIZE) {
                         ELITE_SIZE = (int) td;
-                    } else if (strstr(line, "generations")) {
+                    } else if (strstr(line, "generations") && !GENERATIONS) {
                         GENERATIONS = (int) td;
-                    } else if (strstr(line, "tournament_size")) {
+                    } else if (strstr(line, "tournament_size") && !TOURNAMENT_SIZE) {
                         TOURNAMENT_SIZE = (int) td;
-                    } else if (strstr(line, "seed")) {
+                    } else if (strstr(line, "seed") && !SEED) {
                         SEED = td;
-                    } else if (strstr(line, "crossover_probability")) {
+                    } else if (strstr(line, "crossover_probability") && !CROSSOVER_PROBABILITY) {
                         CROSSOVER_PROBABILITY = td;
-                    } else if (strstr(line, "mutation_probability")) {
+                    } else if (strstr(line, "mutation_probability") && !MUTATION_PROBABILITY) {
                         MUTATION_PROBABILITY = td;
-                    } else if (strstr(line, "test_train_split")) {
+                    } else if (strstr(line, "test_train_split") && !TEST_TRAIN_SPLIT) {
                         TEST_TRAIN_SPLIT = td;
                     }
 
                     // Default verbose to false unless defined
                     // in the config file.
-                    if (strstr(line, "verbose")) {
-                        VERBOSE = (bool) td;
-                    } else {
-                        VERBOSE = false;
+                    if (!VERBOSE) {
+                        if (strstr(line, "verbose")) {
+                            VERBOSE = (bool) td;
+                        } else {
+                            VERBOSE = false;
+                        }
                     }
                 }
             }

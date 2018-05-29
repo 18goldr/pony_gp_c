@@ -7,6 +7,8 @@ struct symbols *symbols;
 struct hashmap *pop_cache;
 
 int main(int argc, char *argv[]) {
+    if (argc) arg_parse(argc, argv);
+
     init_memory(DEFAULT_MEMORY_POOL_SIZE);
 
     setup();

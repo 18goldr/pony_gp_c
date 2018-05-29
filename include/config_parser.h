@@ -10,5 +10,6 @@
 #include "../include/file_util.h"
 
 void set_params(FILE *file, struct symbols *s);
+void arg_parse(int argc, char *argv[]);
 
 #endif //PONY_GP_CONFIG_PARSER_H
