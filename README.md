@@ -35,7 +35,7 @@ C11 and CMake
 usage: ./pony_gpExe [-p POPULATION_SIZE] [-m MAX_DEPTH] [-e ELITE_SIZE]
                     [-g GENERATIONS] [-ts TOURNAMENT_SIZE] [-s SEED]
                     [-cp CROSSOVER_PROBABILITY] [-mp MUTATION_PROBABILITY]
-                    [--tts TEST_TRAIN_SPLIT] [--verbose]
+                    [--tts TEST_TRAIN_SPLIT] [-v VERBOSE]
 optional arguments:
   -p POPULATION_SIZE        Population size is the number of individual solutions
   -m MAX_DEPTH              Max depth of tree. Partly determines the search space
