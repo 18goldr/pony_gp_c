@@ -59,7 +59,7 @@ optional arguments:
                             operator.
   -tts TEST_TRAIN_SPLIT     Test-train data split, [0.0, 1.0]. The ratio of fitness
                             cases used for training individual solutions.
-  --verbose, -v             Verbose printing.
+  -v VERBOSE                Set to 1 for verbose printing.
 ```
 
 
