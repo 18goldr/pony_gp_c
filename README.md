@@ -30,6 +30,38 @@ exemplars are generated from `y = a^2 + b^2` from range `[-5,5]`
 
 C11 and CMake
 
+## Usage
+```
+usage: ./pony_gpExe [-p POPULATION_SIZE] [-m MAX_DEPTH] [-e ELITE_SIZE]
+                    [-g GENERATIONS] [-ts TOURNAMENT_SIZE] [-s SEED]
+                    [-cp CROSSOVER_PROBABILITY] [-mp MUTATION_PROBABILITY]
+                    [--tts TEST_TRAIN_SPLIT] [--verbose]
+optional arguments:
+  -p POPULATION_SIZE        Population size is the number of individual solutions
+  -m MAX_DEPTH              Max depth of tree. Partly determines the search space
+                            of the solutions.
+  -e ELITE_SIZE             Elite size is the number of best individual solutions
+                            that are preserved between generations.
+  -g GENERATIONS            Number of generations. The number of iterations of the
+                            search loop.
+  -ts TOURNAMENT_SIZE       Tournament size. The number of individual solutions
+                            that are compared when determining which solutions are
+                            inserted into the next generation(iteration) of the
+                            search loop.
+  -s SEED                   Random seed. For replication of runs of the EA. The
+                            search is stochastic and and replication of the
+                            results are guaranteed the random seed.
+  -cp CROSSOVER_PROBABILITY Crossover probability, [0.0, 1.0]. The probability of
+                            two individual solutions to be varied by the crossover
+                            operator.
+  -mp MUTATION_PROBABILITY  Mutation probability, [0.0, 1.0]. The probability of
+                            an individual solutions to be varied by the mutation
+                            operator.
+  -tts TEST_TRAIN_SPLIT     Test-train data split, [0.0, 1.0]. The ratio of fitness
+                            cases used for training individual solutions.
+  --verbose, -v             Verbose printing.
+```
+
 
 ## Parameters
 ```
