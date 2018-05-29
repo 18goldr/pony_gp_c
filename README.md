@@ -79,7 +79,8 @@ Best solution on test data:{'genome':individual formula/tree, 'fitness':fitness 
 # Test
 Run. Generator type can be anything.
 ```
-cmake -G <Generator type> 
+cmake -G <Generator type>
+make
 ./pony_gpExe
 ```
 For information on the types of generators, run `cmake --help`
