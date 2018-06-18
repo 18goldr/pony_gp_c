@@ -39,7 +39,7 @@ void csv_add_constants(FILE *file, struct symbols *s) {
     int c = get_num_columns(file) - 1; // Ignore the last column because that is an output.
     int i = 0;
 
-    for (char *t = strtok(line, const_delimeter); t != NULL, i < c; t = strtok(NULL, const_delimeter), i++) {
+    for (char *t = strtok(line, const_delimeter); t != NULL && i < c; t = strtok(NULL, const_delimeter), i++) {
         s->terminals[t_i++] = t[0];
 
         put_hashmap(s->arities, t, 0.0);
