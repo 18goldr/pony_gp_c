@@ -16,10 +16,15 @@ int main(int argc, char *argv[]) {
     struct individual **population = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
     struct individual *best_ever = run(population);
 
-    printf("\nBest solution on the training data: ");
-    print_individual(best_ever);
-    printf("\n");
-    out_of_sample_test(best_ever);
+    if (EXPERIMENTAL_OUTPUT) {
+        print_params();
+        printf(", %f", best_ever->fitness);
+    } else {
+        printf("\nBest solution on the training data: ");
+        print_individual(best_ever);
+        printf("\n");
+        out_of_sample_test(best_ever);
+    }
 
     destroy_memory();
 
@@ -237,9 +242,9 @@ void free_individual(struct individual *i) {
  * @param i The individual.
  */
 void print_individual(struct individual *i) {
-    printf("Genome: ");
+    printf("Genome: {");
     print_nodes_index_order(i->genome);
-    printf(", Fitness: %.4f", i->fitness);
+    printf("}, Fitness: %.4f", i->fitness);
 }
 
 /**
@@ -438,7 +443,7 @@ void print_stats(int generation, struct individual **pop, double duration) {
 
     printf(
             "Generation: %d, "
-                    "Duration: %.4f, "
+                    "Duration: ~%.4f, "
                     "fit ave: %.2f+/-%.3f, "
                     "size ave: %.2f+/-%.3f "
                     "depth ave: %.2f+/-%.3f, "
@@ -536,7 +541,7 @@ struct individual *search_loop(struct individual **pop) {
 
     evaluate_population(pop);
 
-    print_stats(0, pop, get_time() - time);
+    if (!EXPERIMENTAL_OUTPUT) print_stats(0, pop, get_time() - time);
 
     // Set best solution
     sort_population(pop, POPULATION_SIZE);
@@ -624,7 +629,7 @@ struct individual *search_loop(struct individual **pop) {
         best_ever = pop[0];
 
         // Print the Stats of the population
-        print_stats(generation, pop, get_time() - time);
+        if (!EXPERIMENTAL_OUTPUT) print_stats(generation, pop, get_time() - time);
 
         generation++;
     }
@@ -652,4 +657,13 @@ void out_of_sample_test(struct individual *i) {
     printf("Best solution on the test data: ");
     print_individual(i);
     printf("\n");
+}
+
+/**
+ * Print the programs parameters without any extra information.
+ * Prints in the order:
+ *      Population size, max depth, elite size, generations, tournament size.
+ */
+void print_params() {
+    printf("%d, %d, %d, %d, %d", POPULATION_SIZE, MAX_DEPTH, ELITE_SIZE, GENERATIONS, TOURNAMENT_SIZE);
 }

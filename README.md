@@ -1,21 +1,21 @@
 
-`pony_gp` is an implementation of Genetic Programming(GP), 
-(see <http://geneticprogramming.com>). The purpose of `pony_gp` is to describe how 
-the GP algorithm works and to be compatible with emscripten. The intended use is for 
-teaching. The aim is to allow the developer to quickly start using and developing. 
-The design is supposed to be simple, self contained and use core C libraries. The original
-project, written in python, can be found here: https://github.com/flexgp/pony_gp
+`pony_gp` is an implementation of Genetic Programming (GP -- see <http://geneticprogramming.com>).
+The purpose of `pony_gp` is to describe how the GP algorithm works and to be compatible with
+emscripten. The intended use is for teaching. The aim is to allow the developer to quickly
+start using and developing. The design is supposed to be simple, self contained and use core
+C libraries. The original project, written in python, can be found here:
+https://github.com/flexgp/pony_gp
 
 # Run
 
-Find an equation for the input given an output.
+Find an equation that produces the given outputs from the given inputs.
 Example output:
 ```
-Generation: 0, Duration: 0.0000, fit ave: -559.71+/-138.623, size ave: 11.60+/-10.846 depth ave: 2.10+/-1.513, max size: 31, max depth: 4, max fit:-164.976190 best solution: Genome: *++*11*11+*bb*10///a0/a0/*a0-ba, Fitness: -164.9762
-Generation: 1, Duration: 0.0000, fit ave: -760.20+/-731.329, size ave: 6.80+/-10.750 depth ave: 1.00+/-1.612, max size: 31, max depth: 4, max fit:-164.976190 best solution: Genome: *++*11*11+*bb*10///a0/a01, Fitness: -164.9762
-Best solution on train data: Genome: *++*11*11+*bb*10///a0/a01, Fitness: -164.9762
+Generation: 0, Duration: ~2.0000, fit ave: -9060975.07+/-1982762271.224, size ave: 13.91+/-192.000 depth ave: 1.93+/-18.739, max size: 63, max depth: 5, max fit: -111.446281, best solution: Genome: {'+', '-', '-', '+', '1', '0', '-', 'a', '0', '/', '-', '0', 'a', '/', '1', 'a', '*', '+', '/', '0', '0', '*', 'b', 'a', '*', '-', 'a', '1', '/', '0', '0'}, Fitness: -111.4463
+Generation: 1, Duration: ~3.0000, fit ave: -358.91+/-2593.833, size ave: 13.21+/-163.385 depth ave: 2.21+/-18.181, max size: 63, max depth: 5, max fit: -0.694215, best solution: Genome: {'+', '-', '*', '+', '1', 'a', '*', '1', 'a', '+', '+', 'a', '0', '-', '0', 'a', '-', '+', '-', 'a', '1', '*', 'b', 'b', '+', '+', 'a', 'a', '-', 'b', 'b'}, Fitness: -0.6942
 
-Best solution of test data: Genome: *++*11*11+*bb*10///a0/a01, Fitness: -164.9762
+Best solution on the training data: Genome: {'+', '-', '*', '+', '1', 'a', '*', '1', 'a', '+', '+', 'a', '0', '-', '0', 'a', '-', '+', '-', 'a', '1', '*', 'b', 'b', '+', '+', 'a', 'a', '-', 'b', 'b'}, Fitness: -0.6942
+Best solution on the test data: Genome: {'+', '-', '*', '+', '1', 'a', '*', '1', 'a', '+', '+', 'a', '0', '-', '0', 'a', '-', '+', '-', 'a', '1', '*', 'b', 'b', '+', '+', 'a', 'a', '-', 'b', 'b'}, Fitness: -0.6942
 ```
 
 If you wish to,
@@ -25,14 +25,15 @@ paramaters or allow it to remain at its default values.
 The input with their respective output is in the file `data/fitness_case.csv`. The
 exemplars are generated from `y = a^2 + b^2` from range `[-5,5]`
 
+To implement a system-dependant time function, modify the function `get_time` in `misc_util.c`.
 
 ## Requirements
 
-C11 and CMake
+C99 and CMake
 
 ## Usage
 ```
-usage: ./pony_gpExe [-p POPULATION_SIZE] [-m MAX_DEPTH] [-e ELITE_SIZE]
+usage: ./pony_gp    [-p POPULATION_SIZE] [-m MAX_DEPTH] [-e ELITE_SIZE]
                     [-g GENERATIONS] [-ts TOURNAMENT_SIZE] [-s SEED]
                     [-cp CROSSOVER_PROBABILITY] [-mp MUTATION_PROBABILITY]
                     [--tts TEST_TRAIN_SPLIT] [-v VERBOSE]
@@ -113,7 +114,7 @@ Run. Generator type can be anything.
 ```
 cmake -G <Generator type>
 make
-./pony_gpExe
+./pony_gp
 ```
 For information on the types of generators, run `cmake --help`
 

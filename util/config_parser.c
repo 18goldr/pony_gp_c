@@ -1,4 +1,3 @@
-#include <assert.h>
 #include "../include/config_parser.h"
 
 bool VERBOSE;

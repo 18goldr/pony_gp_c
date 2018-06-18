@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <float.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include "../include/memmngr.h"
 #include "../include/binary_tree.h"
 #include "../include/queue.h"
@@ -21,6 +22,7 @@
 #include "include/data.h"
 
 #define DEFAULT_FITNESS -DBL_MAX
+#define EXPERIMENTAL_OUTPUT 0
 
 struct individual {
     struct node *genome;
@@ -48,5 +50,6 @@ void generational_replacement(struct individual **new_pop, struct individual **o
 struct individual *search_loop(struct individual **pop);
 void swap_populations(struct individual ***pop1, struct individual ***pop2);
 void out_of_sample_test(struct individual *i);
+void print_params(void);
 
 #endif //PONY_GP_MAIN_H

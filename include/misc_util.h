@@ -4,7 +4,9 @@
 
 #include <stdbool.h>
 #include <time.h>
+#include <sys/time.h>
 #include "../include/hashmap.h"
+
 /**
  * A wrapper for the functions and terminals that the program can use.
  * Keeps track of arities and the amount of functions and terminals available

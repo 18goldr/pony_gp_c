@@ -1,3 +1,4 @@
+
 #include "../include/misc_util.h"
 
 /**
@@ -117,11 +118,14 @@ double max_value(double *values, int size) {
 }
 
 /**
- * Get the current time in nanoseconds.
- * @return The current time in nanoseconds.
+ * Get the current time.
+ * This function is here so that users can implement their own
+ * system dependant time function without modifying the rest of the
+ * program.
+ * @return The current time.
  */
 double get_time() {
-    struct timespec t;
-    timespec_get(&t, TIME_UTC);
-    return (double)(t.tv_sec * 1000000000L + t.tv_nsec) / 1000000000L;
+    time_t t;
+    time(&t);
+    return (double)t;
 }

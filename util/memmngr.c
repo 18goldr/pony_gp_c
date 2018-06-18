@@ -77,6 +77,7 @@ void *allocate_m(size_t size) {
 
     } else {
         printf("Memory not initialized.");
+        return NULL;
     }
 }
 
