@@ -7,9 +7,9 @@ struct symbols *symbols;
 struct hashmap *pop_cache;
 
 int main(int argc, char *argv[]) {
-    if (argc) arg_parse(argc, argv);
-
     init_memory(DEFAULT_MEMORY_POOL_SIZE);
+
+    if (argc) arg_parse(argc, argv);
 
     setup();
 
@@ -55,12 +55,24 @@ void setup() {
     pop_cache = init_hashmap();
 
     FILE *config = fopen(CONFIG_DIR, "r");
+
+    if (!config) {
+        fprintf(stderr, "Config file not found. Aborting.\n");
+        abort();
+    }
+
     set_params(config, symbols);
     fclose(config);
 
     start_srand();
 
     FILE *csv = fopen(CSV_DIR, "r");
+
+    if (!csv) {
+        fprintf(stderr, "CSV file not found. Aborting.\n");
+        abort();
+    }
+
     csv_add_constants(csv, symbols);
     set_test_and_train_data(csv);
     fclose(csv);

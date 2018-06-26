@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <sys/time.h>
+#include <string.h>
 #include "../include/hashmap.h"
 
 /**
@@ -34,5 +35,6 @@ double get_std(double *values, int size, double ave);
 double *get_ave_and_std(double *values, int size);
 double max_value(double *values, int size);
 double get_time(void);
+char *concat(char *s1, char *s2);
 
 #endif //PONY_GP_MISC_UTIL_H
