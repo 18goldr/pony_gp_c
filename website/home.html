@@ -13,25 +13,51 @@
                 localStorage.e = '-e ' + document.getElementsByName('elite_size')[0].value;
                 localStorage.g = '-g ' + document.getElementsByName('generations')[0].value;
                 localStorage.ts = '-ts ' + document.getElementsByName('tournament_size')[0].value;
-                localStorage.cp = '-cp ' + document.getElementsByName('crossover_probability')[0].value;
-                localStorage.mp = '-mp ' + document.getElementsByName('mutation_probability')[0].value;
-                localStorage.tts = '-tts ' + document.getElementsByName('test_train_split')[0].value;
-                localStorage.v = '-v ' + document.getElementsByName('verbose')[0].value
+                localStorage.cp = '-cp ' + document.getElementsByName('crossover_probability')[0].value / 100;
+                localStorage.mp = '-mp ' + document.getElementsByName('mutation_probability')[0].value / 100;
+                localStorage.tts = '-tts ' + document.getElementsByName('test_train_split')[0].value / 100;
+                localStorage.v = '-v ' + Number(document.getElementsByName('verbose')[0].checked)
             }
         }
     </script>
 </head>
 <body>
     <form action='pony_gp.html'>
-        Population Size: <input type='text' name='population_size'><br>
-        Max Depth: <input type='text' name='max_depth'><br>
-        Elite Size: <input type='text' name='elite_size'><br>
-        Generations: <input type='text' name='generations'><br>
-        Tournament Size: <input type='text' name='tournament_size'><br>
-        Crossover Probability: <input type='text' name='crossover_probability'><br>
-        Mutation Probability: <input type='text' name='mutation_probability'><br>
-        Test-train Split: <input type='text' name='test_train_split'><br>
-        Verbose: <input type='text' name='verbose'><br>
+        Population Size: <input type='range' min='10' max='100' value='50' name='population_size' oninput="p_output.value = population_size.value">
+        <output name="p_output">50</output>
+        <br>
+
+        Max Depth: <input type='range' min='1' max='5' value='3' name='max_depth' oninput="m_output.value = max_depth.value">
+        <output name="m_output">3</output>
+        <br>
+
+        Elite Size: <input type='range' min='2' max='10' value='2' name='elite_size' oninput="e_output.value = elite_size.value">
+        <output name="e_output">2</output>
+        <br>
+
+        Generations: <input type='range' min='10' max='100' value='10' name='generations' oninput="g_output.value = generations.value">
+        <output name="g_output">10</output>
+        <br>
+
+        Tournament Size: <input type='range' min='2' max='20' value='10' name='tournament_size' oninput="ts_output.value = tournament_size.value">
+        <output name="ts_output">10</output>
+        <br>
+
+        Crossover Probability: <input type='range' min='0' max='100' value='80' name='crossover_probability' oninput="cp_output.value = crossover_probability.value / 100">
+        <output name="cp_output">0.8</output>
+        <br>
+
+        Mutation Probability: <input type='range' min='0' max='100' value='20' name='mutation_probability' oninput="mp_output.value = mutation_probability.value / 100">
+        <output name="mp_output">0.2</output>
+        <br>
+
+        Test-train Split: <input type='range' min='0' max='100' value='70' name='test_train_split' oninput="tts_output.value = test_train_split.value / 100">
+        <output name="tts_output">0.7</output>
+        <br>
+
+        Verbose: <input type='checkbox' name='verbose'>
+        <br>
+
         <input type='submit' value='Run' onclick='set_args()'>
     </form>
 </body>
