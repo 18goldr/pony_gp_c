@@ -1,3 +1,41 @@
+
+/**
+* Implementation of Genetic Programming(GP), the purpose of this
+* code is to describe how the algorithm works. The intended use is for
+* teaching. The design is supposed to be simple, self contained and use
+* core C libraries.
+*
+* Genetic Programming
+* ===================
+* An individual is a struct with two keys :
+*   -genome  -- A tree
+*   -fitness -- The fitness of the evaluated tree
+* The fitness is maximized.
+* The nodes in a GP tree consist of different symbols. The symbols are either
+* functions (internal nodes with arity > 0) or terminals (leaf nodes with arity = 0)
+* The symbols are represented as a struct with the keys:
+*   -arities   -- A hashmap where a key is a symbol and the value is the arity
+*   -terminals -- An of characters (symbols) with arity 0
+*   -functions -- A list of characters (symbols) with arity > 0
+*
+* Fitness Function
+* ----------------
+* Find a symbolic expression (function) which yields the lowest error
+* for a given set of inputs.
+* Inputs have explanatory variables that have a corresponding
+* output. The input data is split into test and training data.The
+* training data is used to generate symbolic expressions and the test
+* data is used to evaluate the out - of - sample performance of the
+* evaluated expressions.
+*
+* Pony GP Parameters
+* ------------------
+* The parameters for Pony GP are in a hashmap.
+*
+* code author :: Robert Gold <18goldr@gmail.com>
+* original project author :: Erik Hemberg <hembergerik@csail.mit.edu>
+*/
+
 #include "include/main.h"
 
 // The list of symbols the program uses to generate individuals.
