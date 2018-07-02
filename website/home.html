@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Pony_gp Input</title>
+    <script>
+        function set_args() {
+            if (typeof(Storage) !== 'undefined') {
+                localStorage.config = '-config configs.ini';
+                localStorage.fc = '-fc fitness_cases.csv';
+                localStorage.p = '-p ' + document.getElementsByName('population_size')[0].value;
+                localStorage.m = '-m ' + document.getElementsByName('max_depth')[0].value;
+                localStorage.e = '-e ' + document.getElementsByName('elite_size')[0].value;
+                localStorage.g = '-g ' + document.getElementsByName('generations')[0].value;
+                localStorage.ts = '-ts ' + document.getElementsByName('tournament_size')[0].value;
+                localStorage.cp = '-cp ' + document.getElementsByName('crossover_probability')[0].value;
+                localStorage.mp = '-mp ' + document.getElementsByName('mutation_probability')[0].value;
+                localStorage.tts = '-tts ' + document.getElementsByName('test_train_split')[0].value;
+                localStorage.v = '-v ' + document.getElementsByName('verbose')[0].value
+            }
+        }
+    </script>
+</head>
+<body>
+    <form action='pony_gp.html'>
+        Population Size: <input type='text' name='population_size'><br>
+        Max Depth: <input type='text' name='max_depth'><br>
+        Elite Size: <input type='text' name='elite_size'><br>
+        Generations: <input type='text' name='generations'><br>
+        Tournament Size: <input type='text' name='tournament_size'><br>
+        Crossover Probability: <input type='text' name='crossover_probability'><br>
+        Mutation Probability: <input type='text' name='mutation_probability'><br>
+        Test-train Split: <input type='text' name='test_train_split'><br>
+        Verbose: <input type='text' name='verbose'><br>
+        <input type='submit' value='Run' onclick='set_args()'>
+    </form>
+</body>
+</html>
