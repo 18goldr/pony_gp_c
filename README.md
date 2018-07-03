@@ -36,8 +36,17 @@ C99 and CMake
 usage: ./pony_gp    [-p POPULATION_SIZE] [-m MAX_DEPTH] [-e ELITE_SIZE]
                     [-g GENERATIONS] [-ts TOURNAMENT_SIZE] [-s SEED]
                     [-cp CROSSOVER_PROBABILITY] [-mp MUTATION_PROBABILITY]
-                    [--tts TEST_TRAIN_SPLIT] [-v VERBOSE]
-optional arguments:
+                    [-tts TEST_TRAIN_SPLIT] [-v VERBOSE] [-config CONFIG]
+                    [-fc FITNESS_CASES]
+
+
+Required arguments:
+  -config CONFIG            Config filename (INI format). Overridden by CLI-arguments.
+  -fc FITNESS_CASES         Fitness cases filename. The exemplars of input and the
+                            corresponding output used to train and test individual
+                            solutions.
+
+Optional arguments:
   -p POPULATION_SIZE        Population size is the number of individual solutions
   -m MAX_DEPTH              Max depth of tree. Partly determines the search space
                             of the solutions.
@@ -47,7 +56,7 @@ optional arguments:
                             search loop.
   -ts TOURNAMENT_SIZE       Tournament size. The number of individual solutions
                             that are compared when determining which solutions are
-                            inserted into the next generation(iteration) of the
+                            inserted into the next generation (iteration) of the
                             search loop.
   -s SEED                   Random seed. For replication of runs of the EA. The
                             search is stochastic and and replication of the
@@ -61,35 +70,6 @@ optional arguments:
   -tts TEST_TRAIN_SPLIT     Test-train data split, [0.0, 1.0]. The ratio of fitness
                             cases used for training individual solutions.
   -v VERBOSE                Set to 1 for verbose printing. Otherwise, 0.
-```
-
-
-## Parameters
-```
-Parameters:
-          POPULATION_SIZE: Population size is the number of individual solutions
-                MAX_DEPTH: Max depth of tree. Partly determines the search space
-			   of the solutions
-	       ELITE_SIZE: Elite size is the number of best individual solutions
-			   that are preserved between generations
-	      GENERATIONS: Number of generations. The number of iterations of the
-			   search loop
-          TOURNAMENT_SIZE: Tournament size. The number of individual solutions
-			   that are compared when determining which solutions are
-			   inserted into the next generation(iteration) of the
-			   search loop
-		     SEED: Random seed. For replication of runs of the EA. The
-			   search is stochastic and and replication of the
-			   results are guaranteed the random seed
-    CROSSOVER_PROBABILITY: Crossover probability, [0.0,1.0]. The probability of
-                           two individual solutions to be varied by the crossover
-                           operator
-     MUTATION_PROBABILITY: Mutation probability, [0.0, 1.0]. The probability of
-                           an individual solutions to be varied by the mutation
-                           operator
-	 TEST_TRAIN_SPLIT: Test-train data split, [0.0,1.0]. The ratio of fitness
-                           cases used for training individual solutions
-	          VERBOSE: Verbose printing.
 ```
 
 ## Output

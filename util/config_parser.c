@@ -10,6 +10,8 @@ double SEED;
 double CROSSOVER_PROBABILITY;
 double MUTATION_PROBABILITY;
 double TEST_TRAIN_SPLIT;
+char *CONFIG_DIR;
+char *CSV_DIR;
 
 /**
  * Parse command line arguments.
@@ -19,6 +21,12 @@ double TEST_TRAIN_SPLIT;
 void arg_parse(int argc, char *argv[]) {
     const char space[2] = " ";
     bool side;
+
+    char *root = "..//data//"; // Current working directory should be the cmake-build folder
+
+    // Both the CSV file and the CONFIG file must be provided for the program to run.
+    bool csv_def = false;
+    bool config_def = false;
 
     for (int i=1; i < argc; i++) {
         side = false;
@@ -44,10 +52,24 @@ void arg_parse(int argc, char *argv[]) {
                     TEST_TRAIN_SPLIT = atof(t);
                 } else if(strstr(argv[i], "-v")) {
                     VERBOSE = (bool)atof(t);
+                } else if(strstr(argv[i], "-config")) {
+                    CONFIG_DIR = concat(root, t);
+                    config_def = true;
+                } else if(strstr(argv[i], "-fc")) {
+                    CSV_DIR = concat(root, t);
+                    csv_def = true;
                 }
             }
         }
     }
+
+    if (!csv_def) {
+        fprintf(stderr, "The fitness case file was not provided. Aborting.\n");
+    }
+    if (!config_def) {
+        fprintf(stderr, "The config file was not provided. Aborting.\n");
+    }
+    if (!config_def || !csv_def) abort();
 }
 
 /**
