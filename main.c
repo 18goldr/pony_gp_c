@@ -546,7 +546,8 @@ struct individual **tournament_selection(struct individual **pop) {
 
         sort_population(competitors, TOURNAMENT_SIZE);
 
-        winners[win_i++] = competitors[0];
+        // Copy individuals.
+        winners[win_i++] = new_individual(competitors[0]->genome, competitors[0]->fitness);
     }
 
     free_pointer(competitors);
