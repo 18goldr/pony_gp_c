@@ -26,7 +26,6 @@ struct q_node {
 };
 
 struct queue *create_queue(void);
-struct q_node *new_q_node(struct node *node);
 bool is_empty(struct queue *q);
 void enqueue(struct queue *q, struct node *node);
 struct q_node *dequeue(struct queue *q);
