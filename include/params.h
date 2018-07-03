@@ -15,4 +15,7 @@ extern double CROSSOVER_PROBABILITY;
 extern double MUTATION_PROBABILITY;
 extern double TEST_TRAIN_SPLIT;
 
+extern char *CONFIG_DIR;
+extern char *CSV_DIR;
+
 #endif //PONY_GP_PARAMS_H

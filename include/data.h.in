@@ -1,7 +1,0 @@
-#ifndef DATA_H
-#define DATA_H
-
-#cmakedefine CSV_DIR "@CSV_DIR@"
-#cmakedefine CONFIG_DIR "@CONFIG_DIR@"
-
-#endif

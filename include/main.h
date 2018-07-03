@@ -19,7 +19,6 @@
 #include "../include/config_parser.h"
 #include "../include/csv_parser.h"
 #include "../include/tests.h"
-#include "include/data.h"
 
 #define DEFAULT_FITNESS (-DBL_MAX)
 #define EXPERIMENTAL_OUTPUT 0
