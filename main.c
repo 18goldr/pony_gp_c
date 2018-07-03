@@ -516,13 +516,12 @@ void generational_replacement(struct individual **new_pop, struct individual **o
     sort_population(old_pop, POPULATION_SIZE);
 
     for (int i = 0; i < ELITE_SIZE; i++) {
-        if (old_pop[i]->fitness > new_pop[POPULATION_SIZE - i - 1]->fitness) {
-            // Free unused individuals.
-            free_individual(new_pop[POPULATION_SIZE - i - 1]);
-            new_pop[POPULATION_SIZE - i - 1] = old_pop[i];
+        // Elite is always propagated
+        // Free unused individuals.
+        free_individual(new_pop[POPULATION_SIZE - i - 1]);
+        new_pop[POPULATION_SIZE - i - 1] = old_pop[i];
 
-            old_pop[i] = NULL; // Set to NULL to ensure that it is not double freed.
-        }
+        old_pop[i] = NULL; // Set to NULL to ensure that it is not double freed.
     }
 }
 
