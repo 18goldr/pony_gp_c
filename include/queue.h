@@ -1,35 +1,35 @@
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef PONY_GP_QUEUE_H
+#define PONY_GP_QUEUE_H
 
 #include <stdbool.h>
-
+#include <stdlib.h>
+#include "../include/memmngr.h"
 /**
-* An implementation of the queue data structure.
-*	front: The front of the queue.
-*	 rear: The rear of the queue.
-*	 size: The size of the queue.
-*/
+ * An implementation of the queue data structure.
+ * @field front The front node of the queue.
+ * @field rear The rear node of the queue.
+ * @field size The size of the queue.
+ */
 struct queue {
-	struct q_node *front, *rear;
-	int size;
+    struct q_node *front, *rear;
+    int size;
 };
 
 /**
-* A binary tree member of a queue.
-*	value: The value of the member.
-*	 next: The next member in the queue.
-*/
+ * A wrapper to hold a binary tree node in a queue.
+ * @field value The binary tree node.
+ * @field next The node directly preceding the current node.
+ */
 struct q_node {
-	struct node *value;
-	struct q_node *next;
+    struct node *value;
+    struct q_node *next;
 };
 
-bool is_empty(struct queue *queue);
-struct q_node *new_q_node(struct node *node);
 struct queue *create_queue(void);
-void enqueue(struct queue *queue, struct node *node);
+bool is_empty(struct queue *q);
+void enqueue(struct queue *q, struct node *node);
 struct q_node *dequeue(struct queue *q);
-int queue_size(struct queue *q);
-void deinit_queue(struct queue *q);
+void free_queue(struct queue *q);
+void free_q_node(struct q_node *qn);
 
-#endif
+#endif //PONY_GP_QUEUE_H

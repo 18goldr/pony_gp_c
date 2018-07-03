@@ -1,29 +1,14 @@
-cmake_minimum_required(VERSION 3.4.3)
-project (pony_gp)
+cmake_minimum_required(VERSION 3.5)
+project(pony_gp C)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 set(DIR ${pony_gp_SOURCE_DIR})
 
-file(GLOB_RECURSE pony_gp_SOURCES "${DIR}/src/*.c")
-file(GLOB_RECURSE pony_gp_HEADERS "${DIR}/include/*.h")
-
-foreach (_headerFile ${pony_gp_HEADERS})
-    get_filename_component(_dir ${_headerFile} PATH)
-    list (APPEND pony_gp_INCLUDE_DIRS ${_dir})
-endforeach()
-list(REMOVE_DUPLICATES pony_gp_INCLUDE_DIRS)
-
 include("${DIR}/include/CMakeLists.txt")
-include_directories(${pony_gp_INCLUDE_DIRS})
-add_executable (pony_gpExe ${pony_gp_SOURCES})
+
+add_executable(pony_gp main.c util/memmngr.c include/memmngr.h util/binary_tree.c include/binary_tree.h util/queue.c include/queue.h util/rand_util.c include/rand_util.h include/main.h include/misc_util.h util/hashmap.c include/hashmap.h include/params.h util/misc_util.c util/config_parser.c include/config_parser.h util/file_util.c include/file_util.h util/csv_parser.c include/csv_parser.h include/csv_data.h util/tests.c include/tests.h)
 
 if (CMAKE_COMPILER_IS_GNUCC)
-	
-	target_link_libraries(pony_gpExe m)
-	
-	find_program(MEMORYCHECK_COMMAND valgrind)
-	set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full")
-	set(MEMORYCHECK_SUPPRESSIONS_FILE "${DIR}/valgrind_suppress.txt")
+	target_link_libraries(pony_gp m)
 endif()
-
-include(CTest)
-add_test(test pony_gpExe)
-
