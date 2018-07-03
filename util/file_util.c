@@ -23,7 +23,7 @@ int get_num_lines(FILE *file) {
 
     // If the current character and the previous characters are new lines,
     // then that means the current line is empty.
-    char prev_char;
+    char prev_char = NULL;
 
     for (c = getc(file); c != EOF; c = getc(file)) {
 

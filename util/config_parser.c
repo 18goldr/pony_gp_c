@@ -87,8 +87,8 @@ void set_params(FILE *file, struct symbols *s) {
                 remove_spaces(line);
                 remove_last_newline(line);
 
-                char *key;
-                char *value;
+                char *key = NULL;
+                char *value = NULL;
 
                 for (char *t = strtok(line, delimeter); t != NULL; t = strtok(NULL, delimeter), side = !side) {
                     if (!side) {
