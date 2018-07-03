@@ -54,7 +54,7 @@ void swap(int *a, int *b) {
  * @param size The size of the array.
  * @return The sum.
  */
-double sum_doubles(double *values, int size) {
+double sum_doubles(const double *values, int size) {
     double total = 0;
 
     for (int i=0; i < size; i++) {
@@ -107,7 +107,7 @@ double *get_ave_and_std(double *values, int size) {
  * @param size The size of the array.
  * @return The max value.
  */
-double max_value(double *values, int size) {
+double max_value(const double *values, int size) {
     double max = values[0];
 
     for (int i=1; i < size; i++) {

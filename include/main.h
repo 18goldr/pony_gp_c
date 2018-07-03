@@ -20,7 +20,7 @@
 #include "../include/csv_parser.h"
 #include "../include/tests.h"
 
-#define DEFAULT_FITNESS -DBL_MAX
+#define DEFAULT_FITNESS (-DBL_MAX)
 #define EXPERIMENTAL_OUTPUT 0
 
 struct individual {

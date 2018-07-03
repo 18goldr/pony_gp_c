@@ -1,3 +1,41 @@
+
+/**
+* Implementation of Genetic Programming(GP), the purpose of this
+* code is to describe how the algorithm works. The intended use is for
+* teaching. The design is supposed to be simple, self contained and use
+* core C libraries.
+*
+* Genetic Programming
+* ===================
+* An individual is a struct with two keys :
+*   -genome  -- A tree
+*   -fitness -- The fitness of the evaluated tree
+* The fitness is maximized.
+* The nodes in a GP tree consist of different symbols. The symbols are either
+* functions (internal nodes with arity > 0) or terminals (leaf nodes with arity = 0)
+* The symbols are represented as a struct with the keys:
+*   -arities   -- A hashmap where a key is a symbol and the value is the arity
+*   -terminals -- An of characters (symbols) with arity 0
+*   -functions -- A list of characters (symbols) with arity > 0
+*
+* Fitness Function
+* ----------------
+* Find a symbolic expression (function) which yields the lowest error
+* for a given set of inputs.
+* Inputs have explanatory variables that have a corresponding
+* output. The input data is split into test and training data.The
+* training data is used to generate symbolic expressions and the test
+* data is used to evaluate the out - of - sample performance of the
+* evaluated expressions.
+*
+* Pony GP Parameters
+* ------------------
+* The parameters for Pony GP are in a hashmap.
+*
+* code author :: Robert Gold <18goldr@gmail.com>
+* original project author :: Erik Hemberg <hembergerik@csail.mit.edu>
+*/
+
 #include "include/main.h"
 
 // The list of symbols the program uses to generate individuals.
@@ -131,7 +169,7 @@ void grow(struct node *node, int curr_depth, int max_depth, bool must_fill) {
     for (int side = 0; side < get_hashmap(symbols->arities, curr_sym_str); side++) {
         new_sym = get_random_symbol(curr_depth, max_depth, must_fill);
 
-        struct node *new_node = append_node(node, new_sym, side);
+        struct node *new_node = append_node(node, new_sym, (bool) side);
 
         // Call grow with the child node as the current node.
         if (curr_depth + 1 < max_depth && strchr(symbols->functions, new_sym)) {
@@ -340,7 +378,7 @@ void init_population(struct individual **pop) {
     for (int i = 0; i < POPULATION_SIZE; i++) {
 
         // Pick full or grow method
-        full = get_randint(0, 1);
+        full = (bool) get_randint(0, 1);
 
         // Ramp the depth
         max_depth = (i % MAX_DEPTH) + 1;
@@ -388,7 +426,7 @@ void evaluate_population(struct individual **pop) {
  * @param size The size of the population.
  */
 void sort_population(struct individual **pop, int size) {
-    qsort(pop, size, sizeof(*pop), fitness_comp);
+    qsort(pop, (size_t) size, sizeof(*pop), fitness_comp);
 }
 
 /**
@@ -508,7 +546,8 @@ struct individual **tournament_selection(struct individual **pop) {
 
         sort_population(competitors, TOURNAMENT_SIZE);
 
-        winners[win_i++] = competitors[0];
+        // Copy individuals.
+        winners[win_i++] = new_individual(competitors[0]->genome, competitors[0]->fitness);
     }
 
     free_pointer(competitors);
@@ -528,13 +567,12 @@ void generational_replacement(struct individual **new_pop, struct individual **o
     sort_population(old_pop, POPULATION_SIZE);
 
     for (int i = 0; i < ELITE_SIZE; i++) {
-        if (old_pop[i]->fitness > new_pop[POPULATION_SIZE - i - 1]->fitness) {
-            // Free unused individuals.
-            free_individual(new_pop[POPULATION_SIZE - i - 1]);
-            new_pop[POPULATION_SIZE - i - 1] = old_pop[i];
+        // Elite is always propagated
+        // Free unused individuals.
+        free_individual(new_pop[POPULATION_SIZE - i - 1]);
+        new_pop[POPULATION_SIZE - i - 1] = old_pop[i];
 
-            old_pop[i] = NULL; // Set to NULL to ensure that it is not double freed.
-        }
+        old_pop[i] = NULL; // Set to NULL to ensure that it is not double freed.
     }
 }
 

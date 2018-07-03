@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "../include/memmngr.h"
+#include "../include/binary_tree.h"
 /**
  * An implementation of the queue data structure.
  * @field front The front node of the queue.
@@ -26,7 +27,6 @@ struct q_node {
 };
 
 struct queue *create_queue(void);
-struct q_node *new_q_node(struct node *node);
 bool is_empty(struct queue *q);
 void enqueue(struct queue *q, struct node *node);
 struct q_node *dequeue(struct queue *q);

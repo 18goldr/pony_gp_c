@@ -313,7 +313,7 @@ struct node *tree_deep_copy(struct node *node) {
 char *tree_to_string(struct node *root) {
     int num_nodes = get_number_of_nodes(root);
 
-    char *str = allocate_m(num_nodes + 1);
+    char *str = allocate_m((size_t) (num_nodes + 1));
 
     for (int i=0; i < num_nodes; i++) {
         str[i] = get_node_at_index_wrapper(root, i)->value;
