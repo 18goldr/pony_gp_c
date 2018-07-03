@@ -1,8 +1,9 @@
-file(GLOB CSV_DIR "data/*.csv" )
-file(GLOB INI_DIR "data/*.ini")
+file(GLOB CD "data/*.csv")
+file(GLOB CFD "data/*.ini")
 
-set(DIR_STRING "${CSV_DIR}")
-set(INI_DIR "${INI_DIR}")
-configure_file("include/params.h.in" "include/params.h")
+set(CSV_DIR "${CD}")
+set(CONFIG_DIR "${CFD}")
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+configure_file("include/data.h.in" "include/data.h")
+
+include_directories("${CMAKE_CURRENT_BINARY_DIR}")

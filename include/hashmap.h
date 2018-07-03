@@ -1,28 +1,32 @@
-#ifndef HASHMAP_H
-#define HASHMAP_H
 
-#define MAX_SIZE 100
+#ifndef PONY_GP_HASHMAP_H
+#define PONY_GP_HASHMAP_H
+
+#define MAX_HASHMAP_SIZE 1000
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <memory.h>
+#include "../include/memmngr.h"
 
 /**
-* A simple implementation of a hashmap consisting of
-* two arrays, which together hold a key value pair.
-*		  keys: The array of keys
-*		values: The array of the value.
-*	curr_index: Current max index of keys and values
-*/
+ * A simple implementation of a hashmap. The structure
+ * contains two arrays, which together hold key-value pairs.
+ * @field keys The array of keys
+ * @field values The array of values
+ * @field num_pairs The number of key-value pairs currently assigned.
+ */
 struct hashmap {
-	char *keys[MAX_SIZE];
-	double values[MAX_SIZE];
-	int curr_index; 
+    char *keys[MAX_HASHMAP_SIZE];
+    double values[MAX_HASHMAP_SIZE];
+    int num_pairs;
 };
 
-int hashmap_put(struct hashmap *h, char *key, const double value);
-double hashmap_get(struct hashmap *h, char *key);
-struct hashmap *hashmap_init(void);
-void hashmap_deinit(struct hashmap *h);
+struct hashmap *init_hashmap(void);
+void free_hashmap(struct hashmap *h);
+int put_hashmap(struct hashmap *h, char *key, const double value);
+double get_hashmap(struct hashmap *h, char *key);
 void print_hashmap(struct hashmap *h);
-int hashmap_get_size(struct hashmap *h);
-char *hashmap_get_key(struct hashmap *h, int i);
-int hashmap_get_num_with_value(struct hashmap *h, int value);
 
-#endif
+#endif //PONY_GP_HASHMAP_H
