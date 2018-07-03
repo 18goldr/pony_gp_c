@@ -119,7 +119,7 @@ void grow(struct node *node, int curr_depth, int max_depth, bool must_fill) {
     for (int side = 0; side < get_hashmap(symbols->arities, curr_sym_str); side++) {
         new_sym = get_random_symbol(curr_depth, max_depth, must_fill);
 
-        struct node *new_node = append_node(node, new_sym, side);
+        struct node *new_node = append_node(node, new_sym, (bool) side);
 
         // Call grow with the child node as the current node.
         if (curr_depth + 1 < max_depth && strchr(symbols->functions, new_sym)) {
@@ -328,7 +328,7 @@ void init_population(struct individual **pop) {
     for (int i = 0; i < POPULATION_SIZE; i++) {
 
         // Pick full or grow method
-        full = get_randint(0, 1);
+        full = (bool) get_randint(0, 1);
 
         // Ramp the depth
         max_depth = (i % MAX_DEPTH) + 1;
@@ -376,7 +376,7 @@ void evaluate_population(struct individual **pop) {
  * @param size The size of the population.
  */
 void sort_population(struct individual **pop, int size) {
-    qsort(pop, size, sizeof(*pop), fitness_comp);
+    qsort(pop, (size_t) size, sizeof(*pop), fitness_comp);
 }
 
 /**

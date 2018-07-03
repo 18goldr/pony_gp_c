@@ -34,7 +34,6 @@ struct node *get_node_at_index_wrapper(struct node *root, int goal);
 struct node *get_node_at_index(struct node *root, int goal_i, int *curr_i, struct node **goal);
 struct node *append_node(struct node *tree, char value, bool side);
 void print_nodes_index_order(struct node *root);
-struct node *append_node(struct node *node, char value, bool side);
 int get_max_tree_depth(struct node *root);
 struct node *tree_deep_copy(struct node *node);
 char *tree_to_string(struct node *root);

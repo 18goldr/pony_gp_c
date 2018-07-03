@@ -25,7 +25,7 @@ int get_num_lines(FILE *file) {
     // then that means the current line is empty.
     char prev_char = {0};
 
-    for (c = getc(file); c != EOF; c = getc(file)) {
+    for (c = (char) getc(file); c != EOF; c = (char) getc(file)) {
 
         if (c == comment_sym) comment = true;
 
@@ -71,7 +71,7 @@ char **get_lines(FILE *file) {
             if (line[n] != ' ') break;
         }
 
-        if (line[n] != comment_sym && strcmp(line, "\n")) {
+        if (line[n] != comment_sym && strcmp(line, "\n") != 0) {
 
             // Leave space for null terminating character
             lines[i] = allocate_m(strlen(line) + 1);
