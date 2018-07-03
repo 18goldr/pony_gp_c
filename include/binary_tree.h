@@ -24,7 +24,7 @@ struct node {
 
 struct node *new_node(char v);
 void free_node(struct node *node);
-void print_tree(struct node *root, int space, int delta_space);
+
 int get_number_of_nodes(struct node *root);
 struct node **get_children(struct node *root);
 int get_num_children(struct node *root);

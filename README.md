@@ -19,8 +19,8 @@ Best solution on the test data: Genome: {'+', '-', '*', '+', '1', 'a', '*', '1',
 ```
 
 If you wish to,
-change the paramaters from the `configs.ini` file to your desired
-paramaters or allow it to remain at its default values.
+change the parameters from the `configs.ini` file to your desired
+parameters or allow it to remain at its default values.
 
 The input with their respective output is in the file `data/fitness_case.csv`. The
 exemplars are generated from `y = a^2 + b^2` from range `[-5,5]`

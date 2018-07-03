@@ -30,10 +30,10 @@ bool symbol_is_valid(char sym, struct hashmap *arities);
 void remove_spaces(char *str);
 void remove_last_newline(char *str);
 void swap(int *a, int *b);
-double sum_doubles(double *values, int size);
+double sum_doubles(const double *values, int size);
 double get_std(double *values, int size, double ave);
 double *get_ave_and_std(double *values, int size);
-double max_value(double *values, int size);
+double max_value(const double *values, int size);
 double get_time(void);
 char *concat(char *s1, char *s2);
 
