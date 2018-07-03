@@ -169,7 +169,7 @@ void grow(struct node *node, int curr_depth, int max_depth, bool must_fill) {
     for (int side = 0; side < get_hashmap(symbols->arities, curr_sym_str); side++) {
         new_sym = get_random_symbol(curr_depth, max_depth, must_fill);
 
-        struct node *new_node = append_node(node, new_sym, side);
+        struct node *new_node = append_node(node, new_sym, (bool) side);
 
         // Call grow with the child node as the current node.
         if (curr_depth + 1 < max_depth && strchr(symbols->functions, new_sym)) {
@@ -378,7 +378,7 @@ void init_population(struct individual **pop) {
     for (int i = 0; i < POPULATION_SIZE; i++) {
 
         // Pick full or grow method
-        full = get_randint(0, 1);
+        full = (bool) get_randint(0, 1);
 
         // Ramp the depth
         max_depth = (i % MAX_DEPTH) + 1;
@@ -426,7 +426,7 @@ void evaluate_population(struct individual **pop) {
  * @param size The size of the population.
  */
 void sort_population(struct individual **pop, int size) {
-    qsort(pop, size, sizeof(*pop), fitness_comp);
+    qsort(pop, (size_t) size, sizeof(*pop), fitness_comp);
 }
 
 /**
@@ -546,7 +546,8 @@ struct individual **tournament_selection(struct individual **pop) {
 
         sort_population(competitors, TOURNAMENT_SIZE);
 
-        winners[win_i++] = competitors[0];
+        // Copy individuals.
+        winners[win_i++] = new_individual(competitors[0]->genome, competitors[0]->fitness);
     }
 
     free_pointer(competitors);
@@ -566,13 +567,12 @@ void generational_replacement(struct individual **new_pop, struct individual **o
     sort_population(old_pop, POPULATION_SIZE);
 
     for (int i = 0; i < ELITE_SIZE; i++) {
-        if (old_pop[i]->fitness > new_pop[POPULATION_SIZE - i - 1]->fitness) {
-            // Free unused individuals.
-            free_individual(new_pop[POPULATION_SIZE - i - 1]);
-            new_pop[POPULATION_SIZE - i - 1] = old_pop[i];
+        // Elite is always propagated
+        // Free unused individuals.
+        free_individual(new_pop[POPULATION_SIZE - i - 1]);
+        new_pop[POPULATION_SIZE - i - 1] = old_pop[i];
 
-            old_pop[i] = NULL; // Set to NULL to ensure that it is not double freed.
-        }
+        old_pop[i] = NULL; // Set to NULL to ensure that it is not double freed.
     }
 }
 

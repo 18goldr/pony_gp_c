@@ -6,7 +6,6 @@ double *targets;
 
 int fitness_len;
 int targets_len;
-int num_lines;
 int num_columns;
 
 int fitness_split;

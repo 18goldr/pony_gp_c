@@ -25,7 +25,7 @@ struct hashmap {
 
 struct hashmap *init_hashmap(void);
 void free_hashmap(struct hashmap *h);
-int put_hashmap(struct hashmap *h, char *key, const double value);
+int put_hashmap(struct hashmap *h, char *key, double value);
 double get_hashmap(struct hashmap *h, char *key);
 void print_hashmap(struct hashmap *h);
 
