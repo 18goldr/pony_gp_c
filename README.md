@@ -90,7 +90,7 @@ Best solution on test data: 'genome': {individual formula/tree}, 'fitness':fitne
 ```
 
 # Test
-Run. Generator type can be anything. Config and fitness case file names are required.
+Run. Generator type can be anything. Config and fitness case file paths are required.
 ```
 cmake -G <Generator type>
 make
