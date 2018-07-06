@@ -19,8 +19,6 @@ char *CSV_DIR;
  * @param argv The list of arguments
  */
 void arg_parse(int argc, char *argv[]) {
-    const char space[2] = " ";
-    bool side;
 
     char *root = "..//data//"; // Current working directory should be the cmake-build folder
 
@@ -29,7 +27,6 @@ void arg_parse(int argc, char *argv[]) {
     bool config_def = false;
 
     for (int i=1; i < argc; i+=2) {
-        side = false;
         if (strstr(argv[i], "-p")) {
             POPULATION_SIZE = (int) atof(argv[i+1]);
         } else if(strstr(argv[i], "-m")) {
