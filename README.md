@@ -85,12 +85,12 @@ Runs for `generations`
 
 ### Best Solution Statistics
 ```
-Best solution on train data:{'genome': individual formula/tree, 'fitness': fitness of genome}
-Best solution on test data:{'genome':individual formula/tree, 'fitness':fitness of genome}
+Best solution on train data: 'genome': {individual formula/tree}, 'fitness': fitness of genome
+Best solution on test data: 'genome': {individual formula/tree}, 'fitness':fitness of genome
 ```
 
 # Test
-Run. Generator type can be anything.
+Run. Generator can be any valid type.
 ```
 cmake -G <Generator type>
 make
@@ -98,3 +98,13 @@ make
 ```
 For information on the types of generators, run `cmake --help`
 
+## Website
+To setup the website, install web assembly (see https://webassembly.org/getting-started/developers-guide/),
+then run the following commands from the base folder of the project:
+```
+mkdir build
+cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=<Path to Emscripten.cmake> -G "Unix Makefiles"
+make
+```
+This will generate the necessary .wasm and .js files.

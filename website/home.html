@@ -6,17 +6,17 @@
     <script>
         function set_args() {
             if (typeof(Storage) !== 'undefined') {
-                localStorage.config = '-config configs.ini';
-                localStorage.fc = '-fc fitness_cases.csv';
-                localStorage.p = '-p ' + document.getElementsByName('population_size')[0].value;
-                localStorage.m = '-m ' + document.getElementsByName('max_depth')[0].value;
-                localStorage.e = '-e ' + document.getElementsByName('elite_size')[0].value;
-                localStorage.g = '-g ' + document.getElementsByName('generations')[0].value;
-                localStorage.ts = '-ts ' + document.getElementsByName('tournament_size')[0].value;
-                localStorage.cp = '-cp ' + document.getElementsByName('crossover_probability')[0].value / 100;
-                localStorage.mp = '-mp ' + document.getElementsByName('mutation_probability')[0].value / 100;
-                localStorage.tts = '-tts ' + document.getElementsByName('test_train_split')[0].value / 100;
-                localStorage.v = '-v ' + Number(document.getElementsByName('verbose')[0].checked)
+                localStorage.config = 'configs.ini';
+                localStorage.fc = 'fitness_cases.csv';
+                localStorage.p = document.getElementsByName('population_size')[0].value;
+                localStorage.m = document.getElementsByName('max_depth')[0].value;
+                localStorage.e = document.getElementsByName('elite_size')[0].value;
+                localStorage.g = document.getElementsByName('generations')[0].value;
+                localStorage.ts = document.getElementsByName('tournament_size')[0].value;
+                localStorage.cp = document.getElementsByName('crossover_probability')[0].value / 100;
+                localStorage.mp = document.getElementsByName('mutation_probability')[0].value / 100;
+                localStorage.tts = document.getElementsByName('test_train_split')[0].value / 100;
+                localStorage.v = 0;
             }
         }
     </script>
@@ -35,7 +35,7 @@
         <output name="e_output">2</output>
         <br>
 
-        Generations: <input type='range' min='10' max='100' value='10' name='generations' oninput="g_output.value = generations.value">
+        Generations: <input type='range' min='1' max='100' value='10' name='generations' oninput="g_output.value = generations.value">
         <output name="g_output">10</output>
         <br>
 
@@ -53,9 +53,6 @@
 
         Test-train Split: <input type='range' min='0' max='100' value='70' name='test_train_split' oninput="tts_output.value = test_train_split.value / 100">
         <output name="tts_output">0.7</output>
-        <br>
-
-        Verbose: <input type='checkbox' name='verbose'>
         <br>
 
         <input type='submit' value='Run' onclick='set_args()'>
