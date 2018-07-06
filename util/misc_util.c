@@ -129,18 +129,3 @@ double get_time() {
     time(&t);
     return (double)t;
 }
-
-/**
- * Concatenate two strings.
- * @param s1 One of the strings.
- * @param s2 The other string.
- * @return The concatenation of the two strings.
- */
-char *concat(char *s1, char *s2) {
-    char *result = allocate_m(strlen(s1) + strlen(s2) + 1); // + 1 for the null-terminator
-
-    strcpy(result, s1);
-    strcat(result, s2);
-
-    return result;
-}

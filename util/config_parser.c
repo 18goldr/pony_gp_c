@@ -20,8 +20,6 @@ char *CSV_DIR;
  */
 void arg_parse(int argc, char *argv[]) {
 
-    char *root = "..//data//"; // Current working directory should be the cmake-build folder
-
     // Both the CSV file and the CONFIG file must be provided for the program to run.
     bool csv_def = false;
     bool config_def = false;
@@ -48,10 +46,10 @@ void arg_parse(int argc, char *argv[]) {
         } else if(strstr(argv[i], "-v")) {
             VERBOSE = (bool)atof(argv[i+1]);
         } else if(strstr(argv[i], "-config")) {
-            CONFIG_DIR = concat(root, argv[i+1]);
+            CONFIG_DIR = argv[i+1];
             config_def = true;
         } else if(strstr(argv[i], "-fc")) {
-            CSV_DIR = concat(root, argv[i+1]);
+            CSV_DIR = argv[i+1];
             csv_def = true;
         }
     }

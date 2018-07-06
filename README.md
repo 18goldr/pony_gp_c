@@ -41,8 +41,8 @@ usage: ./pony_gp    [-p POPULATION_SIZE] [-m MAX_DEPTH] [-e ELITE_SIZE]
 
 
 Required arguments:
-  -config CONFIG            Config filename (INI format). Overridden by CLI-arguments.
-  -fc FITNESS_CASES         Fitness cases filename. The exemplars of input and the
+  -config CONFIG            Config path (INI format). Overridden by CLI-arguments.
+  -fc FITNESS_CASES         Fitness cases path. The exemplars of input and the
                             corresponding output used to train and test individual
                             solutions.
 
@@ -94,7 +94,7 @@ Run. Generator type can be anything. Config and fitness case file names are requ
 ```
 cmake -G <Generator type>
 make
-./pony_gp -config <config file> -fc <fitness cases>
+./pony_gp -config <path/to/config/file> -fc <path/to/fitness/cases>
 ```
 For information on the types of generators, run `cmake --help`
 
