@@ -85,8 +85,8 @@ Runs for `generations`
 
 ### Best Solution Statistics
 ```
-Best solution on train data:{'genome': individual formula/tree, 'fitness': fitness of genome}
-Best solution on test data:{'genome':individual formula/tree, 'fitness':fitness of genome}
+Best solution on train data: 'genome': {individual formula/tree}, 'fitness': fitness of genome
+Best solution on test data: 'genome': {individual formula/tree}, 'fitness':fitness of genome
 ```
 
 # Test
@@ -94,7 +94,7 @@ Run. Generator type can be anything.
 ```
 cmake -G <Generator type>
 make
-./pony_gp
+./pony_gp -config <config file> -fc <fitness cases>
 ```
 For information on the types of generators, run `cmake --help`
 
