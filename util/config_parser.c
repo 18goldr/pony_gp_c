@@ -19,47 +19,38 @@ char *CSV_DIR;
  * @param argv The list of arguments
  */
 void arg_parse(int argc, char *argv[]) {
-    const char space[2] = " ";
-    bool side;
-
-    char *root = "..//data//"; // Current working directory should be the cmake-build folder
 
     // Both the CSV file and the CONFIG file must be provided for the program to run.
     bool csv_def = false;
     bool config_def = false;
 
-    for (int i=1; i < argc; i++) {
-        side = false;
-        for (char *t = strtok(argv[i], space); t != NULL; t = strtok(NULL, space), side = !side) {
-            if (side) {
-                if (strstr(argv[i], "-p")) {
-                    POPULATION_SIZE = (int) atof(t);
-                } else if(strstr(argv[i], "-m")) {
-                    MAX_DEPTH = (int) atof(t);
-                } else if(strstr(argv[i], "-e")) {
-                    ELITE_SIZE = (int) atof(t);
-                } else if(strstr(argv[i], "-g")) {
-                    GENERATIONS = (int) atof(t);
-                } else if(strstr(argv[i], "-ts")) {
-                    TOURNAMENT_SIZE = (int) atof(t);
-                } else if(strstr(argv[i], "-s")) {
-                    SEED = atof(t);
-                } else if(strstr(argv[i], "-cp")) {
-                    CROSSOVER_PROBABILITY = atof(t);
-                } else if(strstr(argv[i], "-mp")) {
-                    MUTATION_PROBABILITY = atof(t);
-                } else if(strstr(argv[i], "-tts")) {
-                    TEST_TRAIN_SPLIT = atof(t);
-                } else if(strstr(argv[i], "-v")) {
-                    VERBOSE = (bool)atof(t);
-                } else if(strstr(argv[i], "-config")) {
-                    CONFIG_DIR = concat(root, t);
-                    config_def = true;
-                } else if(strstr(argv[i], "-fc")) {
-                    CSV_DIR = concat(root, t);
-                    csv_def = true;
-                }
-            }
+    for (int i=1; i < argc; i+=2) {
+        if (strstr(argv[i], "-p")) {
+            POPULATION_SIZE = (int) atof(argv[i+1]);
+        } else if(strstr(argv[i], "-m")) {
+            MAX_DEPTH = (int) atof(argv[i+1]);
+        } else if(strstr(argv[i], "-e")) {
+            ELITE_SIZE = (int) atof(argv[i+1]);
+        } else if(strstr(argv[i], "-g")) {
+            GENERATIONS = (int) atof(argv[i+1]);
+        } else if(strstr(argv[i], "-ts")) {
+            TOURNAMENT_SIZE = (int) atof(argv[i+1]);
+        } else if(strstr(argv[i], "-s")) {
+            SEED = atof(argv[i+1]);
+        } else if(strstr(argv[i], "-cp")) {
+            CROSSOVER_PROBABILITY = atof(argv[i+1]);
+        } else if(strstr(argv[i], "-mp")) {
+            MUTATION_PROBABILITY = atof(argv[i+1]);
+        } else if(strstr(argv[i], "-tts")) {
+            TEST_TRAIN_SPLIT = atof(argv[i+1]);
+        } else if(strstr(argv[i], "-v")) {
+            VERBOSE = (bool)atof(argv[i+1]);
+        } else if(strstr(argv[i], "-config")) {
+            CONFIG_DIR = argv[i+1];
+            config_def = true;
+        } else if(strstr(argv[i], "-fc")) {
+            CSV_DIR = argv[i+1];
+            csv_def = true;
         }
     }
 

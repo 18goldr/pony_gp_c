@@ -41,8 +41,8 @@ usage: ./pony_gp    [-p POPULATION_SIZE] [-m MAX_DEPTH] [-e ELITE_SIZE]
 
 
 Required arguments:
-  -config CONFIG            Config filename (INI format). Overridden by CLI-arguments.
-  -fc FITNESS_CASES         Fitness cases filename. The exemplars of input and the
+  -config CONFIG            Config path (INI format). Overridden by CLI-arguments.
+  -fc FITNESS_CASES         Fitness cases path. The exemplars of input and the
                             corresponding output used to train and test individual
                             solutions.
 
@@ -80,21 +80,21 @@ Runs for `generations`
 `Initial tree nr`: number `nodes`: number of nodes in tree `max_depth`: max tree depth `tree`: symbols in tree
 
 ### Generation Statistics
-`Generation`: generation number, `duration`: evaluation time, `fit_ave`: average fitness of the generation, `size_ave`: average number of nodes in the generation amongst all solutions, `depth_ave`: average max_tree depth,`max_size`: maximum number of nodes, `max_depth`: maximum depth, `max_fit`: maximum fitness `best_solution`: {`'genome'`: individual formula/tree, `'fitness'`: fitness of genome}
+`Generation`: generation number, `duration`: evaluation time, `fit_ave`: average fitness of the generation, `size_ave`: average number of nodes in the generation amongst all solutions, `depth_ave`: average max_tree depth,`max_size`: maximum number of nodes, `max_depth`: maximum depth, `max_fit`: maximum fitness `best_solution`: `'genome'`: {individual formula/tree}, `'fitness'`: fitness of genome
 
 
 ### Best Solution Statistics
 ```
-Best solution on train data:{'genome': individual formula/tree, 'fitness': fitness of genome}
-Best solution on test data:{'genome':individual formula/tree, 'fitness':fitness of genome}
+Best solution on train data: 'genome': {individual formula/tree}, 'fitness': fitness of genome
+Best solution on test data: 'genome': {individual formula/tree}, 'fitness':fitness of genome
 ```
 
 # Test
-Run. Generator type can be anything.
+Run. Generator type can be anything. Config and fitness case file paths are required.
 ```
 cmake -G <Generator type>
 make
-./pony_gp
+./pony_gp -config <path/to/config/file> -fc <path/to/fitness/cases>
 ```
 For information on the types of generators, run `cmake --help`
 
