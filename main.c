@@ -51,11 +51,13 @@ int main(int argc, char *argv[]) {
 
     setup();
 
+    print_settings();
+
     struct individual **population = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
     struct individual *best_ever = run(population);
 
     if (EXPERIMENTAL_OUTPUT) {
-        print_params();
+        print_params_minimal();
         printf(", %f", best_ever->fitness);
     } else {
         printf("\nBest solution on the training data: ");
@@ -724,9 +726,19 @@ void out_of_sample_test(struct individual *i) {
 
 /**
  * Print the programs parameters without any extra information.
- * Prints in the order:
- *      Population size, max depth, elite size, generations, tournament size.
+ * Prints in the order: Population size, max depth, elite size, generations, tournament size.
  */
-void print_params() {
+void print_params_minimal() {
     printf("%d, %d, %d, %d, %d", POPULATION_SIZE, MAX_DEPTH, ELITE_SIZE, GENERATIONS, TOURNAMENT_SIZE);
+}
+
+void print_settings() {
+    printf("Reading: %s, Headers: {", CSV_DIR);
+
+    for (int i=0; i < num_headers; i++) {
+        printf("%c", headers[i]);
+
+        if (i < num_headers-1) printf(", ");
+    }
+    printf("}, Number of Exemplars: %d\n", num_exemplars);
 }

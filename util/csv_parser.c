@@ -21,10 +21,12 @@ int test_len;
 char *headers;
 int num_headers;
 
+int num_exemplars;
+
 
 /**
  * Parse a CSV file for any variables/constants then add them
- * to a symbols instance and store the headers.
+ * to a symbols instance and store the headers in an array.
  * @param file The CSV file.
  * @param s The symbols instance.
  */
@@ -87,6 +89,7 @@ void parse_exemplars(FILE *file) {
     char **lines = get_lines(file);
 
     int num_lines = get_num_lines(file);
+    num_exemplars = num_lines - 1;
     int num_columns = get_num_columns(file);
 
     // Allocate fitness_cases.

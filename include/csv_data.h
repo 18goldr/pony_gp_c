@@ -21,4 +21,6 @@ extern int test_len;
 extern char *headers;
 extern int num_headers;
 
+extern int num_exemplars;
+
 #endif //PONY_GP_CSV_DATA_H
