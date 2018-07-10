@@ -6,8 +6,8 @@
     <script>
         function set_args() {
             if (typeof(Storage) !== 'undefined') {
-                localStorage.config = 'configs.ini';
-                localStorage.fc = 'fitness_cases.csv';
+                localStorage.config = 'data/configs.ini';
+                localStorage.fc = 'data/fitness_cases.csv';
                 localStorage.p = document.getElementsByName('population_size')[0].value;
                 localStorage.m = document.getElementsByName('max_depth')[0].value;
                 localStorage.e = document.getElementsByName('elite_size')[0].value;

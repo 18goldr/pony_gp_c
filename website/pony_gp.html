@@ -14,6 +14,7 @@
     <script>
         function set_fitnesses() {
             let f = get_fitnesses();
+            let out_of_sample = [];
 
             let ctx = document.getElementById("performance").getContext("2d");
 
@@ -23,19 +24,30 @@
 
             for (let i=0; i < num_generations; i++) {
                 data_labels.push("Gen " + i);
+
+                if (i < num_generations - 1) out_of_sample.push(null);
             }
+
+            out_of_sample.push(get_out_of_sample_fitness());
 
             let pchart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: data_labels,
 
-                    datasets: [{
-                        label: "Fitness",
-                        data: f,
-                        borderColor: 'rgb(81, 145, 255)',
-                        backgroundColor: 'rgba(138, 178, 252, 0.51)'
-                    }]
+                    datasets: [
+                        {
+                            label: "Training Data",
+                            data: f,
+                            borderColor: 'rgb(81, 145, 255)',
+                            backgroundColor: 'rgba(138, 178, 252, 0.51)'
+                        }, {
+                            label: "Test Data",
+                            data: out_of_sample,
+                            borderColor: 'rgb(255, 25, 25)',
+                            backgroundColor: 'rgba(255, 177, 76, 0.65)'
+                        }
+                    ]
                 },
                 options: {
                     title: {
@@ -62,19 +74,46 @@
             return fitnesses;
         }
 
+        function get_out_of_sample_fitness() {
+            let output = localStorage.wasm_output;
+
+            let lastn = output.lastIndexOf("\n");
+            let lastc = output.lastIndexOf(":");
+
+            return output.substring(lastc+1, lastn);
+        }
+
         function actual_vs_expected() {
         }
+
+        $(document).ready(function(){
+            $("button").click(function(){
+                $("#output").toggle();
+            });
+        });
     </script>
 </head>
 
 <body>
+
     <div class="spinner" id='spinner'></div>
     <div class="emscripten" id="status">Downloading...</div>
 
     <div class="emscripten">
         <progress value="0" max="100" id="progress" hidden=1></progress>
     </div>
-    <textarea id="output" rows="8"></textarea>
+
+    <div class="chart-container" style="float: left; position: relative; height:40vh; width:40vw">
+        <canvas id="performance"></canvas>
+    </div>
+
+    <div class="chart-container" style="float: right; position: relative; height:40vh; width:40vw">
+        <canvas id="actual_vs_expected"></canvas>
+    </div>
+
+    <button style="position: relative">Toggle output</button>
+
+    <textarea id="output" rows="8" hidden="1"></textarea>
 
     <script type='text/javascript'>
         localStorage.wasm_output = "";
@@ -86,18 +125,18 @@
         var Module = {
             // Arguments defined in home.html
             arguments: (typeof(Storage) !== "undefined") ? [
-                "-config", localStorage.config,
-                "-fc", localStorage.fc,
+                "--config", localStorage.config,
+                "--fc", localStorage.fc,
                 "-m", localStorage.m,
                 "-p", localStorage.p,
                 "-e", localStorage.e,
                 "-g", localStorage.g,
-                "-ts", localStorage.ts,
-                "-cp", localStorage.cp,
-                "-mp", localStorage.mp,
-                "-tts", localStorage.tts,
+                "--ts", localStorage.ts,
+                "--cp", localStorage.cp,
+                "--mp", localStorage.mp,
+                "--tts", localStorage.tts,
                 "-v", localStorage.v
-            ] : ["-config", localStorage.config, "-fc", localStorage.fc],
+            ] : ["--config", localStorage.config, "--fc", localStorage.fc],
             preRun: [],
             postRun: [set_fitnesses, actual_vs_expected],
             print: (function () {
@@ -160,14 +199,6 @@
     </script>
 
     <script async type="text/javascript" src="pony_gp.js"></script>
-
-    <div class="chart-container" style="float: left; position: relative; height:40vh; width:40vw">
-        <canvas id="performance"></canvas>
-    </div>
-
-    <div class="chart-container" style="float: right; position: relative; height:40vh; width:40vw">
-        <canvas id="actual_vs_expected"></canvas>
-    </div>
 
 </body>
 </html>
