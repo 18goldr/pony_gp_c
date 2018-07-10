@@ -18,11 +18,15 @@ double *training_targets;
 int training_len;
 int test_len;
 
+char *headers;
+int num_headers;
+
+int num_exemplars;
+
 
 /**
  * Parse a CSV file for any variables/constants then add them
- * to a symbols instance. Ignore the last column because that is
- * target value/output.
+ * to a symbols instance and store the headers in an array.
  * @param file The CSV file.
  * @param s The symbols instance.
  */
@@ -35,18 +39,24 @@ void csv_add_constants(FILE *file, struct symbols *s) {
     remove_spaces(line);
 
     int t_i = s->term_size;
-    int c = get_num_columns(file) - 1; // Ignore the last column because that is an output.
+    num_headers = get_num_columns(file);
+
+    headers = allocate_m(num_headers);
+
     int i = 0;
 
-    for (char *t = strtok(line, const_delimeter); t != NULL && i < c; t = strtok(NULL, const_delimeter), i++) {
-        s->terminals[t_i++] = t[0];
+    for (char *t = strtok(line, const_delimeter); t != NULL && i < num_headers; t = strtok(NULL, const_delimeter), i++) {
+        if (i < num_headers-1) { // Ignore the last column because that is an output.
+            s->terminals[t_i++] = t[0];
 
-        put_hashmap(s->arities, t, 0.0);
+            put_hashmap(s->arities, t, 0.0);
+        }
+
+        headers[i] = t[0];
     }
 
     s->term_size = t_i;
 }
-
 /**
  * Get the number of columns in a CSV file.
  * @param file The CSV file to parse.
@@ -79,7 +89,8 @@ void parse_exemplars(FILE *file) {
     char **lines = get_lines(file);
 
     int num_lines = get_num_lines(file);
-    int num_columns = get_num_columns(file);
+    num_exemplars = num_lines - 1;
+    num_columns = get_num_columns(file);
 
     // Allocate fitness_cases.
     // Leave space for NULL

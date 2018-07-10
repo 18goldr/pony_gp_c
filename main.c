@@ -51,11 +51,13 @@ int main(int argc, char *argv[]) {
 
     setup();
 
+    print_settings();
+
     struct individual **population = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
     struct individual *best_ever = run(population);
 
     if (EXPERIMENTAL_OUTPUT) {
-        print_params();
+        print_params_minimal();
         printf(", %f", best_ever->fitness);
     } else {
         printf("\nBest solution on the training data: ");
@@ -344,22 +346,35 @@ double evaluate(struct node *node, double *fitness_case) {
  * Fitness is the negative mean square error (MSE).
  * @param ind The individual to evaluate.
  */
-void evaluate_individual(struct individual *ind) {
+void evaluate_individual(struct individual *ind, bool test) {
     double fitness = 0.0; // Initial fitness value
+    double *targets;
+    double **cases;
+    int len;
+
+    if (test) {
+        targets = test_targets;
+        cases = test_cases;
+        len = test_len;
+    } else {
+        targets = training_targets;
+        cases = training_cases;
+        len = training_len;
+    }
 
     // Calculate the error between the expected value (training_targets[i])
     // and the actual value (output).
-    for (int i = 0; i < training_len; i++) {
-        double output = evaluate(ind->genome, training_cases[i]);
+    for (int i = 0; i < len; i++) {
+        double output = evaluate(ind->genome, cases[i]);
 
         // Get the squared error
-        double error = output - training_targets[i];
+        double error = output - targets[i];
 
         fitness += error * error;
     }
 
     // Get the mean fitness and assign it to the individual.
-    ind->fitness = (fitness * -1) / (double) targets_len;
+    ind->fitness = (fitness * -1) / (double) len;
 
     assert(ind->fitness <= 0);
 }
@@ -414,7 +429,7 @@ void evaluate_population(struct individual **pop) {
         if (!isnan(fitness)) {
             pop[i]->fitness = fitness;
         } else {
-            evaluate_individual(pop[i]);
+            evaluate_individual(pop[i], false);
             put_hashmap(pop_cache, key, pop[i]->fitness);
         }
     }
@@ -639,14 +654,14 @@ struct individual *search_loop(struct individual **pop) {
 
             // Append the first child to the population.
             struct individual *i1 = new_individual(children[0], DEFAULT_FITNESS);
-            evaluate_individual(i1);
+            evaluate_individual(i1, false);
             new_pop[new_pop_i++] = i1;
 
             // Ensure that too many elements can't be added.
             // Handles uneven population sizes, since crossover returns 2 offspring.
             if (new_pop_i < POPULATION_SIZE) {
                 struct individual *i2 = new_individual(children[1], DEFAULT_FITNESS);
-                evaluate_individual(i2);
+                evaluate_individual(i2, false);
                 new_pop[new_pop_i++] = i2;
             }
         }
@@ -702,7 +717,7 @@ void swap_populations(struct individual ***pop1, struct individual ***pop2) {
  * @param i The solution to test.
  */
 void out_of_sample_test(struct individual *i) {
-    evaluate_individual(i);
+    evaluate_individual(i, true);
 
     printf("Best solution on the test data: ");
     print_individual(i);
@@ -711,9 +726,74 @@ void out_of_sample_test(struct individual *i) {
 
 /**
  * Print the programs parameters without any extra information.
- * Prints in the order:
- *      Population size, max depth, elite size, generations, tournament size.
+ * Prints in the order: Population size, max depth, elite size, generations, tournament size.
  */
-void print_params() {
+void print_params_minimal() {
     printf("%d, %d, %d, %d, %d", POPULATION_SIZE, MAX_DEPTH, ELITE_SIZE, GENERATIONS, TOURNAMENT_SIZE);
+}
+
+/**
+ * Print all relevant parameters and input data.
+ */
+void print_settings() {
+    printf("Reading: %s, Headers: {", CSV_DIR);
+
+    for (int i=0; i < num_headers; i++) {
+        printf("%c", headers[i]);
+
+        if (i < num_headers - 1) printf(", ");
+    }
+    printf("}, Number of Exemplars: %d\n", num_exemplars);
+
+    printf("GP Settings:\n[[Population Size: %d, Max Depth: %d, Elite Size: %d, Generations: %d, "
+                        "Tournament Size: %d, Seed: %f, Crossover Probability: %f, "
+                        "Mutation Probability: %f, Verbose: %d, Config: %s, Functions: {",
+           POPULATION_SIZE, MAX_DEPTH, ELITE_SIZE, GENERATIONS, TOURNAMENT_SIZE, SEED,
+           CROSSOVER_PROBABILITY, MUTATION_PROBABILITY, VERBOSE, CONFIG_DIR
+    );
+
+    for (int i=0; i < symbols->func_size; i++) {
+        printf("%c", symbols->functions[i]);
+
+        if (i < symbols->func_size - 1) printf(", ");
+    }
+
+    printf("}, Terminals: {");
+
+    for (int i=0; i < symbols->term_size; i++) {
+        printf("%c", symbols->terminals[i]);
+
+        if (i < symbols->term_size - 1) printf(", ");
+    }
+
+    printf("}, Arities: ");
+
+    print_hashmap(symbols->arities);
+
+    printf(", Fitness Cases: {");
+
+    for (int i=0; i < fitness_len; i++) {
+        printf("[", num_columns);
+
+        for (int k=0; k < num_columns - 1; k++) {
+            printf("%f", fitness_cases[i][k]);
+
+            if (k < num_columns - 2) printf(", ");
+        }
+
+        printf("]");
+
+        if (i < fitness_len - 1) printf(", ");
+    }
+
+    printf("}, Targets: {");
+
+    for (int i=0; i < targets_len; i++) {
+        printf("%f", targets[i]);
+
+        if (i < targets_len - 1) printf(", ");
+    }
+
+    printf("}]]\n");
+
 }

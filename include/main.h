@@ -37,7 +37,7 @@ struct individual *new_individual(struct node *genome, double fitness);
 void free_individual(struct individual *i);
 void print_individual(struct individual *i);
 double evaluate(struct node *node, double *fitness_case);
-void evaluate_individual(struct individual *ind);
+void evaluate_individual(struct individual *ind, bool test);
 void evaluate_population(struct individual **pop);
 void init_population(struct individual **pop);
 void sort_population(struct individual **pop, int size);
@@ -49,6 +49,7 @@ void generational_replacement(struct individual **new_pop, struct individual **o
 struct individual *search_loop(struct individual **pop);
 void swap_populations(struct individual ***pop1, struct individual ***pop2);
 void out_of_sample_test(struct individual *i);
-void print_params(void);
+void print_params_minimal(void);
+void print_settings(void);
 
 #endif //PONY_GP_MAIN_H

@@ -18,4 +18,10 @@ extern double *training_targets;
 extern int training_len;
 extern int test_len;
 
+extern char *headers;
+extern int num_headers;
+
+extern int num_exemplars;
+extern int num_columns;
+
 #endif //PONY_GP_CSV_DATA_H

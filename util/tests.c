@@ -234,7 +234,7 @@ void evaluate_individual_test() {
 
     struct individual *i = new_individual(node, DEFAULT_FITNESS);
 
-    evaluate_individual(i);
+    evaluate_individual(i, NULL);
 
     if (i->fitness != -299.39999999999998) {
         fprintf(stderr, "evaluate_individual has been modified and is broken.\n");
