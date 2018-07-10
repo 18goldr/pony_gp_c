@@ -33,43 +33,54 @@ C99 and CMake
 
 ## Usage
 ```
-usage: ./pony_gp    [-p POPULATION_SIZE] [-m MAX_DEPTH] [-e ELITE_SIZE]
-                    [-g GENERATIONS] [-ts TOURNAMENT_SIZE] [-s SEED]
-                    [-cp CROSSOVER_PROBABILITY] [-mp MUTATION_PROBABILITY]
-                    [-tts TEST_TRAIN_SPLIT] [-v VERBOSE] [-config CONFIG]
-                    [-fc FITNESS_CASES]
+usage: ./pony_gp --config <CONFIG> --fc <FITNESS_CASES>
+                    [-p <POPULATION_SIZE>] [-m <MAX_DEPTH>] [-e <ELITE_SIZE>]
+                    [-g <GENERATIONS>] [--ts <TOURNAMENT_SIZE>] [-s <SEED>]
+                    [--cp <CROSSOVER_PROBABILITY>] [--mp <MUTATION_PROBABILITY>]
+                    [--tts <TEST_TRAIN_SPLIT>] [-v <VERBOSE>] [-h]
 
 
 Required arguments:
-  -config CONFIG            Config path (INI format). Overridden by CLI-arguments.
-  -fc FITNESS_CASES         Fitness cases path. The exemplars of input and the
+  --config <CONFIG>         Config path (INI format). Overridden by CLI-arguments.
+  --fc <FITNESS_CASES>      Fitness cases path. The exemplars of input and the
                             corresponding output used to train and test individual
                             solutions.
 
 Optional arguments:
-  -p POPULATION_SIZE        Population size is the number of individual solutions
-  -m MAX_DEPTH              Max depth of tree. Partly determines the search space
-                            of the solutions.
-  -e ELITE_SIZE             Elite size is the number of best individual solutions
-                            that are preserved between generations.
-  -g GENERATIONS            Number of generations. The number of iterations of the
-                            search loop.
-  -ts TOURNAMENT_SIZE       Tournament size. The number of individual solutions
-                            that are compared when determining which solutions are
-                            inserted into the next generation (iteration) of the
-                            search loop.
-  -s SEED                   Random seed. For replication of runs of the EA. The
-                            search is stochastic and and replication of the
-                            results are guaranteed the random seed.
-  -cp CROSSOVER_PROBABILITY Crossover probability, [0.0, 1.0]. The probability of
-                            two individual solutions to be varied by the crossover
-                            operator.
-  -mp MUTATION_PROBABILITY  Mutation probability, [0.0, 1.0]. The probability of
-                            an individual solutions to be varied by the mutation
-                            operator.
-  -tts TEST_TRAIN_SPLIT     Test-train data split, [0.0, 1.0]. The ratio of fitness
-                            cases used for training individual solutions.
-  -v VERBOSE                Set to 1 for verbose printing. Otherwise, 0.
+  -h, --help                 Show this help message and exit.
+  -p <POPULATION_SIZE> --population_size <POPULATION_SIZE>
+                             Population size is the number of individual solutions
+  -m <MAX_DEPTH> --max_depth <MAX_DEPTH>
+                             Max depth of tree. Partly determines the search space
+                             of the solutions.
+  -e <ELITE_SIZE> --elite_size <ELITE_SIZE>
+                             Elite size is the number of best individual solutions
+                             that are preserved between generations.
+  -g <GENERATIONS> --generations <GENERATIONS>
+                             Number of generations. The number of iterations of the
+                             search loop.
+  --ts <TOURNAMENT_SIZE> --tournament_size <TOURNAMENT_SIZE>
+                             Tournament size. The number of individual solutions
+                             that are compared when determining which solutions are
+                             inserted into the next generation (iteration) of the
+                             search loop.
+  -s <SEED> --seed <SEED>
+                             Random seed. For replication of runs of the EA. The
+                             search is stochastic and and replication of the
+                             results are guaranteed the random seed.
+  --cp <CROSSOVER_PROBABILITY> --crossover_probability <CROSSOVER_PROBABILITY>
+                             Crossover probability, [0.0, 1.0]. The probability of
+                             two individual solutions to be varied by the crossover
+                             operator.
+  --mp <MUTATION_PROBABILITY> --mutation_probability <MUTATION_PROBABILITY>
+                             Mutation probability, [0.0, 1.0]. The probability of
+                             an individual solutions to be varied by the mutation
+                             operator.
+  --tts <TEST_TRAIN_SPLIT> --test_train_split <TEST_TRAIN_SPLIT>
+                             Test-train data split, [0.0, 1.0]. The ratio of fitness
+                             cases used for training individual solutions.
+  -v <VERBOSE> --verbose <VERBOSE>
+                             Set to 1 for verbose printing. Otherwise, 0.
 ```
 
 ## Output
@@ -86,7 +97,7 @@ Runs for `generations`
 ### Best Solution Statistics
 ```
 Best solution on train data: 'genome': {individual formula/tree}, 'fitness': fitness of genome
-Best solution on test data: 'genome': {individual formula/tree}, 'fitness':fitness of genome
+Best solution on test data: 'genome': {individual formula/tree}, 'fitness': fitness of genome
 ```
 
 # Test
