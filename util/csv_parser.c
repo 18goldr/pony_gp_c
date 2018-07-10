@@ -90,7 +90,7 @@ void parse_exemplars(FILE *file) {
 
     int num_lines = get_num_lines(file);
     num_exemplars = num_lines - 1;
-    int num_columns = get_num_columns(file);
+    num_columns = get_num_columns(file);
 
     // Allocate fitness_cases.
     // Leave space for NULL
