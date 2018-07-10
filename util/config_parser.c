@@ -13,6 +13,54 @@ double TEST_TRAIN_SPLIT;
 char *CONFIG_DIR;
 char *CSV_DIR;
 
+char help_string[] = "usage: ./pony_gp --config <CONFIG> --fc <FITNESS_CASES>\n"
+        "                    [-p <POPULATION_SIZE>] [-m <MAX_DEPTH>] [-e <ELITE_SIZE>]\n"
+        "                    [-g <GENERATIONS>] [--ts <TOURNAMENT_SIZE>] [-s <SEED>]\n"
+        "                    [--cp <CROSSOVER_PROBABILITY>] [--mp <MUTATION_PROBABILITY>]\n"
+        "                    [--tts <TEST_TRAIN_SPLIT>] [-v <VERBOSE>]\n"
+        "\n"
+        "\n"
+        "Required arguments:\n"
+        "  --config <CONFIG>         Config path (INI format). Overridden by CLI-arguments.\n"
+        "  --fc <FITNESS_CASES>      Fitness cases path. The exemplars of input and the\n"
+        "                            corresponding output used to train and test individual\n"
+        "                            solutions.\n"
+        "\n"
+        "Optional arguments:\n"
+        "  -p <POPULATION_SIZE> --population_size <POPULATION_SIZE>\n"
+        "                             Population size is the number of individual solutions\n"
+        "  -m <MAX_DEPTH> --max_depth <MAX_DEPTH>\n"
+        "                             Max depth of tree. Partly determines the search space\n"
+        "                             of the solutions.\n"
+        "  -e <ELITE_SIZE> --elite_size <ELITE_SIZE>\n"
+        "                             Elite size is the number of best individual solutions\n"
+        "                             that are preserved between generations.\n"
+        "  -g <GENERATIONS> --generations <GENERATIONS>\n"
+        "                             Number of generations. The number of iterations of the\n"
+        "                             search loop.\n"
+        "  --ts <TOURNAMENT_SIZE> --tournament_size <TOURNAMENT_SIZE>\n"
+        "                             Tournament size. The number of individual solutions\n"
+        "                             that are compared when determining which solutions are\n"
+        "                             inserted into the next generation (iteration) of the\n"
+        "                             search loop.\n"
+        "  -s <SEED> --seed <SEED>\n"
+        "                             Random seed. For replication of runs of the EA. The\n"
+        "                             search is stochastic and and replication of the\n"
+        "                             results are guaranteed the random seed.\n"
+        "  --cp <CROSSOVER_PROBABILITY> --crossover_probability <CROSSOVER_PROBABILITY>\n"
+        "                             Crossover probability, [0.0, 1.0]. The probability of\n"
+        "                             two individual solutions to be varied by the crossover\n"
+        "                             operator.\n"
+        "  --mp <MUTATION_PROBABILITY> --mutation_probability <MUTATION_PROBABILITY>\n"
+        "                             Mutation probability, [0.0, 1.0]. The probability of\n"
+        "                             an individual solutions to be varied by the mutation\n"
+        "                             operator.\n"
+        "  --tts <TEST_TRAIN_SPLIT> --test_train_split <TEST_TRAIN_SPLIT>\n"
+        "                             Test-train data split, [0.0, 1.0]. The ratio of fitness\n"
+        "                             cases used for training individual solutions.\n"
+        "  -v <VERBOSE> --verbose <VERBOSE>\n"
+        "                             Set to 1 for verbose printing. Otherwise, 0.";
+
 /**
  * Parse command line arguments.
  * @param argc The number of arguments.
@@ -25,32 +73,36 @@ void arg_parse(int argc, char *argv[]) {
     bool config_def = false;
 
     for (int i=1; i < argc; i+=2) {
-        if (strstr(argv[i], "-p")) {
+        if (strstr(argv[i], "-p") || strstr(argv[i], "--population_size")) {
             POPULATION_SIZE = (int) atof(argv[i+1]);
-        } else if(strstr(argv[i], "-m")) {
+        } else if(strstr(argv[i], "-m") || strstr(argv[i], "--max_depth")) {
             MAX_DEPTH = (int) atof(argv[i+1]);
-        } else if(strstr(argv[i], "-e")) {
+        } else if(strstr(argv[i], "-e") || strstr(argv[i], "--elite_size")) {
             ELITE_SIZE = (int) atof(argv[i+1]);
-        } else if(strstr(argv[i], "-g")) {
+        } else if(strstr(argv[i], "-g") || strstr(argv[i], "--generations")) {
             GENERATIONS = (int) atof(argv[i+1]);
-        } else if(strstr(argv[i], "-ts")) {
+        } else if(strstr(argv[i], "--ts") || strstr(argv[i], "--tournament_size")) {
             TOURNAMENT_SIZE = (int) atof(argv[i+1]);
-        } else if(strstr(argv[i], "-s")) {
+        } else if(strstr(argv[i], "-s") || strstr(argv[i], "--seed")) {
             SEED = atof(argv[i+1]);
-        } else if(strstr(argv[i], "-cp")) {
+        } else if(strstr(argv[i], "--cp") || strstr(argv[i], "--crossover_probability")) {
             CROSSOVER_PROBABILITY = atof(argv[i+1]);
-        } else if(strstr(argv[i], "-mp")) {
+        } else if(strstr(argv[i], "--mp") || strstr(argv[i], "--mutation_probability")) {
             MUTATION_PROBABILITY = atof(argv[i+1]);
-        } else if(strstr(argv[i], "-tts")) {
+        } else if(strstr(argv[i], "--tts") || strstr(argv[i], "--test_train_split")) {
             TEST_TRAIN_SPLIT = atof(argv[i+1]);
-        } else if(strstr(argv[i], "-v")) {
+        } else if(strstr(argv[i], "-v") || strstr(argv[i], "--verbose")) {
             VERBOSE = (bool)atof(argv[i+1]);
-        } else if(strstr(argv[i], "-config")) {
+        } else if(strstr(argv[i], "--config")) {
             CONFIG_DIR = argv[i+1];
             config_def = true;
-        } else if(strstr(argv[i], "-fc")) {
+        } else if(strstr(argv[i], "--fc")) {
             CSV_DIR = argv[i+1];
             csv_def = true;
+        } else if(strstr(argv[i], "-h") || strstr(argv[i], "--help")) {
+            printf("%s", help_string);
+            destroy_memory();
+            exit(EXIT_SUCCESS);
         }
     }
 
