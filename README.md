@@ -18,18 +18,17 @@ Best solution on the training data: Genome: {'+', '-', '*', '+', '1', 'a', '*', 
 Best solution on the test data: Genome: {'+', '-', '*', '+', '1', 'a', '*', '1', 'a', '+', '+', 'a', '0', '-', '0', 'a', '-', '+', '-', 'a', '1', '*', 'b', 'b', '+', '+', 'a', 'a', '-', 'b', 'b'}, Fitness: -0.6942
 ```
 
-If you wish to,
-change the parameters from the `configs.ini` file to your desired
-parameters or allow it to remain at its default values.
+Change the parameters from the `configs.ini` file to your desired
+parameters if you wish.
 
-The input with their respective output is in the file `data/fitness_case.csv`. The
-exemplars are generated from `y = a^2 + b^2` from range `[-5,5]`
+The input(s) with their respective output is in the file `data/fitness_case.csv`. The
+exemplars are generated from `y = a^2 + b^2` from range `[-5, 5]`
 
 To implement a system-dependant time function, modify the function `get_time` in `misc_util.c`.
 
 ## Requirements
 
-C99 and CMake
+C99 and CMake 3.5+
 
 ## Usage
 ```
@@ -44,7 +43,8 @@ Required arguments:
   --config <CONFIG>         Config path (INI format). Overridden by CLI-arguments.
   --fc <FITNESS_CASES>      Fitness cases path. The exemplars of input and the
                             corresponding output used to train and test individual
-                            solutions.
+                            solutions. Inputs must be in alphabetical order (not case
+                            sensitive).
 
 Optional arguments:
   -h, --help                 Show this help message and exit.

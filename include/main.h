@@ -37,7 +37,7 @@ struct individual *new_individual(struct node *genome, double fitness);
 void free_individual(struct individual *i);
 void print_individual(struct individual *i);
 double evaluate(struct node *node, double *fitness_case);
-void evaluate_individual(struct individual *ind);
+void evaluate_individual(struct individual *ind, bool test);
 void evaluate_population(struct individual **pop);
 void init_population(struct individual **pop);
 void sort_population(struct individual **pop, int size);
