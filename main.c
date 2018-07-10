@@ -51,11 +51,13 @@ int main(int argc, char *argv[]) {
 
     setup();
 
+    print_settings();
+
     struct individual **population = allocate_m(sizeof(struct individual *) * POPULATION_SIZE);
     struct individual *best_ever = run(population);
 
     if (EXPERIMENTAL_OUTPUT) {
-        print_params();
+        print_params_minimal();
         printf(", %f", best_ever->fitness);
     } else {
         printf("\nBest solution on the training data: ");
@@ -724,9 +726,74 @@ void out_of_sample_test(struct individual *i) {
 
 /**
  * Print the programs parameters without any extra information.
- * Prints in the order:
- *      Population size, max depth, elite size, generations, tournament size.
+ * Prints in the order: Population size, max depth, elite size, generations, tournament size.
  */
-void print_params() {
+void print_params_minimal() {
     printf("%d, %d, %d, %d, %d", POPULATION_SIZE, MAX_DEPTH, ELITE_SIZE, GENERATIONS, TOURNAMENT_SIZE);
+}
+
+/**
+ * Print all relevant parameters and input data.
+ */
+void print_settings() {
+    printf("Reading: %s, Headers: {", CSV_DIR);
+
+    for (int i=0; i < num_headers; i++) {
+        printf("%c", headers[i]);
+
+        if (i < num_headers - 1) printf(", ");
+    }
+    printf("}, Number of Exemplars: %d\n", num_exemplars);
+
+    printf("GP Settings:\n[[Population Size: %d, Max Depth: %d, Elite Size: %d, Generations: %d, "
+                        "Tournament Size: %d, Seed: %f, Crossover Probability: %f, "
+                        "Mutation Probability: %f, Verbose: %d, Config: %s, Functions: {",
+           POPULATION_SIZE, MAX_DEPTH, ELITE_SIZE, GENERATIONS, TOURNAMENT_SIZE, SEED,
+           CROSSOVER_PROBABILITY, MUTATION_PROBABILITY, VERBOSE, CONFIG_DIR
+    );
+
+    for (int i=0; i < symbols->func_size; i++) {
+        printf("%c", symbols->functions[i]);
+
+        if (i < symbols->func_size - 1) printf(", ");
+    }
+
+    printf("}, Terminals: {");
+
+    for (int i=0; i < symbols->term_size; i++) {
+        printf("%c", symbols->terminals[i]);
+
+        if (i < symbols->term_size - 1) printf(", ");
+    }
+
+    printf("}, Arities: ");
+
+    print_hashmap(symbols->arities);
+
+    printf(", Fitness Cases: {");
+
+    for (int i=0; i < fitness_len; i++) {
+        printf("[", num_columns);
+
+        for (int k=0; k < num_columns - 1; k++) {
+            printf("%f", fitness_cases[i][k]);
+
+            if (k < num_columns - 2) printf(", ");
+        }
+
+        printf("]");
+
+        if (i < fitness_len - 1) printf(", ");
+    }
+
+    printf("}, Targets: {");
+
+    for (int i=0; i < targets_len; i++) {
+        printf("%f", targets[i]);
+
+        if (i < targets_len - 1) printf(", ");
+    }
+
+    printf("}]]\n");
+
 }

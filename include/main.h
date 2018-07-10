@@ -49,6 +49,7 @@ void generational_replacement(struct individual **new_pop, struct individual **o
 struct individual *search_loop(struct individual **pop);
 void swap_populations(struct individual ***pop1, struct individual ***pop2);
 void out_of_sample_test(struct individual *i);
-void print_params(void);
+void print_params_minimal(void);
+void print_settings(void);
 
 #endif //PONY_GP_MAIN_H

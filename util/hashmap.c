@@ -68,7 +68,13 @@ double get_hashmap(struct hashmap *h, char *key) {
  * @param h The hashmap to print.
  */
 void print_hashmap(struct hashmap *h) {
+    printf("{");
+
     for (int i=0; i < h->num_pairs; i++) {
-        printf("%s: %f\n", h->keys[i], h->values[i]);
+        printf("%s: %f", h->keys[i], h->values[i]);
+
+        if (i < h->num_pairs - 1) printf(", ");
     }
+
+    printf("}");
 }
