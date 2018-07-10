@@ -773,7 +773,7 @@ void print_settings() {
     printf(", Fitness Cases: {");
 
     for (int i=0; i < fitness_len; i++) {
-        printf("[", num_columns);
+        printf("[");
 
         for (int k=0; k < num_columns - 1; k++) {
             printf("%f", fitness_cases[i][k]);
