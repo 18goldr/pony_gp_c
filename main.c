@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
         print_individual(best_ever);
         printf("\n");
         out_of_sample_test(best_ever);
+
     }
 
     destroy_memory();
@@ -295,7 +296,7 @@ void free_individual(struct individual *i) {
  */
 void print_individual(struct individual *i) {
     printf("Genome: {");
-    print_nodes_index_order(i->genome);
+    print_infix(i->genome);
     printf("}, Fitness: %.4f", i->fitness);
 }
 
