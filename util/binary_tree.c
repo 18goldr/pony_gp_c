@@ -323,3 +323,12 @@ char *tree_to_string(struct node *root) {
 
     return str;
 }
+
+
+void print_infix(struct node *root) {
+    if (root) {
+        print_infix(root->left);
+        printf("%c", root->value);
+        print_infix(root->right);
+    }
+}
