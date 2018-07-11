@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="pony_gp.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.9/jquery.csv.min.js"></script>
 
     <script>
+
         function set_fitnesses() {
             let f = get_fitnesses();
             let out_of_sample = [];
@@ -84,6 +84,19 @@
         }
 
         function actual_vs_expected() {
+            var best_ever = get_best_ever();
+
+        }
+
+
+
+        function get_best_ever() {
+            let output = localStorage.wasm_output;
+
+            let start_i = output.lastIndexOf("{");
+            let end_i = output.lastIndexOf("}");
+
+            return output.substring(start_i+1, end_i).replace(/'/g, "").replace(/,/g, "");
         }
 
         $(document).ready(function(){

@@ -22,7 +22,7 @@
     </script>
 </head>
 <body>
-    <form action='pony_gp.html'>
+    <form enctype='multipart/form-data' action='upload.php' method="POST">
         Population Size: <input type='range' min='10' max='100' value='50' name='population_size' oninput="p_output.value = population_size.value">
         <output name="p_output">50</output>
         <br>
@@ -55,7 +55,7 @@
         <output name="tts_output">0.7</output>
         <br>
 
-        Fitness Case File: <input type="file" id="fitness_cases">
+        Fitness Case File: <input type="file" name="uploaded_file">
         <br>
 
         <input type='submit' value='Run' onclick='set_args()'>
