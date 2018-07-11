@@ -37,5 +37,6 @@ void print_nodes_index_order(struct node *root);
 int get_max_tree_depth(struct node *root);
 struct node *tree_deep_copy(struct node *node);
 char *tree_to_string(struct node *root);
+void print_infix(struct node *root);
 
 #endif //PONY_GP_BINARY_TREE_H
