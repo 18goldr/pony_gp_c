@@ -9,8 +9,13 @@
     <link rel="stylesheet" href="pony_gp.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.0.2/math.js"></script>
 
     <script>
+
+        String.prototype.replaceAll = function(str1, str2, ignore) {
+            return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+        }
 
         function set_fitnesses() {
             let f = get_fitnesses();
@@ -86,9 +91,80 @@
         function actual_vs_expected() {
             var best_ever = get_best_ever();
 
+            var output = localStorage.wasm_output;
+
+            var fit_str = "Fitness Cases: {";
+
+            var fit_start = output.indexOf(fit_str) + fit_str.length;
+            var fit_end = output.indexOf("}, Targets");
+
+            var fit_cases = output.substring(fit_start, fit_end).replaceAll(" ", "").split("],");
+
+            var actual = [];
+
+            for (var i=0; i < fit_cases.length; i++) {
+                fit_cases[i] = fit_cases[i].replaceAll("[", "").replaceAll("]", "");
+
+                var cases = fit_cases[i].split(",");
+
+                actual.push(evaluate(best_ever, cases));
+            }
+
+            var targ_str = "Targets: {";
+            var targ_start = output.indexOf(targ_str) + targ_str.length;
+            var targ_end = output.indexOf("}]]");
+
+            var expected = output.substring(targ_start, targ_end).split(",");
+
+            let ctx = document.getElementById("actual_vs_expected").getContext("2d");
+
+            let data_labels = [];
+
+            for (var i=0; i < fit_cases.length; i++) {
+                data_labels.push("Case " + i);
+            }
+
+            let ae = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data_labels,
+
+                    datasets: [
+                        {
+                            label: "Actual",
+                            data: actual,
+                            borderColor: 'rgb(81, 145, 255)',
+                            backgroundColor: 'rgba(138, 178, 252, 0.51)'
+                        }, {
+                            label: "Expected",
+                            data: expected,
+                            borderColor: 'rgb(255, 25, 25)',
+                            backgroundColor: 'rgba(255, 177, 76, 0.65)'
+                        }
+                    ]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: "Actual vs. Expected",
+                        position: 'bottom'
+                    }
+                }
+            });
         }
 
+        function evaluate(genome, fitness_case) {
+            for (var i="a".charCodeAt(0); i <= "z".charCodeAt(0); i++) {
+                var char = String.fromCharCode(i);
+                genome = genome.replaceAll(char, fitness_case[i - "a".charCodeAt(0)]);
+            }
 
+            for (var i="A".charCodeAt(0); i <= "Z".charCodeAt(0); i++) {
+                var char = String.fromCharCode(i);
+                genome = genome.replaceAll(char, fitness_case[i - "A".charCodeAt(0)]);
+            }
+            return math.eval(genome);
+        }
 
         function get_best_ever() {
             let output = localStorage.wasm_output;
@@ -96,7 +172,7 @@
             let start_i = output.lastIndexOf("{");
             let end_i = output.lastIndexOf("}");
 
-            return output.substring(start_i+1, end_i).replace(/'/g, "").replace(/,/g, "");
+            return output.substring(start_i+1, end_i);
         }
 
         $(document).ready(function(){

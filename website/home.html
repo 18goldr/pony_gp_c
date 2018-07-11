@@ -23,7 +23,7 @@
 </head>
 <body>
     <form enctype='multipart/form-data' action='upload.php' method="POST">
-        Population Size: <input type='range' min='10' max='100' value='50' name='population_size' oninput="p_output.value = population_size.value">
+        Population Size: <input type='range' min='10' max='200' value='50' name='population_size' oninput="p_output.value = population_size.value">
         <output name="p_output">50</output>
         <br>
 
@@ -40,7 +40,7 @@
         <br>
 
         Tournament Size: <input type='range' min='2' max='20' value='10' name='tournament_size' oninput="ts_output.value = tournament_size.value">
-        <output name="ts_output">10</output>
+        <output name="ts_output">3</output>
         <br>
 
         Crossover Probability: <input type='range' min='0' max='100' value='80' name='crossover_probability' oninput="cp_output.value = crossover_probability.value / 100">

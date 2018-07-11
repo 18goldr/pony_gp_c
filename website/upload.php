@@ -14,9 +14,7 @@ if(!empty($_FILES['uploaded_file'])) {
     }
 
     if($can_upload && move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $path)) {
-        session_start();
-        $_SESSION["file_path"] = $path;
-        header('Location: pony_gp.php');
+        header('Location: pony_gp.html');
     } else {
         echo "There was an error uploading the file, please try again!";
     }
