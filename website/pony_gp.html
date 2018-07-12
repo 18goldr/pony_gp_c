@@ -62,6 +62,7 @@
                     }
                 }
             });
+
         }
 
         function get_fitnesses() {
@@ -191,16 +192,17 @@
     <div class="emscripten">
         <progress value="0" max="100" id="progress" hidden=1></progress>
     </div>
+    <div id="charts">
+        <div class="chart-container" style="display: inline-block; position: relative; height:40vh; width:40vw; padding-right: 17vw">
+            <canvas id="performance"></canvas>
+        </div>
 
-    <div class="chart-container" style="float: left; position: relative; height:40vh; width:40vw">
-        <canvas id="performance"></canvas>
+        <div class="chart-container" style="display: inline-block; position: relative; height:40vh; width:40vw">
+            <canvas id="actual_vs_expected"></canvas>
+        </div>
     </div>
 
-    <div class="chart-container" style="float: right; position: relative; height:40vh; width:40vw">
-        <canvas id="actual_vs_expected"></canvas>
-    </div>
-
-    <button style="position: relative">Toggle output</button>
+    <button>Toggle output</button>
 
     <textarea id="output" rows="8" hidden="1"></textarea>
 
