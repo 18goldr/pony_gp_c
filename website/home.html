@@ -3,6 +3,12 @@
 <head>
     <meta charset='UTF-8'>
     <title>Pony_gp Input</title>
+    <style>
+        body {
+            font-family:'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+        }
+
+    </style>
     <script>
         function set_args() {
             if (typeof(Storage) !== 'undefined') {
@@ -22,8 +28,8 @@
     </script>
 </head>
 <body>
-    <form enctype='multipart/form-data' action='upload.php' method="POST">
-        Population Size: <input type='range' min='10' max='200' value='50' name='population_size' oninput="p_output.value = population_size.value">
+    <form action="pony_gp.html" id="inputs" style="float: left">
+        Population Size: <input type='range' min='10' max='100' value='50' name='population_size' oninput="p_output.value = population_size.value">
         <output name="p_output">50</output>
         <br>
 
@@ -31,15 +37,15 @@
         <output name="m_output">3</output>
         <br>
 
-        Elite Size: <input type='range' min='2' max='10' value='2' name='elite_size' oninput="e_output.value = elite_size.value">
+        Elite Size: <input type='range' min='1' max='10' value='2' name='elite_size' oninput="e_output.value = elite_size.value">
         <output name="e_output">2</output>
         <br>
 
-        Generations: <input type='range' min='1' max='100' value='10' name='generations' oninput="g_output.value = generations.value">
+        Generations: <input type='range' min='1' max='50' value='10' name='generations' oninput="g_output.value = generations.value">
         <output name="g_output">10</output>
         <br>
 
-        Tournament Size: <input type='range' min='2' max='20' value='10' name='tournament_size' oninput="ts_output.value = tournament_size.value">
+        Tournament Size: <input type='range' min='1' max='20' value='10' name='tournament_size' oninput="ts_output.value = tournament_size.value">
         <output name="ts_output">3</output>
         <br>
 
@@ -55,10 +61,55 @@
         <output name="tts_output">0.7</output>
         <br>
 
-        Fitness Case File: <input type="file" name="uploaded_file">
-        <br>
-
         <input type='submit' value='Run' onclick='set_args()'>
     </form>
+    <div id="Readme" style="display: inline-block; margin-left: 50px; margin-top: -20px">
+        <p><code>Pony_gp</code> is an implementation of Genetic Programming (GP – see <a href="http://geneticprogramming.com">http://geneticprogramming.com</a>).<br>
+        The purpose of <code>pony_gp</code> is to describe how the GP algorithm works and to be compatible with<br>
+        emscripten. The intended use is for teaching. The aim is to allow the developer to quickly<br>
+        start using and developing. The design is supposed to be simple, self contained and use core<br>
+        C libraries. The project that this website was generated from can be found here:<br>
+        <a href="https://github.com/18goldr/pony_gp_c">https://github.com/18goldr/pony_gp_c</a>
+        <br><br>
+            The purpose of the program is to find an equation that produces the given outputs from the given inputs.
+        </p>
+
+        <pre><code>Usage:
+  Population Size:           Population size is the number of individual solutions
+  Math Depth:                Max depth of tree. Partly determines the search space of the solutions.
+  Elite Size:                Elite size is the number of best individual solutions
+                             that are preserved between generations.
+  Generations:               Number of generations. The number of iterations of the search loop.
+  Tournament Size:           Tournament size. The number of individual solutions
+                             that are compared when determining which solutions are
+                             inserted into the next generation (iteration) of the
+                             search loop.
+  Seed:                      Random seed. For replication of runs of the EA. The
+                             search is stochastic and and replication of the
+                             results are guaranteed the random seed.
+  Crossover Probability:     Crossover probability, [0.0, 1.0]. The probability of
+                             two individual solutions to be varied by the crossover
+                             operator.
+  Mutation Probability:      Mutation probability, [0.0, 1.0]. The probability of
+                             an individual solutions to be varied by the mutation
+                             operator.
+  Test-train Split:          Test-train data split, [0.0, 1.0]. The ratio of fitness
+                             cases used for training individual solutions.
+</code></pre>
+    </div>
+
+    <script>
+        let form  = document.getElementById("inputs");
+        let p = Number(localStorage.p);
+        let ts = Number(localStorage.ts);
+        let e = Number(localStorage.e);
+
+        form.addEventListener("submit", function (event) {
+            if (p < ts || p < e) {
+                alert("Population size must be greater than tournament size and elite size.");
+                event.preventDefault();
+            }
+        }, false);
+    </script>
 </body>
 </html>

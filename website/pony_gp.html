@@ -89,7 +89,7 @@
             return output.substring(lastc+1, lastn);
         }
 
-        function actual_vs_expected() {
+        function actual_vs_evolved() {
             var best_ever = get_best_ever();
 
             var output = localStorage.wasm_output;
@@ -137,7 +137,7 @@
                             borderColor: 'rgb(81, 145, 255)',
                             backgroundColor: 'rgba(138, 178, 252, 0.51)'
                         }, {
-                            label: "Expected",
+                            label: "Evolved",
                             data: expected,
                             borderColor: 'rgb(255, 25, 25)',
                             backgroundColor: 'rgba(255, 177, 76, 0.65)'
@@ -147,7 +147,7 @@
                 options: {
                     title: {
                         display: true,
-                        text: "Actual vs. Expected",
+                        text: "Actual vs. Evolved",
                         position: 'bottom'
                     }
                 }
@@ -173,7 +173,11 @@
             let start_i = output.lastIndexOf("{");
             let end_i = output.lastIndexOf("}");
 
-            return output.substring(start_i+1, end_i);
+            let result = output.substring(start_i+1, end_i);
+
+            let best_ever_div = document.getElementById("best_ever").innerHTML = "Best Solution: " + result;
+
+            return result;
         }
 
         $(document).ready(function(){
@@ -192,17 +196,24 @@
     <div class="emscripten">
         <progress value="0" max="100" id="progress" hidden=1></progress>
     </div>
+
+    <div id="best_ever" style="text-align: center; font-size: 2vw; color: #666; font-family:'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;"></div>
+
     <div id="charts">
-        <div class="chart-container" style="display: inline-block; position: relative; height:40vh; width:40vw; padding-right: 17vw">
+        <div class="chart-container" style="display: inline-block; position: relative; height:40vh; width:45vw;">
             <canvas id="performance"></canvas>
         </div>
 
-        <div class="chart-container" style="display: inline-block; position: relative; height:40vh; width:40vw">
+        <div class="chart-container" style="display: inline-block; position: relative; height:40vh; width:45vw">
             <canvas id="actual_vs_expected"></canvas>
         </div>
     </div>
 
-    <button>Toggle output</button>
+    <button style="position: relative;">Toggle output</button>
+
+    <form action="home.html">
+        <input type="submit" value="Go to settings" />
+    </form>
 
     <textarea id="output" rows="8" hidden="1"></textarea>
 
@@ -229,7 +240,7 @@
                 "-v", localStorage.v
             ] : ["--config", localStorage.config, "--fc", localStorage.fc],
             preRun: [],
-            postRun: [set_fitnesses, actual_vs_expected],
+            postRun: [set_fitnesses, actual_vs_evolved],
             print: (function () {
                 var element = document.getElementById('output');
                 if (element) element.value = ''; // clear browser cache
