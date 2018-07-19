@@ -67,7 +67,6 @@ char help_string[] = "usage: ./pony_gp --config <CONFIG> --fc <FITNESS_CASES>\n"
  * @param argv The list of arguments
  */
 void arg_parse(int argc, char *argv[]) {
-
     // Both the CSV file and the CONFIG file must be provided for the program to run.
     bool csv_def = false;
     bool config_def = false;
@@ -75,6 +74,8 @@ void arg_parse(int argc, char *argv[]) {
     for (int i=1; i < argc; i+=2) {
         if (strstr(argv[i], "-p") || strstr(argv[i], "--population_size")) {
             POPULATION_SIZE = (int) atof(argv[i+1]);
+        } else if(strstr(argv[i], "--mp") || strstr(argv[i], "--mutation_probability")) {
+            MUTATION_PROBABILITY = atof(argv[i+1]);
         } else if(strstr(argv[i], "-m") || strstr(argv[i], "--max_depth")) {
             MAX_DEPTH = (int) atof(argv[i+1]);
         } else if(strstr(argv[i], "-e") || strstr(argv[i], "--elite_size")) {
@@ -87,8 +88,6 @@ void arg_parse(int argc, char *argv[]) {
             SEED = atof(argv[i+1]);
         } else if(strstr(argv[i], "--cp") || strstr(argv[i], "--crossover_probability")) {
             CROSSOVER_PROBABILITY = atof(argv[i+1]);
-        } else if(strstr(argv[i], "--mp") || strstr(argv[i], "--mutation_probability")) {
-            MUTATION_PROBABILITY = atof(argv[i+1]);
         } else if(strstr(argv[i], "--tts") || strstr(argv[i], "--test_train_split")) {
             TEST_TRAIN_SPLIT = atof(argv[i+1]);
         } else if(strstr(argv[i], "-v") || strstr(argv[i], "--verbose")) {

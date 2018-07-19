@@ -1,4 +1,3 @@
-
 `pony_gp` is an implementation of Genetic Programming (GP -- see <http://geneticprogramming.com>).
 The purpose of `pony_gp` is to describe how the GP algorithm works and to be compatible with
 emscripten. The intended use is for teaching. The aim is to allow the developer to quickly
