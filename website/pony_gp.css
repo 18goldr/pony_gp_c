@@ -4,12 +4,6 @@ body {
     padding: none;
 }
 
-#best_ever {
-    text-align: center;
-    font-size: 2vw;
-    color: #666;
-    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-}
 
 .emscripten {
     padding-right: 0;

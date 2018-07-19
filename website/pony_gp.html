@@ -197,7 +197,7 @@
         <progress value="0" max="100" id="progress" hidden=1></progress>
     </div>
 
-    <div id="best_ever"></div>
+    <div id="best_ever" style="text-align: center; font-size: 2vw; color: #666; font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;"></div>
 
     <div id="charts">
         <div class="chart-container" style="display: inline-block; position: relative; height:40vh; width:45vw;">
@@ -223,7 +223,7 @@
         var statusElement = document.getElementById('status');
         var progressElement = document.getElementById('progress');
         var spinnerElement = document.getElementById('spinner');
-
+        console.log(localStorage.seed);
         var Module = {
             // Arguments defined in home.html
             arguments: (typeof(Storage) !== "undefined") ? [
@@ -237,7 +237,8 @@
                 "--cp", localStorage.cp,
                 "--mp", localStorage.mp,
                 "--tts", localStorage.tts,
-                "-v", localStorage.v
+                "-v", localStorage.v,
+                "-s", localStorage.seed
             ] : ["--config", localStorage.config, "--fc", localStorage.fc],
             preRun: [],
             postRun: [set_fitnesses, actual_vs_evolved],

@@ -29,6 +29,7 @@
                 localStorage.mp = document.getElementsByName('mutation_probability')[0].value / 100;
                 localStorage.tts = document.getElementsByName('test_train_split')[0].value / 100;
                 localStorage.v = 0;
+                localStorage.seed = document.getElementsByName('seed')[0].value;
             }
         }
     </script>
@@ -65,6 +66,9 @@
 
         Test-train Split: <input type='range' min='0' max='100' value='70' name='test_train_split' oninput="tts_output.value = test_train_split.value / 100">
         <output name="tts_output">0.7</output>
+        <br>
+
+        Seed: <input type="text" name='seed' size="5">
         <br>
 
         <input type='submit' value='Run' onclick='set_args()'>
