@@ -8,6 +8,12 @@
             font-family:'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
         }
 
+        #Readme {
+            display: inline-block; margin-left: 50px; margin-top: -20px
+        }
+
+        #inputs { float: left; }
+
     </style>
     <script>
         function set_args() {
@@ -28,7 +34,7 @@
     </script>
 </head>
 <body>
-    <form action="pony_gp.html" id="inputs" style="float: left">
+    <form action="pony_gp.html" id="inputs">
         Population Size: <input type='range' min='10' max='100' value='50' name='population_size' oninput="p_output.value = population_size.value">
         <output name="p_output">50</output>
         <br>
@@ -63,7 +69,8 @@
 
         <input type='submit' value='Run' onclick='set_args()'>
     </form>
-    <div id="Readme" style="display: inline-block; margin-left: 50px; margin-top: -20px">
+
+    <div id="Readme">
         <p><code>Pony_gp</code> is an implementation of Genetic Programming (GP – see <a href="http://geneticprogramming.com">http://geneticprogramming.com</a>).<br>
         The purpose of <code>pony_gp</code> is to describe how the GP algorithm works and to be compatible with<br>
         emscripten. The intended use is for teaching. The aim is to allow the developer to quickly<br>
