@@ -16,5 +16,5 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-	set_target_properties(pony_gp PROPERTIES LINK_FLAGS "--embed-file ../data -s NO_EXIT_RUNTIME=0")
+	set_target_properties(pony_gp PROPERTIES LINK_FLAGS "--embed-file ../data -s NO_EXIT_RUNTIME=0 -s BINARYEN_TRAP_MODE=clamp")
 endif()
