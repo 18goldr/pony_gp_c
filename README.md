@@ -1,8 +1,9 @@
 `pony_gp` is an implementation of Genetic Programming (GP -- see <http://geneticprogramming.com>).
 The purpose of `pony_gp` is to describe how the GP algorithm works and to be compatible with
-emscripten. The intended use is for teaching. The aim is to allow the developer to quickly
-start using and developing. The design is supposed to be simple, self contained and use core
-C libraries. The original project, written in python, can be found here:
+emscripten, in particular, to be converted to WebAssembly (see the folder `Website`). The intended use is for teaching. 
+The aim is to allow the developer to quickly start using and developing. The design is 
+supposed to be simple, self contained and use core C libraries. The original project, 
+written in python, can be found here:
 https://github.com/flexgp/pony_gp
 
 # Run
